@@ -1,0 +1,119 @@
+
+
+feature file
+
+Feature: Test login 
+
+ Scenario: check login is successful with valid credentials
+ 	Given browser is open
+ 	And user is on login page
+ 	When user enters username and password
+ 	And user clicks on login
+ 	Then user is navigated to the home page
+ 	
+
+
+java file
+
+
+package stepdefinition;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+
+public class loginsteps {
+	WebDriver driver = null;
+	@Given("browser is open")
+	public void browser_is_open() {
+	    
+	   System.setProperty("webdriver.gecko.marionette","C:\\Users\\aswin\\eclipse-workspace\\1002\\src\\test\\resources\\Drivers\\geckodriver_2.exe");
+	   driver = new FirefoxDriver();
+	   driver.manage().window().maximize();
+	}
+
+	@And("user is on login page")
+	public void user_is_on_login_page() throws Exception{
+	    driver.navigate().to("http://localhost/adm_test/login.php");
+	    Thread.sleep(2000);
+	    
+	}
+
+	@When("user enters username and password")
+	public void user_enters_username_and_password() {
+		driver.findElement(By.id("username")).sendKeys("8639794330");
+		driver.findElement(By.id("mobile")).sendKeys("8639794330");
+		driver.findElement(By.id("email")).sendKeys("aa@gmail.com");
+		driver.findElement(By.id("age")).sendKeys("22");
+	    
+	}
+
+	@And("user clicks on login")
+	public void user_clicks_on_login() {
+		
+		driver.findElement(By.id("submit")).click();
+	   
+	}
+
+	@Then("user is navigated to the home page")
+	public void user_is_navigated_to_the_home_page() throws Exception{
+		driver.findElement(By.className("post-title")).isDisplayed();
+		Thread.sleep(2000);
+		driver.close();
+		driver.quit();
+	}
+
+
+}
+
+
+
+
+pom.xml
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>1002</groupId>
+  <artifactId>1002</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+   
+  <dependencies><!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-junit -->
+<dependency>
+    <groupId>io.cucumber</groupId>
+    <artifactId>cucumber-junit</artifactId>
+    <version>7.11.1</version>
+    <scope>test</scope>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
+<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>4.8.1</version>
+</dependency>
+
+
+<!-- https://mvnrepository.com/artifact/junit/junit -->
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.13.2</version>
+    <scope>test</scope>
+</dependency>
+
+
+<!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-java -->
+<dependency>
+    <groupId>io.cucumber</groupId>
+    <artifactId>cucumber-java</artifactId>
+    <version>7.11.1</version>
+</dependency>
+
+</dependencies>
+</project>
+

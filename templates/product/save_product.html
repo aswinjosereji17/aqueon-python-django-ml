@@ -1,0 +1,452 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Admin</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/quill/quill.snow.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/quill/quill.bubble.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/simple-datatables/style.css' %}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+  <style>
+    /* Style the form container */
+    .product-form {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* Style form groups */
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    /* Style labels */
+    .form-group label {
+      font-weight: bold;
+      display: block;
+    }
+
+    /* Style form controls */
+    .form-control {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Style file input */
+    .form-control-file {
+      padding: 5px 42px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Style the submit button */
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px 150px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* Add hover effect on the submit button */
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+  </style>
+
+
+  <script>
+    $(document).ready(function () {
+      // Function to validate the price input
+      function validatePrice() {
+        var priceInput = parseFloat($("#price").val());
+        if (isNaN(priceInput) || priceInput <= 0) {
+          $("#price-error").text("Price must be greater than 0.");
+          return false;
+        } else {
+          $("#price-error").text("");
+          return true;
+        }
+      }
+
+      // Attach the validation function to the form submission
+      $(".product-form").submit(function () {
+        return validatePrice();
+      });
+
+      // Attach the validation function to the price input's change event
+      $("#price").change(validatePrice);
+
+
+
+
+
+      function validateImages() {
+            var img1 = $("#img1").val();
+            var img2 = $("#img2").val();
+            var img3 = $("#img3").val();
+
+            if (img1 === img2 || img1 === img3 || img2 === img3) {
+                $("#image-error").text("Image files must be different.");
+                return false;
+            } else {
+                $("#image-error").text("");
+                return true;
+            }
+        }
+
+        // Attach the validation function to the form submission
+        $(".product-form").submit(function () {
+            return validateImages();
+        });
+
+        // Attach the validation function to the change event of image inputs
+        $("#img1, #img2, #img3").change(validateImages);
+    });
+  </script>
+
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="index.html" class="logo d-flex align-items-center">
+        <img src="assets/img/logo.png" alt="">
+        <span class="d-none d-lg-block">Seller</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+  </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+      <li class="nav-item">
+        <a class="nav-link " href="{% url 'user_profile_view' %}">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
+       
+      {% if user.is_superuser and user.is_staff %}
+
+      <li class="nav-item" >
+        <a class="nav-link collapsed"  href="{% url 'product_list' %}">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Add Category</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+      </li>
+      
+      <li class="nav-item" >
+        <a class="nav-link collapsed"  href="{% url 'product_list' %}">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Add Subcategory</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+      </li>
+      <li class="nav-item" >
+        <a class="nav-link collapsed"  href="{% url 'product_list' %}">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Delete Category</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+      </li>
+      <li class="nav-item" >
+        <a class="nav-link collapsed"  href="{% url 'product_list' %}">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Delete Category</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+      </li>
+
+      {% endif %}
+
+      {% if not user.is_superuser and user.is_staff %}
+
+      <li class="nav-item" >
+        <a class="nav-link collapsed"  href="{% url 'product_list' %}">
+          <i class="bi bi-layout-text-window-reverse"></i><span>List all products</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <!-- <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav"> -->
+          <!-- <li>
+            <a href="tables-general.html">
+              <i class="bi bi-circle"></i><span>General Tables</span>
+            </a>
+          </li>
+          <li>
+            <a href="tables-data.html">
+              <i class="bi bi-circle"></i><span>Data Tables</span>
+            </a>
+          </li> -->
+          
+        <!-- </ul> -->
+
+      </li><!-- End Tables Nav -->
+      <li class="nav-item">
+        <a class="nav-link collapsed"  href="{% url 'add_product' %}">
+          <i class="bi bi-menu-button-wide"></i><span>Add Product</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <!-- <li onclick="showmain('main1')">Show main 1</li>
+          <li onclick="showmain('main2')">Show main 2</li> -->
+        <!-- <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="components-alerts.html">
+              <i class="bi bi-circle"></i><span>Alerts</span>
+            </a>
+          </li>
+          <li>
+            <a href="components-accordion.html">
+              <i class="bi bi-circle"></i><span>Accordion</span>
+            </a>
+          </li>
+          
+        </ul> -->
+      </li><!-- End Components Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>Modify Product</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-bar-chart"></i><span>Delete products</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <!-- <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="charts-chartjs.html">
+              <i class="bi bi-circle"></i><span>Chart.js</span>
+            </a>
+          </li>
+        </ul> -->
+      </li><!-- End Charts Nav -->
+
+      {% endif %}
+
+      <li class="nav-heading">Pages</li>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="users-profile.html">
+          <i class="bi bi-person"></i>
+          <span>Profile</span>
+        </a>
+      </li><!-- End Profile Page Nav -->
+
+
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="pages-contact.html">
+          <i class="bi bi-envelope"></i>
+          <span>Contact</span>
+        </a>
+      </li><!-- End Contact Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="pages-register.html">
+          <i class="bi bi-card-list"></i>
+          <span>Register</span>
+        </a>
+      </li><!-- End Register Page Nav -->
+
+    </ul>
+
+  </aside><!-- End Sidebar-->
+
+
+
+
+  <main id="main1" class="main">
+    <div class="pagetitle">
+      <h1>Add Product</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+    <!-- <h1>Save Product</h1> -->
+    <form method="post" enctype="multipart/form-data" class="product-form">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="product_name">Product Name:</label>
+        <input type="text" name="product_name" required class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="subcategory">Subcategory:</label>
+        <select name="subcategory" required class="form-control">
+          {% for subcategory in subcategories %}
+          <option value="{{ subcategory.sub_cat_id }}">{{ subcategory.sub_cat_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- <div class="form-group">
+          <label for="price">Price:</label>
+          <input type="number" name="price" step="0.01" required class="form-control">
+      </div> -->
+      <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" step="0.01" required class="form-control">
+        <span id="price-error" class="text-danger"></span>
+      </div>
+
+
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required class="form-control"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="instruction">Instruction:</label>
+        <textarea id="instruction" name="instruction" required class="form-control"></textarea>
+      </div>
+
+      <!-- <div class="form-group">
+          <label for="img1">Image 1:</label>
+          <input type="file" id="img1" name="img1" accept="image/*" required class="form-control-file">
+      </div>
+  
+      <div class="form-group">
+          <label for="img2">Image 2:</label>
+          <input type="file" id="img2" name="img2" accept="image/*" required class="form-control-file">
+      </div>
+  
+      <div class="form-group">
+          <label for="img3">Image 3:</label>
+          <input type="file" id="img3" name="img3" accept="image/*" required class="form-control-file">
+      </div> -->
+
+      <div class="form-group">
+        <label for="img1">Image 1:</label>
+        <input type="file" id="img1" name="img1" accept="image/*" required class="form-control-file">
+      </div>
+
+      <div class="form-group">
+        <label for="img2">Image 2:</label>
+        <input type="file" id="img2" name="img2" accept="image/*" required class="form-control-file">
+      </div>
+
+      <div class="form-group">
+        <label for="img3">Image 3:</label>
+        <input type="file" id="img3" name="img3" accept="image/*" required class="form-control-file">
+      </div>
+
+      <span id="image-error" class="text-danger"></span>
+
+
+      <button type="submit" class="btn btn-primary">Save Product</button>
+    </form>
+
+
+
+  </main>
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>Aqueon</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+      <!-- Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> -->
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/apexcharts/apexcharts.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/chart.js/chart.umd.js' %}"></script>
+  <script src="{% static 'assets/vendor/echarts/echarts.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/quill/quill.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/simple-datatables/simple-datatables.js' %}"></script>
+  <script src="{% static 'assets/vendor/tinymce/tinymce.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+</body>
+
+</html>
+
+
+
+
+<!-- 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Save Product</title>
+</head>
+<body>
+    <h1>Save Product</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="product_name">Product Name:</label>
+        <input type="text" name="product_name" required><br>
+        
+        <label for="subcategory">Subcategory:</label>
+        <select name="subcategory" required>
+            {% for subcategory in subcategories %}
+                <option value="{{ subcategory.sub_cat_id }}">{{ subcategory.sub_cat_name }}</option>
+            {% endfor %}
+        </select><br>
+        
+        <label for="price">Price:</label>
+        <input type="number" name="price" step="0.01" required><br>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea><br><br>
+        
+        <label for="img1">Image 1:</label>
+        <input type="file" id="img1" name="img1" accept="image/*" required><br><br>
+        
+        <label for="img2">Image 2:</label>
+        <input type="file" id="img2" name="img2" accept="image/*" required><br><br>
+        
+        <label for="img3">Image 3:</label>
+        <input type="file" id="img3" name="img3" accept="image/*" required><br><br>
+        
+        <button type="submit">Save Product</button>
+    </form>
+</body>
+</html> -->

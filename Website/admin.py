@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import UserProfile,SellerRequest,HomeSpecialOffer,ProductCategory, ProductSubcategory, Product, ProductDescription, UserAddress
+from .models import UserProfile,SellerRequest,HomeSpecialOffer,ProductCategory, ProductSubcategory, Product, ProductDescription, UserAddress, AddCart, CartItems
 #  ProductCategory, ProductSubcategory, Product
 
 # class UserProfileAdmin(admin.ModelAdmin):
@@ -42,7 +42,7 @@ admin.site.register(Product, ProductAdmin)
 # admin.site.register(ProductSubcategory)
 # admin.site.register(Product)
 class ProductDescriptionAdmin(admin.ModelAdmin):
-    list_display = ('prod_desc_id','prod_id','description','instructions')  # Add other fields here
+    list_display = ('prod_desc_id','prod_id','description','instructions','img1')  # Add other fields here
 admin.site.register(ProductDescription,ProductDescriptionAdmin)
 
 class ProductSubcategoryAdmin(admin.ModelAdmin):
@@ -50,7 +50,7 @@ class ProductSubcategoryAdmin(admin.ModelAdmin):
 
 admin.site.register(ProductSubcategory, ProductSubcategoryAdmin)
 
-# admin.site.register(Cart)
-# admin.site.register(CartItem)
+admin.site.register(AddCart)
+admin.site.register(CartItems)
 
 

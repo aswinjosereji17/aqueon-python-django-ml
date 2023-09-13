@@ -32,6 +32,27 @@
                 </div>
             </div>
 
+
+
+            {% comment %} <h1>Add to Cart</h1> {% endcomment %}
+    
+    {% comment %} <form method="post" action="{% url 'add_to_cart' %}">
+        {% csrf_token %}
+        
+        <!-- Input for product ID -->
+        <label for="prod_id">Product ID:</label>
+        <input type="text" id="prod_id" name="prod_id" value="{{products.prod_id}}" required>
+        
+        <!-- Input for quantity -->
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" value="1" min="1" required>
+        
+        <button type="submit">Add to Cart</button>
+    </form> {% endcomment %}
+
+    <form method="post" action="{% url 'add_to_cart' %}">
+        {% csrf_token %}
+        <input type="hidden" id="prod_id" name="prod_id" value="{{products.prod_id}}" required>
             <div class="col-lg-7 h-auto mb-30">
                 <div class="h-100 bg-light p-30">
                     <h3>{{ products.prod_name }}</h3>
@@ -51,19 +72,21 @@
                     <div class="d-flex align-items-center mb-4 pt-2">
     <div class="input-group quantity mr-3" style="width: 130px;">
         <div class="input-group-btn">
-            <button class="btn btn-primary btn-minus">
+            {% comment %} <button class="btn btn-primary btn-minus">
                 <i class="fa fa-minus"></i>
-            </button>
+            </button> {% endcomment %}
         </div>
-        <input type="text" class="form-control bg-secondary border-0 text-center" value="1">
+        <input type="number" id="quantity" name="quantity" value="1" min="1" required>
         <div class="input-group-btn">
-            <button class="btn btn-primary btn-plus">
+            {% comment %} <button class="btn btn-primary btn-plus">
                 <i class="fa fa-plus"></i>
-            </button>
+            </button> {% endcomment %}
         </div>
     </div>
-    <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+    <button type="submit" class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
 </div>
+
+
 
 <script>
     // Get the input element
@@ -85,9 +108,11 @@
         var value = parseInt(inputElement.value);
         inputElement.value = value + 1;
     });
-</script>
+</script> 
+    </form>
 
-                    <div class="d-flex pt-2">
+
+                    {% comment %} <div class="d-flex pt-2">
                         <strong class="text-dark mr-2">Share on:</strong>
                         <div class="d-inline-flex">
                             <a class="text-dark px-2" href="">
@@ -103,7 +128,9 @@
                                 <i class="fab fa-pinterest"></i>
                             </a>
                         </div>
-                    </div>
+                    </div> {% endcomment %}
+        </form>
+
                 </div>
             </div>
         </div>

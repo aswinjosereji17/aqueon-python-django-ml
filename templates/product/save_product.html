@@ -6,6 +6,34 @@
 <head>
   
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  {% comment %} <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> {% endcomment %}
+<script>
+    $(document).ready(function () {
+
+        var saveButton = $('#saveButton');
+
+        $('#product_name').on('input', function () {
+            // Get the value of the product name input
+            var productName = $(this).val();
+
+            // Send an AJAX request to Django to check if the product name exists
+            $.ajax({
+                url: '/check_product_name/',  // Replace with your Django URL
+                data: {'product_name': productName},
+                dataType: 'json',
+                success: function (data) {
+                    if (data.exists) {
+                        $('#pnameError').text('Product name already exists.');
+                        saveButton.prop('disabled', true);
+                    } else {
+                        $('#pnameError').text('');
+                        saveButton.prop('disabled', false);
+                    }
+                }
+            });
+        });
+    });
+</script>
 
 
   <style>
@@ -56,6 +84,11 @@
     /* Add hover effect on the submit button */
     .btn-primary:hover {
       background-color: #0056b3;
+    }
+
+    #pnameError{
+      margin-top:20px;
+      color:red;
     }
   </style>
 
@@ -126,9 +159,10 @@
     <form method="post" enctype="multipart/form-data" class="product-form">
       {% csrf_token %}
       <div class="form-group">
-        <label for="product_name">Product Name:</label>
-        <input type="text" name="product_name" required class="form-control">
-      </div>
+    <label for="product_name">Product Name:</label>
+    <input type="text" name="product_name" required class="form-control" id="product_name">
+    <span id="pnameError" class="error"></span>
+</div>
 
       <div class="form-group">
         <label for="subcategory">Subcategory:</label>
@@ -192,8 +226,8 @@
 
       <span id="image-error" class="text-danger"></span>
 
+      <button id="saveButton" type="submit" class="btn btn-primary" >Save Product</button>
 
-      <button type="submit" class="btn btn-primary">Save Product</button>
     </form>
 
 

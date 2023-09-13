@@ -36,6 +36,16 @@ urlpatterns = [
     path('check_username/', views.check_username, name='check_username'),
     path('check_email/', views.check_email, name='check_email'),
 
+
+
+
+    path('add-to-cart/', views.add_to_cart, name='add_to_cart'),
+    path('cart_details', views.cart_details, name='cart_details'),
+    path('check_product_name/', views.check_product_name, name='check_product_name'),
+
+
+
+
    path('edit_profile/', views.edit_profile, name='edit_profile'),
     ]
 

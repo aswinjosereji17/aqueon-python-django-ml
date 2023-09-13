@@ -13,15 +13,44 @@ from django.db.models import Q
 
 # Create your views here.
 def index(request):
-    homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
-    prod_cat = ProductCategory.objects.all()  # Get all events from the database
 
-    context = {
+
+    
+    homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
+    prod_cat = ProductCategory.objects.all()
+    
+    if request.user.is_authenticated:
+        user=request.user
+        homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
+        prod_cat = ProductCategory.objects.all()
+        # return redirect('index')
+        try:
+            cart = AddCart.objects.get(user=user)
+            cart_items = CartItems.objects.filter(cart=cart)
+            cart_item_count = cart_items.count()  # Calculate the count of items in the cart
+        except AddCart.DoesNotExist:
+            cart = None
+            cart_items = []
+            cart_item_count = 0
+        context = {
+        'cart' : cart,
+        'cart_items' : cart_items,
         'homeimg': homeimg,
-        'prod_cat':prod_cat
-    }
-    # return render(request, 'showsevents.html', context)
-    return render(request,'index.html', context)
+        'prod_cat':prod_cat,
+        'cart_item_count': cart_item_count,
+        }
+        
+        return render(request,'index.html', context)
+    else:
+        homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
+        prod_cat = ProductCategory.objects.all()
+        context = {
+        'homeimg': homeimg,
+        'prod_cat':prod_cat,
+        }
+        
+        return render(request,'index.html', context)
+    
 
 def login_user(request):
     if request.user.is_authenticated:
@@ -176,7 +205,16 @@ def edit_profile(request):
 
         # Update the profile fields with the submitted form data
         user_profile.mobile = request.POST.get('mobile')
+        # user_profile.save()
+        # user_profile.profile_image=request.POST.get('prof_image')
+        uploaded_image = request.FILES.get('img1')
+
+        if uploaded_image:
+            # Update the user's profile image
+            user_profile.profile_image = uploaded_image
+        
         user_profile.save()
+        
 
         user_addr.address1=request.POST.get('address1')
         user_addr.address2=request.POST.get('address2')
@@ -194,9 +232,9 @@ def edit_profile(request):
             seller_req=SellerRequest.objects.get(user=request.user)
             seller_req.company = request.POST.get('company')
             seller_req.save()  
-        if 'profile_image' in request.FILES:
-            user_profile.profile_image = request.FILES['profile_image']
-            user_profile.save()
+        # if 'profile_image' in request.FILES:
+        #     user_profile.profile_image = request.FILES['profile_image']
+        #     user_profile.save()
 
         
         # Redirect to a success page or profile page
@@ -266,8 +304,10 @@ def product_list(request):
 
 
 
+from django.db import IntegrityError
 
 @login_required
+
 def add_product(request):
     if request.method == 'POST':
         product_name = request.POST['product_name']
@@ -278,6 +318,11 @@ def add_product(request):
         img1 = request.FILES['img1']
         img2 = request.FILES['img2']
         img3 = request.FILES['img3']
+
+        # Check if the product name already exists
+        if Product.objects.filter(prod_name=product_name).exists():
+            # Handle the case where the product name already exists
+            return HttpResponse("Product with this name already exists.")
 
         subcategory = ProductSubcategory.objects.get(pk=subcategory_id)
         
@@ -304,7 +349,7 @@ def add_product(request):
         return redirect('product_list')  # Redirect to a product list view
     
     subcategories = ProductSubcategory.objects.all()
-    return render(request, 'product\save_product.html', {'subcategories': subcategories})
+    return render(request, 'product\save_product.html', {'subcategories': subcategories, })
 
 
 from .models import ProductSubcategory
@@ -445,3 +490,68 @@ def check_email(request):
         email = request.GET.get('email', '')
         email_exists = User.objects.filter(email=email).exists()
         return JsonResponse({'exists': email_exists})
+
+
+from django.shortcuts import render, redirect
+from .models import AddCart, CartItems, Product
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseBadRequest
+
+@login_required
+def add_to_cart(request):
+    if request.method == 'POST':
+        prod_id = request.POST.get('prod_id')
+        quantity = int(request.POST.get('quantity', 1))  # Default to 1 if not provided
+
+        if prod_id:
+            try:
+                prod = Product.objects.get(prod_id=prod_id)
+            except Product.DoesNotExist:
+                return HttpResponseBadRequest("Invalid product ID")
+
+            user = request.user
+            cart, created = AddCart.objects.get_or_create(user=user)
+
+            # Check if the product is already in the cart, if so, update the quantity
+            existing_item = CartItems.objects.filter(cart=cart, prod=prod).first()
+            if existing_item:
+                existing_item.quantity += quantity
+                existing_item.save()
+            else:
+                # Create a new cart item
+                CartItems.objects.create(cart=cart, prod=prod, quantity=quantity)
+
+            return redirect('cart_details')  # Redirect to the cart page or wherever you want
+        else:
+            return HttpResponseBadRequest("Invalid product ID")
+
+    # Handle GET requests (e.g., rendering the page with a form)
+    return render(request, 'add_to_cart.html')
+
+
+from .models import AddCart, CartItems
+from django.db.models import Sum 
+
+def cart_details(request):
+    user = request.user
+    try:
+        cart = AddCart.objects.get(user=user)
+        cart_items = CartItems.objects.filter(cart=cart)
+        total_cart_value = cart_items.aggregate(Sum('total_price'))['total_price__sum']
+    except AddCart.DoesNotExist:
+        cart = None
+        cart_items = []
+        total_cart_value = 0.0
+
+    return render(request, 'product/cart.html', {'cart': cart, 'cart_items': cart_items, 'total_cart_value': total_cart_value})
+
+
+
+from django.http import JsonResponse
+from .models import Product
+
+def check_product_name(request):
+    if request.method == 'GET':
+        product_name = request.GET.get('product_name', '')
+        product_exists = Product.objects.filter(prod_name=product_name).exists()
+        return JsonResponse({'exists': product_exists})

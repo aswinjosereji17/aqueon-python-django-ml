@@ -102,10 +102,23 @@ class ProductDescription(models.Model):
         return f"Description for {self.prod_id.prod_name}"
 
 
-
-
-
-class hello(models.Model):
-    h_id = models.AutoField(primary_key=True)
+class AddCart(models.Model):
+    cart_id = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE,unique=True)  # Using the User model from Django's auth module
-   
+    cart_date = models.DateTimeField(auto_now_add=True) 
+
+class CartItems(models.Model):
+    cart_item_id = models.AutoField(primary_key=True)
+    cart = models.ForeignKey(AddCart, on_delete=models.CASCADE)
+    prod = models.ForeignKey(Product, on_delete=models.CASCADE)  # Assuming you have a Product model
+    quantity = models.IntegerField()
+    cart_item_date = models.DateTimeField(auto_now_add=True)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Set a default value of 0.0
+
+    def save(self, *args, **kwargs):
+        # Calculate the total price based on the quantity and the price of the associated product
+        if self.prod:
+            self.total_price = self.quantity * self.prod.price  # Assuming 'price' is a field in your Product model
+        super().save(*args, **kwargs)
+
+

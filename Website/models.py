@@ -102,3 +102,10 @@ class ProductDescription(models.Model):
         return f"Description for {self.prod_id.prod_name}"
 
 
+
+
+
+class hello(models.Model):
+    h_id = models.AutoField(primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE,unique=True)  # Using the User model from Django's auth module
+   

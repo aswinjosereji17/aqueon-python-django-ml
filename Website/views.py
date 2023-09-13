@@ -194,6 +194,9 @@ def edit_profile(request):
             seller_req=SellerRequest.objects.get(user=request.user)
             seller_req.company = request.POST.get('company')
             seller_req.save()  
+        if 'profile_image' in request.FILES:
+            user_profile.profile_image = request.FILES['profile_image']
+            user_profile.save()
 
         
         # Redirect to a success page or profile page
@@ -252,11 +255,14 @@ from .models import Product, ProductSubcategory, ProductDescription
 def product_list(request):
     query = request.GET.get('q')
     products = Product.objects.filter(user_id=request.user)
+    user_profile = UserProfile.objects.get(user=request.user)
+    seller_request = SellerRequest.objects.get(user=request.user)
+    user_addr = UserAddress.objects.get(user=request.user)
 
     if query:
         products = products.filter(Q(prod_name__icontains=query))
 
-    return render(request, 'product\product_list.html', {'products': products, 'query': query})
+    return render(request, 'product\product_list.html', {'products': products, 'query': query , 'user_profile': user_profile, 'seller_request': seller_request,'user_addr' : user_addr})
 
 
 
@@ -352,6 +358,9 @@ def prod_desc(request, prod_id):
 def modify_product(request, prod_id):
     product = get_object_or_404(Product, prod_id=prod_id, user_id=request.user)
     description = ProductDescription.objects.get(prod_id=product)
+    user_profile = UserProfile.objects.get(user=request.user)
+    seller_request = SellerRequest.objects.get(user=request.user)
+    user_addr = UserAddress.objects.get(user=request.user)
 
     if request.method == 'POST':
         product.prod_name = request.POST['prod_name']
@@ -359,6 +368,7 @@ def modify_product(request, prod_id):
         product.sub_categ_id_id = request.POST['sub_categ_id']
 
         description.description = request.POST['description']
+        description.instructions=request.POST['instruction']
         if 'img1' in request.FILES:
             description.img1 = request.FILES['img1']
         if 'img2' in request.FILES:
@@ -373,5 +383,65 @@ def modify_product(request, prod_id):
         return redirect('product_list')
 
     subcategories = ProductSubcategory.objects.all()
-    return render(request, 'product/modify_product.html', {'product': product, 'description': description, 'subcategories': subcategories})
+    # try:
+    #     seller_request = SellerRequest.objects.get(user=request.user)
+    # except SellerRequest.DoesNotExist:
+    #     seller_request = None
 
+    # try:
+    #     user_profile = UserProfile.objects.get(user=request.user)
+    # except UserProfile.DoesNotExist:
+    #     user_profile = None
+
+    # try:
+    #     user_addr = UserAddress.objects.get(user=request.user)
+    # except UserAddress.DoesNotExist:
+    #     user_addr = None
+    
+  
+    return render(request, 'product/modify_product.html', {'product': product, 'description': description, 'subcategories': subcategories, 'user_profile': user_profile, 'seller_request': seller_request,'user_addr' : user_addr})
+
+def delete_product(request, prod_id):
+    product = get_object_or_404(Product, prod_id=prod_id, user_id=request.user)
+
+    if request.method == 'POST':
+        product.delete()
+        return redirect('product_list')
+
+    return render(request, 'product/delete_product.html', {'product': product})
+
+
+def add_cat(request):
+    if request.method == 'POST':
+        categ_name = request.POST['categ_name']
+        categ_image = request.FILES['categ_image']
+
+        # Create a new ProductCategory object and save it
+        new_category = ProductCategory(categ_name=categ_name, categ_image=categ_image)
+        new_category.save()
+
+        return redirect('user_profile_view')  # Redirect to a list view of product categories
+    else:
+        return render(request, 'admin/add_cat.html',)
+
+from .models import ProductCategory
+
+def list_product_categories(request):
+    categories = ProductCategory.objects.all()
+    return render(request, 'admin/display_cat.html', {'categories': categories})
+
+
+from django.http import JsonResponse
+from django.contrib.auth.models import User
+
+def check_username(request):
+    if request.method == 'GET':
+        username = request.GET.get('username', '')
+        user_exists = User.objects.filter(username=username).exists()
+        return JsonResponse({'exists': user_exists})
+
+def check_email(request):
+    if request.method == 'GET':
+        email = request.GET.get('email', '')
+        email_exists = User.objects.filter(email=email).exists()
+        return JsonResponse({'exists': email_exists})

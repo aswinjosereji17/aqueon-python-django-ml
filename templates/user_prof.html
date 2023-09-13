@@ -52,12 +52,12 @@
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
-    <div class="search-bar">
+    <!-- <div class="search-bar">
       <form class="search-form d-flex align-items-center" method="POST" action="#">
         <input type="text" name="query" placeholder="Search" title="Enter search keyword">
         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
       </form>
-    </div><!-- End Search Bar -->
+    </div>End Search Bar -->
 
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
@@ -289,18 +289,18 @@
       </li><!-- End Dashboard Nav -->
       
       {% if user.is_superuser and user.is_staff %}
-
       <li class="nav-item" >
-        <a class="nav-link collapsed"  href="{% url 'product_list' %}">
+        <a class="nav-link collapsed"  href="{% url 'list_product_categories' %}">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Display Category</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+      </li>
+      <li class="nav-item" >
+        <a class="nav-link collapsed"  href="{% url 'add_cat' %}">
           <i class="bi bi-layout-text-window-reverse"></i><span>Add Category</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
       </li>
       
-      <li class="nav-item" >
-        <a class="nav-link collapsed"  href="{% url 'product_list' %}">
-          <i class="bi bi-layout-text-window-reverse"></i><span>Add Subcategory</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-      </li>
+      
       <li class="nav-item" >
         <a class="nav-link collapsed"  href="{% url 'product_list' %}">
           <i class="bi bi-layout-text-window-reverse"></i><span>Delete Category</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -317,8 +317,8 @@
       {% if not user.is_superuser and user.is_staff %}
 
       <li class="nav-item" >
-        <a class="nav-link collapsed"  href="{% url 'product_list' %}">
-          <i class="bi bi-layout-text-window-reverse"></i><span>List all products</span><i class="bi bi-chevron-down ms-auto"></i>
+        <a class="nav-link collapsed"  href="{% url 'product_list' %}?user_id={{ request.user.id }}">
+          <i class="bi bi-layout-text-window-reverse"></i><span>List all products</span></i>
         </a>
         <!-- <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav"> -->
           <!-- <li>
@@ -337,7 +337,7 @@
       </li><!-- End Tables Nav -->
       <li class="nav-item">
         <a class="nav-link collapsed"  href="{% url 'add_product' %}">
-          <i class="bi bi-menu-button-wide"></i><span>Add Product</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-menu-button-wide"></i><span>Add Product</span></i>
         </a>
         <!-- <li onclick="showmain('main1')">Show main 1</li>
           <li onclick="showmain('main2')">Show main 2</li> -->
@@ -356,17 +356,17 @@
         </ul> -->
       </li><!-- End Components Nav -->
 
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a class="nav-link collapsed"  href="">
           <i class="bi bi-journal-text"></i><span>Modify Product</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         
-      </li><!-- End Forms Nav -->
+      </li>End Forms Nav
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-bar-chart"></i><span>Delete products</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
+        </a> -->
         <!-- <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="charts-chartjs.html">
@@ -435,8 +435,8 @@
   </aside><!-- End Sidebar-->
 
   <main id="main1" class="main">
-
     <div class="pagetitle">
+    {% block content %}
       <h1>Dashboard</h1>
       <nav>
         <ol class="breadcrumb">
@@ -1079,6 +1079,7 @@
 
       </div>
     </section>
+    {% endblock %}
 
   </main><!-- End #main -->
 
@@ -1149,13 +1150,13 @@
                   <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
                 </li>
 
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                   <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Settings</button>
                 </li>
 
                 <li class="nav-item">
                   <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
-                </li>
+                </li> -->
 
               </ul>
               <div class="tab-content pt-2">
@@ -1404,23 +1405,6 @@
     </section>
 
   </main>
-<!-- 
-  <main id="main3" class="main">
-    <h1>Product List</h1>
-    <form method="get">
-        <label for="q">Search:</label>
-        <input type="text" id="q" name="q" value="{{ query }}">
-        <input type="submit" value="Search">
-    </form>
-    <ul>
-        {% for product in product %}
-        <li>Product ID: {{ product.prod_id }} - {{ product.prod_name }}<button><a href="">modify</a><button><a href="">Delete</a></button></li>
-        <button><a href="">Add to Cart</a></button>
-        {% endfor %}
-    </ul>
-
-   
-  </main> -->
 
 
   <script>

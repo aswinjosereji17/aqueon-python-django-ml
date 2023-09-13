@@ -35,6 +35,50 @@ body {
         }
         
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#username').on('input', function () {
+            // Get the value of the username input
+            var username = $(this).val();
+            
+            // Send an AJAX request to Django to check if the username exists
+            $.ajax({
+                url: '/check_username/',  // Replace with your Django URL
+                data: {'username': username},
+                dataType: 'json',
+                success: function (data) {
+                    if (data.exists) {
+                        $('#usernameError').text('Username already exists.');
+                    } else {
+                        $('#usernameError').text('');
+                    }
+                }
+            });
+        });
+    });
+
+    $(document).ready(function () {
+        $('#email').on('input', function () {
+            // Get the value of the email input
+            var email = $(this).val();
+            
+            // Send an AJAX request to Django to check if the email exists
+            $.ajax({
+                url: '/check_email/',  // Replace with your Django URL
+                data: {'email': email},
+                dataType: 'json',
+                success: function (data) {
+                    if (data.exists) {
+                        $('#emailError').text('Email already exists.');
+                    } else {
+                        $('#emailError').text('');
+                    }
+                }
+            });
+        });
+    });
+</script>
 </head>
 <body>
 {% comment %} <div class="overlay"></div> {% endcomment %}

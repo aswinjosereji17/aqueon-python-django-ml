@@ -49,7 +49,8 @@ class ProductSubcategoryAdmin(admin.ModelAdmin):
     list_display = ('categ_id','sub_cat_name','created_at')  # Add other fields here
 
 admin.site.register(ProductSubcategory, ProductSubcategoryAdmin)
-# admin.site.register(Product, ProductAdmin)
-# admin.site.register(ProductDescription)
+
+# admin.site.register(Cart)
+# admin.site.register(CartItem)
 
 

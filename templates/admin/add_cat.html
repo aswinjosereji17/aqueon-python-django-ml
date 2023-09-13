@@ -1,0 +1,27 @@
+{% extends 'user_prof.html' %}
+
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h1 class="mt-5">Add Product Category</h1>
+            <form method="post" enctype="multipart/form-data" class="mt-3">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="categ_name">Category Name:</label>
+                    <input type="text" class="form-control" name="categ_name" id="categ_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="categ_image">Category Image:</label>
+                    <input type="file" class="form-control-file" name="categ_image" id="categ_image" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+    {% endblock%}
+  

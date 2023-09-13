@@ -1,0 +1,33 @@
+{% extends 'user_prof.html' %}
+
+
+{% block content %}
+
+<h1>Product Categories</h1>
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Name</th>
+            <th>Image</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for category in categories %}
+        <tr>
+            <td>{{ category.categ_name }}</td>
+            <td>
+                {% if category.categ_image %}
+                <img style="height: 100px; width: 100px;" src="{{ category.categ_image.url }}" alt="{{ category.categ_name }}" class="img-thumbnail" width="100">
+                {% else %}
+                No Image
+                {% endif %}
+            </td>
+            <td>{{ category.created_at }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+    {% endblock%}

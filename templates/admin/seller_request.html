@@ -1,0 +1,67 @@
+{% extends 'user_prof.html' %}
+
+
+{% block content %}
+
+<head>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get all elements with the class "show-document-link"
+        var showDocumentLinks = document.querySelectorAll(".show-document-link");
+
+        showDocumentLinks.forEach(function (link) {
+            link.addEventListener("click", function (event) {
+                event.preventDefault(); // Prevent the default link behavior
+
+                var documentUrl = this.getAttribute("data-document-url");
+                if (documentUrl) {
+                    // Open the document in a new window or tab
+                    window.open(documentUrl, "_blank");
+                }
+            });
+        });
+    });
+</script>
+</head>
+
+<h1>Sellers Request</h1></br></br>
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>Company Name</th>
+            <th>GSTIN</th>
+            <th>Document</th>
+            <td>Status</td>
+            
+        </tr>
+    </thead>
+    <tbody>
+    
+        {% for seller_request in seller_requests %}
+        <tr>
+            {% comment %} <td>{{ user.email }}</td>
+            <td>{{ user.userprofile.mobile }}</td>
+            <td>{{ user.sellerrequest.company }}</td>
+            <td>{{ user.sellerrequest.gstin }}</td>
+            <td>{{ user.sellerrequest.document }}</td> {% endcomment %}
+            <td>{{ seller_request.user.email }}</td>
+            <td>{{ seller_request.user.userprofile.mobile }}</td>
+            <td>{{ seller_request.company }}</td>
+            <td>{{ seller_request.gstin }}</td>
+            <td><a href="#" class="show-document-link" data-document-url="{{ seller_request.document.url }}">Show Document</a></td>
+            <td>
+                {% if seller_request.user.is_staff %}
+                <p style="color:green">Approved</p>
+            {% else %}
+                <p>Pending</p>
+            {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+    {% endblock%}

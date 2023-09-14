@@ -43,7 +43,10 @@ urlpatterns = [
     path('cart_details', views.cart_details, name='cart_details'),
     path('check_product_name/', views.check_product_name, name='check_product_name'),
 
+    path('users_list/', views.users_list, name='users_list'),
+    path('seller_request/', views.seller_request, name='seller_request'),
 
+    path('check_category_exists/', views.check_category_exists, name='check_category_exists'),
 
 
    path('edit_profile/', views.edit_profile, name='edit_profile'),

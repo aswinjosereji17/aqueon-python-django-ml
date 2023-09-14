@@ -1,0 +1,46 @@
+{% extends 'user_prof.html' %}
+
+
+{% block content %}
+<h1>Users List</h1></br></br>
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Email</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Mobile</th>
+            <th>Role</th>
+            {% comment %} <th>Image</th> {% endcomment %}
+            <th>Joined At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.email }}</td>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.userprofile.mobile }}</td>
+            <td>{% if user.is_superuser %}
+    admin
+{% elif user.is_staff %}
+    staff
+{% else %}
+    user
+{% endif %}</td>
+            {% comment %} <td>
+            {% if user.userprofile.profile_image %}
+            <img style="height: 100px; width: 100px;" src="{{ user.userprofile.profile_image.url }}" alt="{{ user.username }}" class="img-thumbnail" width="100">
+            {% else %}
+            No Image
+            {% endif %}
+        </td> {% endcomment %}
+            <td>{{ user.date_joined }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+    {% endblock%}

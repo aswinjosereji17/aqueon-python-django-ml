@@ -21,8 +21,8 @@ def index(request):
     
     if request.user.is_authenticated:
         user=request.user
-        homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
-        prod_cat = ProductCategory.objects.all()
+        # homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
+        # prod_cat = ProductCategory.objects.all()
         # return redirect('index')
         try:
             cart = AddCart.objects.get(user=user)
@@ -42,8 +42,8 @@ def index(request):
         
         return render(request,'index.html', context)
     else:
-        homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
-        prod_cat = ProductCategory.objects.all()
+        # homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
+        # prod_cat = ProductCategory.objects.all()
         context = {
         'homeimg': homeimg,
         'prod_cat':prod_cat,
@@ -238,6 +238,12 @@ def edit_profile(request):
 
         
         # Redirect to a success page or profile page
+        # return redirect('user_profile_view')
+        # show_main2 = True
+
+    # Redirect to 'user_profile_view' with the context variable
+        # return render(request, 'user_prof.html', {'show_main2': show_main2})
+
         return redirect('user_profile_view')
 
     # If the request method is GET, render the edit profile form
@@ -555,3 +561,51 @@ def check_product_name(request):
         product_name = request.GET.get('product_name', '')
         product_exists = Product.objects.filter(prod_name=product_name).exists()
         return JsonResponse({'exists': product_exists})
+
+
+from django.contrib.auth.models import User
+
+def users_list(request):
+    users = User.objects.all()
+    try:
+        seller_request = SellerRequest.objects.get(user=request.user)
+    except SellerRequest.DoesNotExist:
+        seller_request = None
+    
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        user_profile = None
+
+    try:
+        user_addr = UserAddress.objects.get(user=request.user)
+    except UserAddress.DoesNotExist:
+        user_addr = None
+    
+    context = {
+        'users': users,
+        'user_profile': user_profile,
+        'seller_request': seller_request,
+        'user_addr' : user_addr,
+    }
+    
+    return render(request, 'admin/users_list.html', context)
+
+
+def seller_request(request):
+    seller_requests = SellerRequest.objects.all()
+    return render(request, 'admin/seller_request.html', {'seller_requests': seller_requests})
+    
+   
+
+
+# views.py
+from django.http import JsonResponse
+
+def check_category_exists(request):
+    if request.method == 'POST':
+        categ_name = request.POST.get('categ_name')
+        if ProductCategory.objects.filter(categ_name=categ_name).exists():
+            return JsonResponse({'message': 'Category already exists'}, status=400)
+        else:
+            return JsonResponse({'message': 'Category does not exist'})

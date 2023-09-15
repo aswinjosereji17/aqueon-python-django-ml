@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 #         return self.user.username  # Return the username as the string representation
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    mobile = models.CharField(max_length=255)
+    mobile = models.CharField(max_length=255,unique=True)
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     # Other fields for user profile
 

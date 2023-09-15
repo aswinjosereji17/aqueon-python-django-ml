@@ -47,8 +47,11 @@ urlpatterns = [
     path('seller_request/', views.seller_request, name='seller_request'),
 
     path('check_category_exists/', views.check_category_exists, name='check_category_exists'),
-
-
+    path('user_profile/', views.user_profile, name='user_profile'),
+    path('approve-seller/<int:user_id>/', views.approve_seller, name='approve_seller'),
+    path('dis_approve-seller/<int:user_id>/', views.dis_approve_seller, name='dis_approve_seller'),
+    path('remove-from-cart/<int:cart_item_id>/', views.remove_cart_item, name='remove_cart_item'),
+    
    path('edit_profile/', views.edit_profile, name='edit_profile'),
     ]
 

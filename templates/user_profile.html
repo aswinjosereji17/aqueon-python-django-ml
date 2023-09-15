@@ -1,160 +1,38 @@
-{% load static%}
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Profile Page</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <!-- Your custom styles -->
-    <link rel="stylesheet" href="{% static 'css/user_profile.css' %}">
-
-    <style>
-        /* Your styles here */
-        body {
-    background: -webkit-linear-gradient(left, #3931af, #00c6ff);
-}
-
-.emp-profile {
-    padding: 3%;
-    margin-top: 3%;
-    margin-bottom: 3%;
-    border-radius: 0.5rem;
-    background: #fff;
-}
-
-.profile-img {
-    text-align: center;
-}
-
-.profile-img img {
-    width: 70%;
-    height: 100%;
-}
-
-.profile-img .file {
-    position: relative;
-    overflow: hidden;
-    margin-top: -20%;
-    width: 70%;
-    border: none;
-    border-radius: 0;
-    font-size: 15px;
-    background: #212529b8;
-}
-
-.profile-img .file input {
-    position: absolute;
-    opacity: 0;
-    right: 0;
-    top: 0;
-}
-
-.profile-head h5 {
-    color: #333;
-}
-
-.profile-head h6 {
-    color: #0062cc;
-}
-
-.profile-edit-btn {
-    border: none;
-    border-radius: 1.5rem;
-    width: 70%;
-    padding: 2%;
-    font-weight: 600;
-    color: #6c757d;
-    cursor: pointer;
-}
-
-.proile-rating {
-    font-size: 12px;
-    color: #818182;
-    margin-top: 5%;
-}
-
-.proile-rating span {
-    color: #495057;
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.profile-head .nav-tabs {
-    margin-bottom: 5%;
-}
-
-.profile-head .nav-tabs .nav-link {
-    font-weight: 600;
-    border: none;
-}
-
-.profile-head .nav-tabs .nav-link.active {
-    border: none;
-    border-bottom: 2px solid #0062cc;
-}
-
-.profile-work {
-    padding: 14%;
-    margin-top: -15%;
-}
-
-.profile-work p {
-    font-size: 12px;
-    color: #818182;
-    font-weight: 600;
-    margin-top: 10%;
-}
-
-.profile-work a {
-    text-decoration: none;
-    color: #495057;
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.profile-work ul {
-    list-style: none;
-}
-
-.profile-tab label {
-    font-weight: 600;
-}
-
-.profile-tab p {
-    font-weight: 600;
-    color: #0062cc;
-}
-    </style>
-</head>
-
-<body>
+{% extends 'user_prof.html' %}
 
 
-    <!-- Your profile HTML content here -->
-</body>
+{% block content %}
 
-</html>
-<div class="container emp-profile">
-    <form method="post">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="profile-img">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog"
-                        alt="" />
-                    <div class="file btn btn-lg btn-primary">
-                        Change Photo
-                        <input type="file" name="file" />
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="profile-head">
-                    <h5>
-                        {{ user_profile.user.username }}
-                    </h5>
-                    {% if user.is_superuser %}
+{% load static %}
+
+
+
+    <div class="pagetitle">
+      <h1>Profile</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item">Users</li>
+          <li class="breadcrumb-item active">Profile</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section profile">
+      <div class="row">
+        <div class="col-xl-4">
+
+          <div class="card">
+            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+              {% if user_profile.profile_image %}
+              <img id="hello" src="{{ user_profile.profile_image.url }}" alt="Profile" style="width:150px; height:131px; border-radius:206px">
+          {% else %}
+              <img src="{% static 'img\fish_images\lionfish.jpg' %}" alt="Default Profile" style="width:250px; height:250px;">
+          {% endif %}              <h2>
+              {{ user_profile.user.username }}
+              </h2>
+              {% if user.is_superuser %}
                     <h6>
                         Admin
                     </h6>
@@ -167,162 +45,322 @@
                     <h6>
                         User
                     </h6>
+              {% endif %}
+              <div class="social-links mt-2">
+                <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+                <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-xl-8">
+
+          <div class="card">
+            <div class="card-body pt-3">
+              <!-- Bordered Tabs -->
+              <ul class="nav nav-tabs nav-tabs-bordered">
+
+                <li class="nav-item">
+                  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button>
+                </li>
+
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
+                </li>
+
+                <!-- <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Settings</button>
+                </li>
+
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
+                </li> -->
+
+              </ul>
+              <div class="tab-content pt-2">
+
+                <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                  <h5 class="card-title">About</h5>
+                  <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</p>
+
+                  <h5 class="card-title">Profile Details</h5>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label ">First Name</div>
+                    <div class="col-lg-9 col-md-8">{{ user_profile.user.first_name }}</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label ">Last Name</div>
+                    <div class="col-lg-9 col-md-8">{{ user_profile.user.last_name }}</div>
+                  </div>
+
+                  {% if user.is_staff and not user.is_superuser %}
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Company</div>
+                    <div class="col-lg-9 col-md-8">{{ seller_request.company }}</div>
+                  </div>
+                  {% endif %}
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Mobile</div>
+                    <div class="col-lg-9 col-md-8">{{ user_profile.mobile }}</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Email</div>
+                    <div class="col-lg-9 col-md-8">{{ user_profile.user.email }}</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Address</div>
+                    <div class="col-lg-9 col-md-8">{{ user_addr.address1 }}</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Address</div>
+                    <div class="col-lg-9 col-md-8">{{ user_addr.address2 }}</div>
+                  </div>
+                </div>
+
+                <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+
+
+
+                  <!-- Profile Edit Form -->
+                  <form method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+
+                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+                        <div class="col-md-8 col-lg-9">
+        <input type="file" id="img1" name="img1" onchange="viewImage1(event)" accept="image/*" class="form-control-file">
+                      </div>
+                        </div>
+                        <div class="row mb-3">
+
+                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label"></label>
+                        <div class="col-md-8 col-lg-9">
+{% if user_profile.profile_image %}
+            <img id="img1_preview" src="{{ user_profile.profile_image.url }}" alt="Image 1"><br><br>
+        {% else %}
+            <img id="img1_preview" style=" display: none;">
+        {% endif %}                      </div>
+                        </div>
+        {% comment %} <input type="hidden" name="img1_current" value="{{ user_profile.profile_image.url }}"> {% endcomment %}
+        {% comment %} {% if user_profile.profile_image %}
+            <img id="img1_preview" src="{{ user_profile.profile_image.url }}" alt="Image 1"><br><br>
+        {% else %}
+            <img id="img1_preview" style=" display: none;">
+        {% endif %} {% endcomment %}
+
+
+                      {% comment %} <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+                      <div class="col-md-8 col-lg-9">
+                        {% if user_profile.user.profile_image %}
+                        <img src="{{ user_profile.user.profile_image.url }}" alt="Profile" class="rounded-circle">
+          {% else %}
+              <img style=" display: none;" class="rounded-circle">
+          {% endif %}  
+                        <div class="pt-2"> {% endcomment %}
+                          {% comment %} <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i class="bi bi-upload"></i></a>
+                          <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a> {% endcomment %}
+                        {% comment %} <input type="file" id="img1" name="profile_image"  accept="image/*" class="form-control"> {% endcomment %}
+                        
+                        {% comment %} </div>
+                      </div> {% endcomment %}
+                  
+
+                    <div class="row mb-3">
+                      <label for="fullName" class="col-md-4 col-lg-3 col-form-label">First Name</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="first_name" type="text" class="form-control" id="fullName" value="{{ user_profile.user.first_name }}">
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Last Name</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="last_name" type="text" class="form-control" id="fullName" value="{{ user_profile.user.last_name }}">
+                      </div>
+                    </div>
+
+                    <!-- <div class="row mb-3">
+                      <label for="about" class="col-md-4 col-lg-3 col-form-label">About</label>
+                      <div class="col-md-8 col-lg-9">
+                        <textarea name="about" class="form-control" id="about" style="height: 100px">Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea>
+                      </div>
+                    </div> -->
+
+                    <!-- <div class="row mb-3">
+                      <label for="company" class="col-md-4 col-lg-3 col-form-label">Company</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="company" type="text" class="form-control" id="company" value="Lueilwitz, Wisoky and Leuschke">
+                      </div>
+                    </div> -->
+
+                    <!-- <div class="row mb-3">
+                      <label for="Job" class="col-md-4 col-lg-3 col-form-label">Job</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="job" type="text" class="form-control" id="Job" value="Web Designer">
+                      </div>
+                    </div> -->
+
+                    <!-- <div class="row mb-3">
+                      <label for="Country" class="col-md-4 col-lg-3 col-form-label">Country</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="country" type="text" class="form-control" id="Country" value="USA">
+                      </div>
+                    </div> -->
+                    {% if user.is_staff and not user.is_superuser   %}
+                    <div class="row mb-3">
+                      <label for="Address" class="col-md-4 col-lg-3 col-form-label">Company</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="company" type="text" class="form-control" id="Address" value="{{ seller_request.company }}">
+                      </div>
+                    </div>
                     {% endif %}
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
-                                aria-controls="home" aria-selected="true">About</a>
-                        </li>
-                        {% if user.is_superuser and user.is_staff%}
 
-                        {% elif user.is_staff and not user.is_superuser %}
-
-                        <li class="nav-item">
-                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
-                                aria-controls="profile" aria-selected="false">Add Product</a>
-                        </li>
-
-                        {% else %}
-
-
-                        {% endif %}
-
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="profile-work">
-                    <p>WORK LINK</p>
-                    <a href="">Website Link</a><br />
-                    <a href="">Bootsnipp Profile</a><br />
-                    <a href="">Bootply Profile</a>
-                    <p>SKILLS</p>
-                    <a href="">Web Designer</a><br />
-                    <a href="">Web Developer</a><br />
-                    <a href="">WordPress</a><br />
-                    <a href="">WooCommerce</a><br />
-                    <a href="">PHP, .Net</a><br />
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div class="tab-content profile-tab" id="myTabContent">
-                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>User Id</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p>{{ user_profile.user.id }}</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Name</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p>{{ user_profile.user.username }}</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Email</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p>{{ user_profile.user.email }}</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Mobile No.</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Address</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p>{{ user_profile.address }}</p>
-                            </div>
-                        </div>
-                        {% if user.is_staff and not user.is_superuser%}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>GSTIN:</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p>{{ seller_request.gstin }}</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Document:</label>
-                            </div>
-                            {% if seller_request.document %}
-                            <div class="col-md-6">
-                                <p><a href="{{ seller_request.document.url }}" target="_blank">View Document</a></p>
-                            </div>
-                            {% else %}
-                            <div class="col-md-6">
-                                <p>No document uploaded yet.</p>
-                            </div>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><a href="{% url 'loggout' %}" >logout
-                                 </a></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><a href="{% url 'add_product' %}" >add
-                                 </a></p>
-                            </div>
-                        </div>
+                    <div class="row mb-3">
+                      <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Mobile</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="mobile" type="tel" pattern="[0-9]{10}" class="form-control" id="Phone" value="{{ user_profile.mobile }}">
+                      </div>
                     </div>
 
-
-                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                        <form method="post">
-                            {% csrf_token %}
-                            
-                            <label for="prod_name">Product Name:</label>
-                            <input type="text" id="prod_name" name="prod_name" required>
-                            <br>
-                    
-                            <label for="sub_categ_id">Subcategory:</label>
-                            <select id="sub_categ_id" name="sub_categ_id" required>
-                                <option value="" disabled selected>Select a subcategory</option>
-                                {% for subcategory in subcategories %}
-                                    <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
-                                {% endfor %}
-                            </select>
-                            <br>
-                    
-                            <label for="price">Price:</label>
-                            <input type="number" id="price" name="price" step="0.01" required>
-                            <br>
-                    
-                            <button type="submit">Add Product</button>
-                        </form>
+                    <div class="row mb-3">
+                      <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="email" type="email" class="form-control" id="Email" value="{{ user_profile.user.email }}">
+                      </div>
                     </div>
+
+                    <div class="row mb-3">
+                      <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Address1</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="address1" type="text" class="form-control" id="address1" value="{{ user_addr.address1 }}">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Address2</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="address2" type="text" class="form-control" id="address2" value="{{ user_addr.address2 }}">
+                      </div>
+                    </div>
+
+                    <!-- <div class="row mb-3">
+                      <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram Profile</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="instagram" type="text" class="form-control" id="Instagram" value="https://instagram.com/#">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin Profile</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="linkedin" type="text" class="form-control" id="Linkedin" value="https://linkedin.com/#">
+                      </div>
+                    </div> -->
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                  </form><!-- End Profile Edit Form -->
+ <script>
+        function viewImage1(event){
+            document.getElementById('img1_preview').src=URL.createObjectURL(event.target.files[0])
+        }
+        
+    </script>
                 </div>
+
+                <div class="tab-pane fade pt-3" id="profile-settings">
+
+                  <!-- Settings Form -->
+                  <form>
+
+                    <div class="row mb-3">
+                      <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email Notifications</label>
+                      <div class="col-md-8 col-lg-9">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="changesMade" checked>
+                          <label class="form-check-label" for="changesMade">
+                            Changes made to your account
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="newProducts" checked>
+                          <label class="form-check-label" for="newProducts">
+                            Information on new products and services
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="proOffers">
+                          <label class="form-check-label" for="proOffers">
+                            Marketing and promo offers
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="securityNotify" checked disabled>
+                          <label class="form-check-label" for="securityNotify">
+                            Security alerts
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                  </form><!-- End settings Form -->
+
+                </div>
+
+                <div class="tab-pane fade pt-3" id="profile-change-password">
+                  <!-- Change Password Form -->
+                  <form>
+
+                    <div class="row mb-3">
+                      <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="password" type="password" class="form-control" id="currentPassword">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="newpassword" type="password" class="form-control" id="newPassword">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="renewpassword" type="password" class="form-control" id="renewPassword">
+                      </div>
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-primary">Change Password</button>
+                    </div>
+                  </form><!-- End Change Password Form -->
+
+                </div>
+
+              </div><!-- End Bordered Tabs -->
+
             </div>
+          </div>
+
         </div>
-    </form>
-</div>
+      </div>
+    </section>
 
 
-
-</body>
-
-</html>
+  {% endblock%}

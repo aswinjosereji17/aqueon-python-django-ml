@@ -34,6 +34,8 @@
             <th>GSTIN</th>
             <th>Document</th>
             <td>Status</td>
+            <td></td>
+            <td></td>
             
         </tr>
     </thead>
@@ -58,10 +60,66 @@
                 <p>Pending</p>
             {% endif %}
             </td>
+            <td>
+                {% if not seller_request.user.is_staff %}
+                <form method="post" action="{% url 'approve_seller' seller_request.user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" style="background-color: green; color: white; width: 120px; margin: auto;" class="btn btn-primary">Approve</button>
+                </form>
+                {% else %}
+                <form method="post" action="{% url 'dis_approve_seller' seller_request.user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" style="background-color: red; color: white; width: 120px; margin: auto;" class="btn btn-primary">Disapprove</button>
+                </form>
+                {% endif %}
+            </td>
+            
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
+<!-- Add JavaScript to handle the approve button click -->
+<!-- <script>
+    // Attach a click event handler to the "Approve" button
+    document.addEventListener('DOMContentLoaded', function () {
+        const approveButtons = document.querySelectorAll('.approve-btn');
+        approveButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-user-id');
+                approveSeller(userId);
+            });
+        });
+
+        // Function to send a POST request to approve the seller
+        function approveSeller(userId) {
+            fetch(`/approve-seller/${userId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+                .then(response => {
+                    if (response.status === 200) {
+                        // Update the UI or display a success message
+                        location.reload(); // Reload the page to reflect the updated status
+                    } else {
+                        // Handle errors
+                        console.error('Error approving seller');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+    });
+</script> -->
 
     {% endblock%}

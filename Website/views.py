@@ -244,7 +244,7 @@ def edit_profile(request):
     # Redirect to 'user_profile_view' with the context variable
         # return render(request, 'user_prof.html', {'show_main2': show_main2})
 
-        return redirect('user_profile_view')
+        return redirect('user_profile')
 
     # If the request method is GET, render the edit profile form
  
@@ -315,6 +315,33 @@ from django.db import IntegrityError
 @login_required
 
 def add_product(request):
+    users = User.objects.all()
+    seller_requests = SellerRequest.objects.all()
+    try:
+        seller_request = SellerRequest.objects.get(user=request.user)
+    except SellerRequest.DoesNotExist:
+        seller_request = None
+    
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        user_profile = None
+
+    try:
+        user_addr = UserAddress.objects.get(user=request.user)
+    except UserAddress.DoesNotExist:
+        user_addr = None
+    subcategories = ProductSubcategory.objects.all()
+
+    context = {
+        'users': users,
+        'user_profile': user_profile,
+        'seller_request': seller_request,
+        'user_addr' : user_addr,
+        'seller_requests' : seller_requests,
+        'subcategories': subcategories
+    }
+
     if request.method == 'POST':
         product_name = request.POST['product_name']
         subcategory_id = request.POST['subcategory']
@@ -354,8 +381,7 @@ def add_product(request):
 
         return redirect('product_list')  # Redirect to a product list view
     
-    subcategories = ProductSubcategory.objects.all()
-    return render(request, 'product\save_product.html', {'subcategories': subcategories, })
+    return render(request, 'product\save_product.html', context)
 
 
 from .models import ProductSubcategory
@@ -463,6 +489,28 @@ def delete_product(request, prod_id):
 
 
 def add_cat(request):
+    users = User.objects.all()
+    try:
+        seller_request = SellerRequest.objects.get(user=request.user)
+    except SellerRequest.DoesNotExist:
+        seller_request = None
+    
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        user_profile = None
+
+    try:
+        user_addr = UserAddress.objects.get(user=request.user)
+    except UserAddress.DoesNotExist:
+        user_addr = None
+    
+    context = {
+        'users': users,
+        'user_profile': user_profile,
+        'seller_request': seller_request,
+        'user_addr' : user_addr,
+    }
     if request.method == 'POST':
         categ_name = request.POST['categ_name']
         categ_image = request.FILES['categ_image']
@@ -473,13 +521,39 @@ def add_cat(request):
 
         return redirect('user_profile_view')  # Redirect to a list view of product categories
     else:
-        return render(request, 'admin/add_cat.html',)
+        return render(request, 'admin/add_cat.html',context)
 
 from .models import ProductCategory
 
 def list_product_categories(request):
+    users = User.objects.all()
+    try:
+        seller_request = SellerRequest.objects.get(user=request.user)
+    except SellerRequest.DoesNotExist:
+        seller_request = None
+    
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        user_profile = None
+
+    try:
+        user_addr = UserAddress.objects.get(user=request.user)
+    except UserAddress.DoesNotExist:
+        user_addr = None
+    
     categories = ProductCategory.objects.all()
-    return render(request, 'admin/display_cat.html', {'categories': categories})
+    context = {
+        'users': users,
+        'user_profile': user_profile,
+        'seller_request': seller_request,
+        'user_addr' : user_addr,
+        'categories': categories
+    }
+    
+    return render(request, 'admin/display_cat.html', context)
+
+    
 
 
 from django.http import JsonResponse
@@ -537,6 +611,7 @@ def add_to_cart(request):
 
 from .models import AddCart, CartItems
 from django.db.models import Sum 
+from decimal import Decimal
 
 def cart_details(request):
     user = request.user
@@ -544,12 +619,14 @@ def cart_details(request):
         cart = AddCart.objects.get(user=user)
         cart_items = CartItems.objects.filter(cart=cart)
         total_cart_value = cart_items.aggregate(Sum('total_price'))['total_price__sum']
+        shipping_cost = Decimal('50.00')  # Assuming a fixed shipping cost of $50.00
+        multiplied_value = total_cart_value + shipping_cost
     except AddCart.DoesNotExist:
         cart = None
         cart_items = []
         total_cart_value = 0.0
 
-    return render(request, 'product/cart.html', {'cart': cart, 'cart_items': cart_items, 'total_cart_value': total_cart_value})
+    return render(request, 'product/cart.html', {'cart': cart, 'cart_items': cart_items, 'total_cart_value': total_cart_value, 'multiplied_value': multiplied_value})
 
 
 
@@ -593,8 +670,31 @@ def users_list(request):
 
 
 def seller_request(request):
+    users = User.objects.all()
     seller_requests = SellerRequest.objects.all()
-    return render(request, 'admin/seller_request.html', {'seller_requests': seller_requests})
+    try:
+        seller_request = SellerRequest.objects.get(user=request.user)
+    except SellerRequest.DoesNotExist:
+        seller_request = None
+    
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        user_profile = None
+
+    try:
+        user_addr = UserAddress.objects.get(user=request.user)
+    except UserAddress.DoesNotExist:
+        user_addr = None
+    
+    context = {
+        'users': users,
+        'user_profile': user_profile,
+        'seller_request': seller_request,
+        'user_addr' : user_addr,
+        'seller_requests' : seller_requests
+    }
+    return render(request, 'admin/seller_request.html', context)
     
    
 
@@ -609,3 +709,85 @@ def check_category_exists(request):
             return JsonResponse({'message': 'Category already exists'}, status=400)
         else:
             return JsonResponse({'message': 'Category does not exist'})
+
+
+
+def user_profile(request):
+    # user_profile = UserProfile.objects.get(user=request.user)
+    
+    try:
+        seller_request = SellerRequest.objects.get(user=request.user)
+    except SellerRequest.DoesNotExist:
+        seller_request = None
+
+    # try:
+    #     product = Product.objects.filter(user_id=request.user)
+    # except Product.DoesNotExist:
+    #     product = None
+    
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        user_profile = None
+
+    try:
+        user_addr = UserAddress.objects.get(user=request.user)
+    except UserAddress.DoesNotExist:
+        user_addr = None
+    
+    context = {
+        'user_profile': user_profile,
+        'seller_request': seller_request,
+        'user_addr' : user_addr,
+        # 'product' :product
+    }
+    
+    return render(request, 'user_profile.html', context)
+
+
+from django.shortcuts import get_object_or_404, redirect
+from django.http import JsonResponse
+
+from .models import SellerRequest  # Import your SellerRequest model here
+
+def approve_seller(request, user_id):
+    # Retrieve the seller request and user objects
+    seller_request = get_object_or_404(SellerRequest, user__id=user_id)
+
+    # Approve the seller by setting is_staff to True
+    seller_request.user.is_staff = True
+    seller_request.user.save()
+
+    # You can perform additional actions here if needed, e.g., send notifications, update status, etc.
+
+    # Return a JSON response indicating success
+    # return JsonResponse({'message': 'Seller approved successfully'})
+    return redirect('seller_request')
+
+
+def dis_approve_seller(request, user_id):
+    # Retrieve the seller request and user objects
+    seller_request = get_object_or_404(SellerRequest, user__id=user_id)
+
+    # Approve the seller by setting is_staff to True
+    seller_request.user.is_staff = False
+    seller_request.user.save()
+
+    # You can perform additional actions here if needed, e.g., send notifications, update status, etc.
+
+    # Return a JSON response indicating success
+    # return JsonResponse({'message': 'Seller approved successfully'})
+    return redirect('seller_request')
+
+
+from django.shortcuts import redirect, get_object_or_404
+from .models import CartItems
+
+def remove_cart_item(request, cart_item_id):
+    # Get the CartItems object by cart_item_id
+    cart_item = get_object_or_404(CartItems, pk=cart_item_id)
+
+    # Remove the CartItems object from the cart
+    cart_item.delete()
+
+    return redirect('cart_details')  # Redirect to your cart page or wherever you want

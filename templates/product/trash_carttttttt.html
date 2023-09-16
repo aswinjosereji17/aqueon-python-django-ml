@@ -1,0 +1,47 @@
+{% comment %}{% if cart %}
+                <table  class="table table-light table-borderless table-hover text-center mb-0">
+                    <thead style="background-color: #010110;" class="thead-dark">
+                        <tr>
+                            <th>Products</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody class="align-middle">
+                    {% for item in cart_items %}
+                        <tr>
+                            <td class="align-middle"><img src="img/product-1.jpg" alt="" style="width: 50px;"> {{ item.prod.prod_name }}</td>
+                            <td class="align-middle">Rs.{{ item.prod.price }}</td>
+                            <td class="align-middle">
+                                <div class="input-group quantity mx-auto" style="width: 100px;">
+                                    <div class="input-group-btn">
+                                        <!-- <button class="btn btn-sm btn-primary btn-minus" >
+                                        <i class="fa fa-minus"></i>
+                                        </button> -->
+                                    </div>
+                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="{{ item.quantity }}">
+                                    <div class="input-group-btn">
+                                        <!-- <button class="btn btn-sm btn-primary btn-plus">
+                                            <i class="fa fa-plus"></i>
+                                        </button> -->
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle">Rs.{{ item.total_price }}</td>
+                            <td class="align-middle">
+                                <form method="post" action="{% url 'remove_cart_item' item.cart_item_id %}">
+                                    {% csrf_token %}
+                                    <button style="border-radius: 3px;" type="submit" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i>
+                                      </button>
+                                </form>
+                            </td>
+                        </tr>
+                     {% endfor %}  
+                    </tbody>
+                </table>
+                 {% else %}
+    <p>Your cart is empty.</p>
+    {% endif %} {% endcomment %}

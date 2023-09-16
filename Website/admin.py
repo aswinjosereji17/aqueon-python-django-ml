@@ -34,7 +34,7 @@ admin.site.register(ProductCategory, ProductCategoryAdmin)
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('prod_name','sub_categ_id','price','user_id','created_at')  # Add other fields here
+    list_display = ('prod_name','sub_categ_id','price','user_id','stock_quantity','created_at')  # Add other fields here
 
 admin.site.register(Product, ProductAdmin)
 

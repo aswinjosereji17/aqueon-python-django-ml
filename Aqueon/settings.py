@@ -40,7 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Website'
+    'Website',
+
+    'django.contrib.sites', # must
+    'allauth', # must
+    'allauth.account', # must
+    'allauth.socialaccount', # must
+    'allauth.socialaccount.providers.google', # new
 ]
 
 MIDDLEWARE = [
@@ -51,6 +57,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'Aqueon.urls'
@@ -138,3 +146,34 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mailtoshowvalidationok@gmail.com'  
 EMAIL_HOST_PASSWORD = 'qtwpnirvgsxzhtdo'  
 DEFAULT_FROM_EMAIL = 'mailtoshowvalidationok@gmail.com'
+
+
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+LOGIN_REDIRECT_URL = '/'
+
+SOCIALACCOUNT_LOGIN_ON_GET=True
+
+
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE': ['profile', 'email'],
+#         'AUTH_PARAMS': {
+#             'access_type': 'online',
+#         },
+#         'METHOD': 'oauth2',
+#         'VERIFIED_EMAIL': True,
+#         'CLIENT_ID': 'your-client-id',
+#         'SECRET': 'your-client-secret',
+#     },
+# }

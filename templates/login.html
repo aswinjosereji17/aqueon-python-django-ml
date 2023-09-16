@@ -1,4 +1,6 @@
 {% load static%}
+{% load socialaccount %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,12 +77,14 @@ body {
             <input type="password" id="password" placeholder="Password" name="password" required>
             <button class="submitbtn" type="submit">Sign In</button>
             <p id="signinelement2"><a href="password_reset" style="margin-left:35px; color: darkblue; text-decoration: none">Forgot password?</a></p>
+            <!-- <a href="{% provider_login_url 'google'%}?next=/">Login with Google</a> -->
             {% comment %} <input type="email" id="signin-email" placeholder="Email" required>
             <input type="password" id="signin-password" placeholder="Password" required>
             <button class="submitbtn" type="submit">Sign In</button> {% endcomment %}
             <p class="or"> OR</p>
-                    {% comment %} <button class="googlebtn" type="submit"><img src="{% static 'img/login/googleimg.png' %}">Sign In with Google</button> {% endcomment %}
         </form>
+                            <a style="text-decoration: none;" href="{% provider_login_url 'google'%}?next=/"><button class="googlebtn" ><img src="{% static 'img/login/googleimg.png' %}">Sign In with Google</button></a>
+
                 <p style="margin-left:50px">Don't have an account?<a href="{% url 'register' %}">Sign Up</a></p>
 
         {% comment %} <button class="toggle-btn" onclick="toggleForm()">Don't have an account? Sign Up</button> {% endcomment %}

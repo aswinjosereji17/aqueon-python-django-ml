@@ -1,4 +1,5 @@
 {% load static%}
+{% load socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,9 +50,9 @@ body {
                 dataType: 'json',
                 success: function (data) {
                     if (data.exists) {
-                        $('#usernameError').text('Username already exists.');
+                        $('#username2Error').text('Username already exists.');
                     } else {
-                        $('#usernameError').text('');
+                        $('#username2Error').text('');
                     }
                 }
             });
@@ -70,9 +71,9 @@ body {
                 dataType: 'json',
                 success: function (data) {
                     if (data.exists) {
-                        $('#emailError').text('Email already exists.');
+                        $('#email2Error').text('Email already exists.');
                     } else {
-                        $('#emailError').text('');
+                        $('#email2Error').text('');
                     }
                 }
             });
@@ -88,9 +89,11 @@ body {
         <form id="signup-form"method="post" onsubmit="return validateRegistrationForm()">
             {% csrf_token %}
             <input type="text" id="username" placeholder="Username" name="name" >
-            <span id="usernameError" class="error"></span>         
+            <span id="usernameError" class="error"></span> 
+            <span id="username2Error" class="error"></span>        
             <input type="email" id="email" placeholder="Email" name="email" >
             <span id="emailError" class="error"></span>
+            <span id="email2Error" class="error"></span>
             <input type="password" id="password" placeholder="Password" name="password" >
             <span id="passwordError" class="error"></span>
 
@@ -101,6 +104,8 @@ body {
              <p class="or"> OR</p>
                     {% comment %} <button class="googlebtn" type="submit"><div class="imggoog"><img  src="{% static 'img/login/googleimg.png' %}"></div>Sign Up with Google</button> {% endcomment %}
         </form>
+        <a style="text-decoration: none;" href="{% provider_login_url 'google'%}?next=/"><button class="googlebtn" ><img src="{% static 'img/login/googleimg.png' %}">Sign Up with Google</button></a>
+
         {% comment %} <button class="toggle-btn" onclick="toggleForm()">Already have an account? Sign In</button> {% endcomment %}
     <p  style="margin-left:50px">Already have an account?<a href="{% url 'login_user' %}">
            Sign In

@@ -2,7 +2,8 @@ from django.db import models
 
 # Create your models here.
 from django.contrib.auth.models import User
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 # class UserProfile(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.CASCADE)
 #     address = models.CharField(max_length=255)
@@ -12,7 +13,7 @@ from django.contrib.auth.models import User
 #         return self.user.username  # Return the username as the string representation
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    mobile = models.CharField(max_length=255,unique=True)
+    mobile = models.CharField(max_length=255)
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     # Other fields for user profile
 
@@ -28,9 +29,33 @@ class UserAddress(models.Model):
     def __str__(self):
         return f'User Address for {self.user.email}'
 
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def create_user_address(sender, instance, created, **kwargs):
+    if created:
+        UserAddress.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.userprofile.save()
+
+@receiver(post_save, sender=User)
+def save_user_address(sender, instance, **kwargs):
+    instance.useraddress.save()
+
+# Connect the signal handlers
+post_save.connect(create_user_profile, sender=User)
+post_save.connect(create_user_address, sender=User)
+post_save.connect(save_user_profile, sender=User)
+post_save.connect(save_user_address, sender=User)
+
 class SellerRequest(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,unique=True)
-    # approved = models.BooleanField(default=False)
     gstin = models.CharField(max_length=15, blank=True)
     document = models.FileField(upload_to='seller_documents/', blank=True)
     company = models.CharField(max_length=100, blank=True,null=True)
@@ -83,6 +108,7 @@ class Product(models.Model):
     sub_categ_id = models.ForeignKey(ProductSubcategory, on_delete=models.CASCADE)
     price = models.FloatField(null=False)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)  # Use Django's default user model
+    stock_quantity = models.PositiveIntegerField(default=0) 
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

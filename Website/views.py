@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
-from .models import UserProfile, SellerRequest, HomeSpecialOffer, ProductCategory,UserAddress
+from .models import UserProfile, Product, SellerRequest, HomeSpecialOffer, ProductCategory,UserAddress
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
@@ -18,6 +18,7 @@ def index(request):
     
     homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
     prod_cat = ProductCategory.objects.all()
+    recent_products = Product.objects.all().order_by('-created_at')[:8]
     
     if request.user.is_authenticated:
         user=request.user
@@ -38,6 +39,7 @@ def index(request):
         'homeimg': homeimg,
         'prod_cat':prod_cat,
         'cart_item_count': cart_item_count,
+        'recent_products': recent_products
         }
         
         return render(request,'index.html', context)
@@ -47,6 +49,7 @@ def index(request):
         context = {
         'homeimg': homeimg,
         'prod_cat':prod_cat,
+        'recent_products': recent_products
         }
         
         return render(request,'index.html', context)
@@ -79,7 +82,17 @@ def login_user(request):
             return render(request, 'login.html', {'error_message': error_message})
     else:
         return render(request, 'login.html')
-    
+
+
+# def save_google_email(user, backend, response, *args, **kwargs):
+#     if backend.name == 'google-oauth2':
+#         email = response.get('email')
+#         if email and not user.email:
+#             user.email = email
+#             user.save()
+
+
+   
 def register(request):
     if request.user.is_authenticated:
         return redirect('index')
@@ -97,8 +110,8 @@ def register(request):
         else:
             user=User.objects.create_user(username=username,email=email,password=password)
             user.save()
-            UserProfile.objects.create(user=user, mobile="")
-            UserAddress.objects.create(user=user,address1="",address2="")
+            # UserProfile.objects.create(user=user, mobile="")
+            # UserAddress.objects.create(user=user,address1="",address2="")
             success_message = "Registration successful. You can now log in."
             messages.success(request, success_message)
             return redirect('login_user')
@@ -129,8 +142,8 @@ def seller_register(request):
             document = request.FILES.get('document')
             seller_request = SellerRequest.objects.create(user=user,company=company, gstin=gstin, document=document)
             success_message = "Seller request submitted. Please wait for approval."
-            UserProfile.objects.create(user=user, mobile="")
-            UserAddress.objects.create(user=user,address1="",address2="")  
+            # UserProfile.objects.create(user=user, mobile="")
+            # UserAddress.objects.create(user=user,address1="",address2="")  
             user.save()
          
             return redirect('login_user')
@@ -222,7 +235,7 @@ def edit_profile(request):
 
         user.first_name=request.POST.get('first_name')
         user.last_name=request.POST.get('last_name')
-        user.email=request.POST.get('email')
+        # user.email=request.POST.get('email')
         user.save()
 
         # seller_req.company=request.POST.get('company')
@@ -346,6 +359,7 @@ def add_product(request):
         product_name = request.POST['product_name']
         subcategory_id = request.POST['subcategory']
         price = request.POST['price']
+        quantity=request.POST['quantity']
         description = request.POST['description']
         instruction = request.POST['instruction']
         img1 = request.FILES['img1']
@@ -364,6 +378,7 @@ def add_product(request):
             prod_name=product_name,
             sub_categ_id=subcategory,
             price=price,
+            stock_quantity=quantity,
             user_id=request.user
         )
         product.save()
@@ -442,6 +457,7 @@ def modify_product(request, prod_id):
     if request.method == 'POST':
         product.prod_name = request.POST['prod_name']
         product.price = request.POST['price']
+        product.stock_quantity=request.POST['quantity']
         product.sub_categ_id_id = request.POST['sub_categ_id']
 
         description.description = request.POST['description']
@@ -609,26 +625,58 @@ def add_to_cart(request):
     return render(request, 'add_to_cart.html')
 
 
-from .models import AddCart, CartItems
-from django.db.models import Sum 
+# from .models import AddCart, CartItems
+# from django.db.models import Sum 
+# from decimal import Decimal
+
+# def cart_details(request):
+#     user = request.user
+#     try:
+#         cart = AddCart.objects.get(user=user)
+#         cart_items = CartItems.objects.filter(cart=cart)
+#         total_cart_value = cart_items.aggregate(Sum('total_price'))['total_price__sum']
+#         shipping_cost = Decimal('50.00')  # Assuming a fixed shipping cost of $50.00
+#         multiplied_value = total_cart_value + shipping_cost
+#     except AddCart.DoesNotExist:
+#         # cart = None
+#         # cart_items = []
+#         # total_cart_value = 0.0
+#         # return redirect('index')
+#         return redirect('index') 
+
+#     return render(request, 'product/cart.html', {'cart': cart, 'cart_items': cart_items, 'total_cart_value': total_cart_value, 'multiplied_value': multiplied_value})
+
+from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
+from django.db.models import Sum
 from decimal import Decimal
+from .models import AddCart, CartItems  # Import your models
 
 def cart_details(request):
-    user = request.user
-    try:
-        cart = AddCart.objects.get(user=user)
-        cart_items = CartItems.objects.filter(cart=cart)
-        total_cart_value = cart_items.aggregate(Sum('total_price'))['total_price__sum']
-        shipping_cost = Decimal('50.00')  # Assuming a fixed shipping cost of $50.00
-        multiplied_value = total_cart_value + shipping_cost
-    except AddCart.DoesNotExist:
-        cart = None
-        cart_items = []
-        total_cart_value = 0.0
 
-    return render(request, 'product/cart.html', {'cart': cart, 'cart_items': cart_items, 'total_cart_value': total_cart_value, 'multiplied_value': multiplied_value})
+    if request.user.is_authenticated:
+        user = request.user
+        try:
+            cart = AddCart.objects.get(user=user)
+            cart_items = CartItems.objects.filter(cart=cart)
+        
+        # Calculate total cart value and shipping cost
+            total_cart_value = cart_items.aggregate(Sum('total_price'))['total_price__sum']
+            if total_cart_value is None:
+                total_cart_value = Decimal('0.00')  # Set a default value if total_cart_value is None
+        
+            shipping_cost = Decimal('50.00')  # Assuming a fixed shipping cost of $50.00
+        
+        # Calculate the total cost with shipping
+            multiplied_value = total_cart_value + shipping_cost
+        except AddCart.DoesNotExist:
+            return redirect('index')  # Redirect to 'index' if the user has no AddCart entry
 
+        return render(request, 'product/cart.html', {'cart': cart, 'cart_items': cart_items, 'total_cart_value': total_cart_value, 'multiplied_value': multiplied_value})
+    else:
 
+      return redirect('login_user')
+   
 
 from django.http import JsonResponse
 from .models import Product
@@ -791,3 +839,20 @@ def remove_cart_item(request, cart_item_id):
     cart_item.delete()
 
     return redirect('cart_details')  # Redirect to your cart page or wherever you want
+
+
+
+from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt  # Use CSRF exemption for simplicity in this example; consider using CSRF protection in a real application.
+def check_email_existence(request):
+    email = request.POST.get('email', '')
+
+    if User.objects.filter(email=email).exists():
+        data = {'exists': True}
+    else:
+        data = {'exists': False}
+
+    return JsonResponse(data)

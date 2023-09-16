@@ -138,10 +138,16 @@ input[type="number"]::-webkit-inner-spin-button,
     
                     </div>
                     <h3 class="font-weight-semi-bold mb-4">Rs.{{ products.price }}</h3>
+                    {% if products.stock_quantity == 0 %}
+    <p style="color: red;">Out of Stock</p>
+{% else %}
+<p style="color: green;">In Stock</p>
+{% endif %}
                     <p class="mb-4">{{ prod_desc.description }}</p>
 
                     <div class="d-flex align-items-center mb-4 pt-2">
     <div class="input-group quantity mr-3" style="width: 130px;">
+
         <div class="input-group-btn">
             {% comment %} <button class="btn btn-primary btn-minus">
                 <i class="fa fa-minus"></i>

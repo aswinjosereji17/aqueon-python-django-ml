@@ -103,9 +103,11 @@ span{
     {% csrf_token %}
     <input type="text" id="name" placeholder="Username" name="name" required>
     <span id="nameError" class="error"></span>
+    <span id="name2Error" class="error"></span>
 
     <input type="email" id="email" placeholder="Email" name="email" required>
     <span id="emailError" class="error"></span>
+    <span id="email2Error" class="error"></span>
 
     <input type="text" id="company_name" placeholder="Company name" name="company" required>
     <span id="companyError" class="error"></span>
@@ -114,8 +116,8 @@ span{
     <span id="gstinError" class="error"></span>
 
     <label style="margin-left:27px; font-size:15px">Upload Document</label>
-    <input style="margin-left:25px;" type="file" id="document" placeholder="Document" name="document" required
-        pattern=".*\S+.*" title="Please select a file">
+    <input style="margin-left: 25px;" type="file" id="document" placeholder="Document" name="document" required
+    accept="application/pdf" title="Please select a PDF file">
     <span id="documentError" class="error"></span>
 
     <input type="password" id="password" placeholder="Password" name="password" required>
@@ -125,7 +127,7 @@ span{
     <span id="confirmPasswordError" class="error"></span>
 
     <button class="submitbtn" type="submit" id="submitButton">Sign Up</button>
-    <p class="or"> OR</p>
+    <!-- <p class="or"> OR</p> -->
 </form>
 
 <script>
@@ -135,10 +137,10 @@ span{
         var username = usernameInput.value;
         var usernameRegex = /^[a-zA-Z][a-zA-Z0-9]*$/;
         if (!usernameRegex.test(username)) {
-            document.getElementById("nameError").textContent = "Username must start with alphabets and contain only alphanumeric characters.";
+            document.getElementById("name2Error").textContent = "Username must start with alphabets and contain only alphanumeric characters.";
             return false;
         }
-        document.getElementById("nameError").textContent = "";
+        document.getElementById("name2Error").textContent = "";
         return true;
     }
 
@@ -148,10 +150,10 @@ span{
         var email = emailInput.value;
         var emailRegex = /\S+@\S+\.\S+/;
         if (!emailRegex.test(email)) {
-            document.getElementById("emailError").textContent = "Please enter a valid email address.";
+            document.getElementById("email2Error").textContent = "Please enter a valid email address.";
             return false;
         }
-        document.getElementById("emailError").textContent = "";
+        document.getElementById("email2Error").textContent = "";
         return true;
     }
 
@@ -182,15 +184,28 @@ span{
 
     // Function to validate document
     function validateDocument() {
-        var documentInput = document.getElementById("document");
-        var document = documentInput.value;
-        if (document.trim() === "") {
-            document.getElementById("documentError").textContent = "Please select a file.";
-            return false;
-        }
-        document.getElementById("documentError").textContent = "";
-        return true;
+    var documentInput = document.getElementById("document");
+    var document = documentInput.value;
+
+    // Check if a file is selected
+    if (document.trim() === "") {
+        document.getElementById("documentError").textContent = "Please select a file.";
+        return false;
     }
+
+    // Check the file extension
+    var allowedExtensions = ["pdf"]; // Add more extensions if needed
+    var fileExtension = document.split('.').pop().toLowerCase();
+    
+    if (allowedExtensions.indexOf(fileExtension) === -1) {
+        document.getElementById("documentError").textContent = "Please select a PDF file.";
+        return false;
+    }
+
+    document.getElementById("documentError").textContent = "";
+    return true;
+}
+
 
     // Function to validate password
 

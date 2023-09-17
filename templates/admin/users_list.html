@@ -23,11 +23,11 @@
             <td>{{ user.last_name }}</td>
             <td>{{ user.userprofile.mobile }}</td>
             <td>{% if user.is_superuser %}
-    admin
+    Admin
 {% elif user.is_staff %}
-    staff
+    Seller
 {% else %}
-    user
+    User
 {% endif %}</td>
             {% comment %} <td>
             {% if user.userprofile.profile_image %}

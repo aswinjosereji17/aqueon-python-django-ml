@@ -2,9 +2,9 @@
 
 
 {% block content %}
-<div style="display:flex; flex-direction: row;" >
+<div style="height: 350px; display:flex; flex-direction: row;" >
 {% for subcat in subcategories %}
-    <div style=" margin-left:20px; width:200px;height: 200px; border:1px solid black; display: flex; border-radius: 10px; cursor: pointer;  justify-content: center; align-items: center;" class="subcategory" onclick="navigateToSubcategoryProducts({{ subcat.sub_cat_id }})">
+    <div style=" margin:20px; width:200px;height: 200px; border:1px solid black; display: flex; border-radius: 10px; cursor: pointer;  justify-content: center; align-items: center;" class="subcategory" onclick="navigateToSubcategoryProducts({{ subcat.sub_cat_id }})">
         <h4 style="margin:auto">{{ subcat.sub_cat_name }}</h4>
     </div>
 {% endfor %}

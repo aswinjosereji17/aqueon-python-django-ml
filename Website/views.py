@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
-from .models import UserProfile, Product, SellerRequest, HomeSpecialOffer, ProductCategory,UserAddress
+from .models import UserProfile, Product, SellerRequest, HomeSpecialOffer, ProductCategory,UserAddress, Wishlist
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
@@ -28,18 +28,23 @@ def index(request):
         try:
             cart = AddCart.objects.get(user=user)
             cart_items = CartItems.objects.filter(cart=cart)
-            cart_item_count = cart_items.count()  # Calculate the count of items in the cart
+            cart_item_count = cart_items.count()
+            user_id = request.user.id  # Use the user's ID if they are logged in
+            wish_count = Wishlist.objects.filter(user_id=user_id).count()
         except AddCart.DoesNotExist:
             cart = None
             cart_items = []
             cart_item_count = 0
+            wish_count = 0 
+
         context = {
         'cart' : cart,
         'cart_items' : cart_items,
         'homeimg': homeimg,
         'prod_cat':prod_cat,
         'cart_item_count': cart_item_count,
-        'recent_products': recent_products
+        'recent_products': recent_products,
+        'wish_count' : wish_count
         }
         
         return render(request,'index.html', context)
@@ -159,7 +164,7 @@ def loggout(request):
 
 
 from django.shortcuts import render
-from .models import UserProfile,Product, ProductSubcategory, UserAddress
+from .models import UserProfile,Product, ProductSubcategory, UserAddress, Product
 
 # def user_profile_view(request):
 #     user_profile = UserProfile.objects.get(user=request.user)
@@ -171,7 +176,10 @@ from .models import UserProfile,Product, ProductSubcategory, UserAddress
 @login_required
 def user_profile_view(request):
     # user_profile = UserProfile.objects.get(user=request.user)
-    
+    user_count = User.objects.filter(is_staff=False).count()
+    seller_count = User.objects.filter(Q(is_staff=True) & Q(is_superuser=False)).count()
+    prod_count = Product.objects.count()
+    s_req= SellerRequest.objects.all()
     try:
         seller_request = SellerRequest.objects.get(user=request.user)
     except SellerRequest.DoesNotExist:
@@ -196,6 +204,10 @@ def user_profile_view(request):
         'user_profile': user_profile,
         'seller_request': seller_request,
         'user_addr' : user_addr,
+        'user_count' : user_count,
+        'seller_count' : seller_count,
+        'prod_count' : prod_count,
+        's_req' : s_req
         # 'product' :product
     }
     
@@ -326,7 +338,6 @@ def product_list(request):
 from django.db import IntegrityError
 
 @login_required
-
 def add_product(request):
     users = User.objects.all()
     seller_requests = SellerRequest.objects.all()
@@ -856,3 +867,40 @@ def check_email_existence(request):
         data = {'exists': False}
 
     return JsonResponse(data)
+
+
+
+from .models import Wishlist, Product
+
+def add_to_wishlist(request, prod_id):
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        # You can implement your own logic for handling unauthenticated users
+        # For example, you can redirect them to a login page
+        return redirect('login_user')  # Redirect to your login URL
+
+    # Get the product based on prod_id
+    product = get_object_or_404(Product, pk=prod_id)
+
+    # Check if the product is not already in the user's wishlist
+    if not Wishlist.objects.filter(user_id=request.user, prod_id=product).exists():
+        Wishlist.objects.create(user_id=request.user, prod_id=product)
+
+    # Redirect to a success page or back to the product detail page
+    return redirect('index')  # Redirect to the product detail page
+
+
+from django.shortcuts import render
+from .models import Wishlist
+
+def wishlist(request):
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        # You can implement your own logic for handling unauthenticated users
+        # For example, you can redirect them to a login page
+        return redirect('login_user')  # Redirect to your login URL
+
+    # Get the user's wishlist items
+    wishlist_items = Wishlist.objects.filter(user_id=request.user)
+
+    return render(request, 'product/wishlist.html', {'wishlist_items': wishlist_items})

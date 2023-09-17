@@ -172,9 +172,11 @@ input[type="number"]::-webkit-inner-spin-button,
             
         </div>
     </div>
-    
+    {% if products.stock_quantity == 0 %}
+    <button style="border-radius: 5px;" type="submit" class="btn btn-primary px-3" disabled><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+    {% else %}
     <button style="border-radius: 5px;" type="submit" class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
-
+    {% endif %}
 
 <script>
     function incrementValue() {

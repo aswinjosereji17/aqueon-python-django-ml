@@ -16,7 +16,9 @@
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
 
   <!-- Vendor CSS Files -->
   <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -28,18 +30,19 @@
   <link href="{% static 'assets/vendor/simple-datatables/style.css' %}" rel="stylesheet">
 
   <!-- Template Main CSS File -->
-  <link href="{% static 'assets/css/style.css' %}"  rel="stylesheet">
-  {% comment %} <script>
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+  {% comment %}
+  <script>
     {% if show_main2 %}
     showmain('main2');
     {% endif %}
-</script> {% endcomment %}
+  </script> {% endcomment %}
 
 </head>
 
 <body>
   <div style="background-color: black; width: 100%; height: 50px;">
-jkfe;lfdj;l
+    jkfe;lfdj;l
   </div>
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -220,12 +223,12 @@ jkfe;lfdj;l
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
             {% if user_profile.profile_image %}
-            <img src="{{ user_profile.profile_image.url }}" alt="Profile" class="rounded-circle" >
-          {% else %}
-          <img src="{% static 'img\fish_images\lionfish.jpg' %}" alt="Profile" class="rounded-circle">
+            <img src="{{ user_profile.profile_image.url }}" alt="Profile" class="rounded-circle">
+            {% else %}
+            <img src="{% static 'img\fish_images\lionfish.jpg' %}" alt="Profile" class="rounded-circle">
 
-              <!-- <img src="{% static 'img\fish_images\lionfish.jpg' %}" alt="Default Profile" class="rounded-circle"> -->
-          {% endif %} 
+            <!-- <img src="{% static 'img\fish_images\lionfish.jpg' %}" alt="Default Profile" class="rounded-circle"> -->
+            {% endif %}
             <span class="d-none d-md-block dropdown-toggle ps-2">{{ user_profile.user.username }}</span>
           </a><!-- End Profile Iamge Icon -->
 
@@ -295,19 +298,21 @@ jkfe;lfdj;l
           <span>Dashboard</span>
         </a>
       </li><!-- End Dashboard Nav -->
-      
+
       {% if user.is_superuser and user.is_staff %}
-      {% comment %} <li class="nav-item" >
-        <a class="nav-link collapsed"  href="{% url 'list_product_categories' %}">
-          <i class="bi bi-layout-text-window-reverse"></i><span>Display Category</span><i class="bi bi-chevron-down ms-auto"></i>
+      {% comment %} <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'list_product_categories' %}">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Display Category</span><i
+            class="bi bi-chevron-down ms-auto"></i>
         </a>
       </li>
-      <li class="nav-item" >
-        <a class="nav-link collapsed"  href="{% url 'add_cat' %}">
-          <i class="bi bi-layout-text-window-reverse"></i><span>Add Category</span><i class="bi bi-chevron-down ms-auto"></i>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'add_cat' %}">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Add Category</span><i
+            class="bi bi-chevron-down ms-auto"></i>
         </a>
       </li> {% endcomment %}
-         <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-journal-text"></i><span>Users</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
@@ -332,10 +337,11 @@ jkfe;lfdj;l
               <i class="bi bi-circle"></i><span>Form Validation</span>
             </a>
           </li> {% endcomment %}
-        {% comment %} </ul>
-      </li>  {% endcomment %}
- {% comment %} <li class="nav-item">
-       <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          {% comment %}
+        </ul>
+      </li> {% endcomment %}
+      {% comment %} <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-menu-button-wide"></i><span>Users</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
@@ -348,7 +354,7 @@ jkfe;lfdj;l
             <a href="{% url 'add_cat' %}">
               <i class="bi bi-circle"></i><span>Seller Requests</span>
             </a>
-          </li>  {% endcomment %}
+          </li> {% endcomment %}
           {% comment %} <li>
             <a href="components-badges.html">
               <i class="bi bi-circle"></i><span>Badges</span>
@@ -361,7 +367,7 @@ jkfe;lfdj;l
           </li> {% endcomment %}
           <li>
         </ul>
-      </li> 
+      </li>
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-menu-button-wide"></i><span>Category</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -390,10 +396,11 @@ jkfe;lfdj;l
           <li>
         </ul>
       </li><!-- End Components Nav -->
-     
-      {% comment %} <li class="nav-item" >
-        <a class="nav-link collapsed"  href="{% url 'product_list' %}">
-          <i class="bi bi-layout-text-window-reverse"></i><span>Delete Category</span><i class="bi bi-chevron-down ms-auto"></i>
+
+      {% comment %} <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'product_list' %}">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Delete Category</span><i
+            class="bi bi-chevron-down ms-auto"></i>
         </a>
       </li> {% endcomment %}
 
@@ -401,12 +408,12 @@ jkfe;lfdj;l
 
       {% if not user.is_superuser and user.is_staff %}
 
-      <li class="nav-item" >
-        <a class="nav-link collapsed"  href="{% url 'product_list' %}?user_id={{ request.user.id }}">
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'product_list' %}?user_id={{ request.user.id }}">
           <i class="bi bi-layout-text-window-reverse"></i><span>List all products</span></i>
         </a>
         <!-- <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav"> -->
-          <!-- <li>
+        <!-- <li>
             <a href="tables-general.html">
               <i class="bi bi-circle"></i><span>General Tables</span>
             </a>
@@ -421,7 +428,7 @@ jkfe;lfdj;l
 
       </li><!-- End Tables Nav -->
       <li class="nav-item">
-        <a class="nav-link collapsed"  href="{% url 'add_product' %}">
+        <a class="nav-link collapsed" href="{% url 'add_product' %}">
           <i class="bi bi-menu-button-wide"></i><span>Add Product</span></i>
         </a>
         <!-- <li onclick="showmain('main1')">Show main 1</li>
@@ -452,7 +459,7 @@ jkfe;lfdj;l
         <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-bar-chart"></i><span>Delete products</span><i class="bi bi-chevron-down ms-auto"></i>
         </a> -->
-        <!-- <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+      <!-- <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="charts-chartjs.html">
               <i class="bi bi-circle"></i><span>Chart.js</span>
@@ -521,7 +528,7 @@ jkfe;lfdj;l
 
   <main id="main1" class="main">
     <div class="pagetitle">
-    {% block content %}
+      {% block content %}
       <h1>Dashboard</h1>
       <nav>
         <ol class="breadcrumb">
@@ -556,15 +563,15 @@ jkfe;lfdj;l
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title">Sales <span>| Today</span></h5>
+                  <h5 class="card-title">Products <span>| Today</span></h5>
 
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-cart"></i>
+                      <i class="bi bi-box"></i>
                     </div>
                     <div class="ps-3">
-                      <h6>145</h6>
-                      <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+                      <h6>{{prod_count}}</h6>
+                      <!-- <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
 
                     </div>
                   </div>
@@ -591,15 +598,15 @@ jkfe;lfdj;l
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title">Revenue <span>| This Month</span></h5>
+                  <h5 class="card-title">Sellers <span>| This Month</span></h5>
 
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-currency-dollar"></i>
+                      <i class="bi bi-people"></i>
                     </div>
                     <div class="ps-3">
-                      <h6>$3,264</h6>
-                      <span class="text-success small pt-1 fw-bold">8%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+                      <h6>{{seller_count}}</h6>
+                      <!-- <span class="text-success small pt-1 fw-bold">8%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
 
                     </div>
                   </div>
@@ -627,15 +634,15 @@ jkfe;lfdj;l
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title">Customers <span>| This Year</span></h5>
+                  <h5 class="card-title">Users <span>| This Year</span></h5>
 
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                       <i class="bi bi-people"></i>
                     </div>
                     <div class="ps-3">
-                      <h6>1244</h6>
-                      <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span>
+                      <h6>{{user_count}}</h6>
+                      <!-- <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span> -->
 
                     </div>
                   </div>
@@ -900,22 +907,23 @@ jkfe;lfdj;l
               <h5 class="card-title">Recent Activity <span>| Today</span></h5>
 
               <div class="activity">
-
+                {% for request in s_req %}
                 <div class="activity-item d-flex">
-                  <div class="activite-label">32 min</div>
+                  <div class="activite-label">32 min ago</div>
                   <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
                   <div class="activity-content">
-                    Quia quae rerum <a href="#" class="fw-bold text-dark">explicabo officiis</a> beatae
+                    <a href="#" class="fw-bold text-dark">{{request.user}} request a seller request</a> 
                   </div>
-                </div><!-- End activity item-->
+                </div>
+                {% endfor %}
 
-                <div class="activity-item d-flex">
+                <!-- <div class="activity-item d-flex">
                   <div class="activite-label">56 min</div>
                   <i class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
                   <div class="activity-content">
                     Voluptatem blanditiis blanditiis eveniet
                   </div>
-                </div><!-- End activity item-->
+                </div>
 
                 <div class="activity-item d-flex">
                   <div class="activite-label">2 hrs</div>
@@ -923,7 +931,7 @@ jkfe;lfdj;l
                   <div class="activity-content">
                     Voluptates corrupti molestias voluptatem
                   </div>
-                </div><!-- End activity item-->
+                </div>
 
                 <div class="activity-item d-flex">
                   <div class="activite-label">1 day</div>
@@ -931,7 +939,7 @@ jkfe;lfdj;l
                   <div class="activity-content">
                     Tempore autem saepe <a href="#" class="fw-bold text-dark">occaecati voluptatem</a> tempore
                   </div>
-                </div><!-- End activity item-->
+                </div>
 
                 <div class="activity-item d-flex">
                   <div class="activite-label">2 days</div>
@@ -939,7 +947,7 @@ jkfe;lfdj;l
                   <div class="activity-content">
                     Est sit eum reiciendis exercitationem
                   </div>
-                </div><!-- End activity item-->
+                </div>
 
                 <div class="activity-item d-flex">
                   <div class="activite-label">4 weeks</div>
@@ -947,7 +955,7 @@ jkfe;lfdj;l
                   <div class="activity-content">
                     Dicta dolorem harum nulla eius. Ut quidem quidem sit quas
                   </div>
-                </div><!-- End activity item-->
+                </div> -->
 
               </div>
 
@@ -1189,25 +1197,27 @@ jkfe;lfdj;l
             <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
 
               {% if user_profile.profile_image %}
-              <img id="hello" src="{{ user_profile.profile_image.url }}" alt="Profile" style="width:150px; height:131px; border-radius:206px">
-          {% else %}
-              <img src="{% static 'img\fish_images\lionfish.jpg' %}" alt="Default Profile" style="width:250px; height:250px;">
-          {% endif %}              <h2>
-              {{ user_profile.user.username }}
+              <img id="hello" src="{{ user_profile.profile_image.url }}" alt="Profile"
+                style="width:150px; height:131px; border-radius:206px">
+              {% else %}
+              <img src="{% static 'img\fish_images\lionfish.jpg' %}" alt="Default Profile"
+                style="width:250px; height:250px;">
+              {% endif %} <h2>
+                {{ user_profile.user.username }}
               </h2>
               {% if user.is_superuser %}
-                    <h6>
-                        Admin
-                    </h6>
-                    {% elif user.is_staff %}
-                    <h6>
-                        Seller
-                    </h6>
-                    <p class="proile-rating">RANKINGS : <span>8/10</span></p>
-                    {% else %}
-                    <h6>
-                        User
-                    </h6>
+              <h6>
+                Admin
+              </h6>
+              {% elif user.is_staff %}
+              <h6>
+                Seller
+              </h6>
+              <p class="proile-rating">RANKINGS : <span>8/10</span></p>
+              {% else %}
+              <h6>
+                User
+              </h6>
               {% endif %}
               <div class="social-links mt-2">
                 <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
@@ -1228,7 +1238,8 @@ jkfe;lfdj;l
               <ul class="nav nav-tabs nav-tabs-bordered">
 
                 <li class="nav-item">
-                  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button>
+                  <button class="nav-link active" data-bs-toggle="tab"
+                    data-bs-target="#profile-overview">Overview</button>
                 </li>
 
                 <li class="nav-item">
@@ -1248,7 +1259,9 @@ jkfe;lfdj;l
 
                 <div class="tab-pane fade show active profile-overview" id="profile-overview">
                   <h5 class="card-title">About</h5>
-                  <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</p>
+                  <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores cumque
+                    temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem
+                    eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</p>
 
                   <h5 class="card-title">Profile Details</h5>
 
@@ -1297,58 +1310,68 @@ jkfe;lfdj;l
                   <!-- Profile Edit Form -->
                   <form method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
                     {% csrf_token %}
-                    
+
                     <div class="row mb-3">
 
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
-                        <div class="col-md-8 col-lg-9">
-        <input type="file" id="img1" name="img1" onchange="viewImage1(event)" accept="image/*" class="form-control-file">
-                      </div>
-                        </div>
-                        <div class="row mb-3">
-
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label"></label>
-                        <div class="col-md-8 col-lg-9">
-{% if user_profile.profile_image %}
-            <img id="img1_preview" src="{{ user_profile.profile_image.url }}" alt="Image 1"><br><br>
-        {% else %}
-            <img id="img1_preview" style=" display: none;">
-        {% endif %}                      </div>
-                        </div>
-        {% comment %} <input type="hidden" name="img1_current" value="{{ user_profile.profile_image.url }}"> {% endcomment %}
-        {% comment %} {% if user_profile.profile_image %}
-            <img id="img1_preview" src="{{ user_profile.profile_image.url }}" alt="Image 1"><br><br>
-        {% else %}
-            <img id="img1_preview" style=" display: none;">
-        {% endif %} {% endcomment %}
-
-
-                      {% comment %} <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+                      <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
                       <div class="col-md-8 col-lg-9">
-                        {% if user_profile.user.profile_image %}
-                        <img src="{{ user_profile.user.profile_image.url }}" alt="Profile" class="rounded-circle">
-          {% else %}
-              <img style=" display: none;" class="rounded-circle">
-          {% endif %}  
-                        <div class="pt-2"> {% endcomment %}
-                          {% comment %} <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i class="bi bi-upload"></i></a>
-                          <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a> {% endcomment %}
-                        {% comment %} <input type="file" id="img1" name="profile_image"  accept="image/*" class="form-control"> {% endcomment %}
-                        
-                        {% comment %} </div>
-                      </div> {% endcomment %}
-                  
+                        <input type="file" id="img1" name="img1" onchange="viewImage1(event)" accept="image/*"
+                          class="form-control-file">
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+
+                      <label for="fullName" class="col-md-4 col-lg-3 col-form-label"></label>
+                      <div class="col-md-8 col-lg-9">
+                        {% if user_profile.profile_image %}
+                        <img id="img1_preview" src="{{ user_profile.profile_image.url }}" alt="Image 1"><br><br>
+                        {% else %}
+                        <img id="img1_preview" style=" display: none;">
+                        {% endif %}
+                      </div>
+                    </div>
+                    {% comment %} <input type="hidden" name="img1_current" value="{{ user_profile.profile_image.url }}">
+                    {% endcomment %}
+                    {% comment %} {% if user_profile.profile_image %}
+                    <img id="img1_preview" src="{{ user_profile.profile_image.url }}" alt="Image 1"><br><br>
+                    {% else %}
+                    <img id="img1_preview" style=" display: none;">
+                    {% endif %} {% endcomment %}
+
+
+                    {% comment %} <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile
+                      Image</label>
+                    <div class="col-md-8 col-lg-9">
+                      {% if user_profile.user.profile_image %}
+                      <img src="{{ user_profile.user.profile_image.url }}" alt="Profile" class="rounded-circle">
+                      {% else %}
+                      <img style=" display: none;" class="rounded-circle">
+                      {% endif %}
+                      <div class="pt-2"> {% endcomment %}
+                        {% comment %} <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i
+                            class="bi bi-upload"></i></a>
+                        <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i
+                            class="bi bi-trash"></i></a> {% endcomment %}
+                        {% comment %} <input type="file" id="img1" name="profile_image" accept="image/*"
+                          class="form-control"> {% endcomment %}
+
+                        {% comment %}
+                      </div>
+                    </div> {% endcomment %}
+
 
                     <div class="row mb-3">
                       <label for="fullName" class="col-md-4 col-lg-3 col-form-label">First Name</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="first_name" type="text" class="form-control" id="fullName" value="{{ user_profile.user.first_name }}">
+                        <input name="first_name" type="text" class="form-control" id="fullName"
+                          value="{{ user_profile.user.first_name }}">
                       </div>
                     </div>
                     <div class="row mb-3">
                       <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Last Name</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="last_name" type="text" class="form-control" id="fullName" value="{{ user_profile.user.last_name }}">
+                        <input name="last_name" type="text" class="form-control" id="fullName"
+                          value="{{ user_profile.user.last_name }}">
                       </div>
                     </div>
 
@@ -1379,11 +1402,12 @@ jkfe;lfdj;l
                         <input name="country" type="text" class="form-control" id="Country" value="USA">
                       </div>
                     </div> -->
-                    {% if user.is_staff and not user.is_superuser   %}
+                    {% if user.is_staff and not user.is_superuser %}
                     <div class="row mb-3">
                       <label for="Address" class="col-md-4 col-lg-3 col-form-label">Company</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="company" type="text" class="form-control" id="Address" value="{{ seller_request.company }}">
+                        <input name="company" type="text" class="form-control" id="Address"
+                          value="{{ seller_request.company }}">
                       </div>
                     </div>
                     {% endif %}
@@ -1391,28 +1415,32 @@ jkfe;lfdj;l
                     <div class="row mb-3">
                       <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Mobile</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="mobile" type="tel" pattern="[0-9]{10}" class="form-control" id="Phone" value="{{ user_profile.mobile }}">
+                        <input name="mobile" type="tel" pattern="[0-9]{10}" class="form-control" id="Phone"
+                          value="{{ user_profile.mobile }}">
                       </div>
                     </div>
 
                     <div class="row mb-3">
                       <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="email" type="email" class="form-control" id="Email" value="{{ user_profile.user.email }}">
+                        <input name="email" type="email" class="form-control" id="Email"
+                          value="{{ user_profile.user.email }}">
                       </div>
                     </div>
 
                     <div class="row mb-3">
                       <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Address1</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="address1" type="text" class="form-control" id="address1" value="{{ user_addr.address1 }}">
+                        <input name="address1" type="text" class="form-control" id="address1"
+                          value="{{ user_addr.address1 }}">
                       </div>
                     </div>
 
                     <div class="row mb-3">
                       <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Address2</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="address2" type="text" class="form-control" id="address2" value="{{ user_addr.address2 }}">
+                        <input name="address2" type="text" class="form-control" id="address2"
+                          value="{{ user_addr.address2 }}">
                       </div>
                     </div>
 
@@ -1434,12 +1462,12 @@ jkfe;lfdj;l
                       <button type="submit" class="btn btn-primary">Save Changes</button>
                     </div>
                   </form><!-- End Profile Edit Form -->
- <script>
-        function viewImage1(event){
-            document.getElementById('img1_preview').src=URL.createObjectURL(event.target.files[0])
-        }
-        
-    </script>
+                  <script>
+                    function viewImage1(event) {
+                      document.getElementById('img1_preview').src = URL.createObjectURL(event.target.files[0])
+                    }
+
+                  </script>
                 </div>
 
                 <div class="tab-pane fade pt-3" id="profile-settings">
@@ -1531,14 +1559,14 @@ jkfe;lfdj;l
   <script>
     // Initially show main 1
     showmain('main1');
-  
+
     function showmain(mainId) {
       // Hide all main divs
       var mainDivs = document.getElementsByClassName('main');
       for (var i = 0; i < mainDivs.length; i++) {
         mainDivs[i].style.display = 'none';
       }
-  
+
       // Show the selected main div
       var selectedmain = document.getElementById(mainId);
       if (selectedmain) {
@@ -1565,17 +1593,18 @@ jkfe;lfdj;l
     </div>
   </footer><!-- End Footer -->
 
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
-<script src="{% static 'assets/vendor/apexcharts/apexcharts.min.js' %}"></script>
-<script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'assets/vendor/chart.js/chart.umd.js' %}"></script>
-<script src="{% static 'assets/vendor/echarts/echarts.min.js' %}"></script>
-<script src="{% static 'assets/vendor/quill/quill.min.js' %}"></script>
-<script src="{% static 'assets/vendor/simple-datatables/simple-datatables.js' %}"></script>
-<script src="{% static 'assets/vendor/tinymce/tinymce.min.js' %}"></script>
-<script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+  <script src="{% static 'assets/vendor/apexcharts/apexcharts.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/chart.js/chart.umd.js' %}"></script>
+  <script src="{% static 'assets/vendor/echarts/echarts.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/quill/quill.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/simple-datatables/simple-datatables.js' %}"></script>
+  <script src="{% static 'assets/vendor/tinymce/tinymce.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
 
   <!-- Template Main JS File -->
   <script src="{% static 'assets/js/main.js' %}"></script>
@@ -1583,4 +1612,3 @@ jkfe;lfdj;l
 </body>
 
 </html>
-

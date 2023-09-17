@@ -71,7 +71,7 @@ th{
                   <td>{{ prods.prod_name }}</td>
                   <td>{{ prods.sub_categ_id.categ_id.categ_name }}</td>
                   <td>{{ prods.sub_categ_id.sub_cat_name }}</td>
-                  <td>${{ prods.price }}</td>
+                  <td>Rs.{{ prods.price }}</td>
                   <td><img style="width : 100px; height: 100px;" src="{{ prods.productdescription.img1.url }}" alt="{{ prods.prod_name }} - Image 1" ></td>
 
                   <td><button style="background-color: rgb(180, 217, 44);"><a style="color: rgb(2, 10, 18);" href="{% url 'modify_product' prods.prod_id  %}?user_id={{ request.user.id }}">modify</a></button></td>

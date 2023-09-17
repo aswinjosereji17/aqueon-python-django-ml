@@ -26,7 +26,7 @@
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30">
                     <a class="breadcrumb-item text-dark" href="#">Home</a>
-                    <a class="breadcrumb-item text-dark" href="#">Shop</a>
+                    <!-- <a class="breadcrumb-item text-dark" href="#">Shop</a> -->
                     <span class="breadcrumb-item active">Shopping Cart</span>
                 </nav>
             </div>
@@ -39,12 +39,28 @@
    
 
 
-    <div class="container-fluid">
+    <div style="height: auto;" class="container-fluid">
         <div class="row px-xl-5 justify-content-center"> <!-- Center the row horizontally -->
-      
+          {% if cart %}
+          {% if cart_items|length == 0 %}
+        <div class="container text-center mt-5">
+            <div class="row justify-content-center">
+              <div class="col-md-6">
+                <div class="card border-0 shadow">
+                  <div class="card-body p-5">
+                    <h1 class="display-4">Your Aqueon Cart is Empty</h1>
+                    <p class="lead">Explore our amazing products and add some to your cart!</p>
+                    <a href="{% url 'index' %}" class="btn btn-primary btn-lg">Browse Products</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        {% endif %}
           <!-- Left Column: Cart Items -->
           <div class="col-lg-8 table-responsive mb-5 mx-auto"> <!-- Center the left column -->
-            {% if cart %}
+            
             {% for item in cart_items %}
       
             <div class="container mt-4">
@@ -65,7 +81,11 @@
                           <label for="quantity">Quantity: {{ item.quantity }}</label>
                         </div>
                         <!-- In Stock Status -->
-                        <p class="text-success">In Stock</p>
+                        {% if products.stock_quantity == 0 %}
+    <p style="color: red;">Out of Stock</p>
+{% else %}
+<p style="color: green;">In Stock</p>
+{% endif %}
                         <form method="post" action="{% url 'remove_cart_item' item.cart_item_id %}">
                           {% csrf_token %}
                           <button style="border-radius: 3px;" type="submit" class="btn btn-sm btn-danger">
@@ -81,22 +101,7 @@
             <!-- <p>Your cart is empty. (Cart items count: {{ cart_items|length }})</p> -->
             {% endfor %}
             {% endif %}
-            {% if cart_items|length == 0 %}
-            <div class="container text-center mt-5">
-                <div class="row justify-content-center">
-                  <div class="col-md-6">
-                    <div class="card border-0 shadow">
-                      <div class="card-body p-5">
-                        <h1 class="display-4">Your Aqueon Cart is Empty</h1>
-                        <p class="lead">Explore our amazing products and add some to your cart!</p>
-                        <a href="{% url 'index' %}" class="btn btn-primary btn-lg">Browse Products</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-            {% endif %}
+          
             {% comment %} {% else %}
             <p>Your cart is empty. (Cart items count: {{ cart_items|length }})</p>
             {% endif %}  {% endcomment %}
@@ -140,11 +145,11 @@
             </div>
           </div>
       
-        </div>
-      </div>
+       
       {% endif %}
 
-    
+    </div>
+  </div> 
 </body>
     <!-- Cart End -->
 

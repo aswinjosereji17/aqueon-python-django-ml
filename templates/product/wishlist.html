@@ -1,0 +1,47 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" href="#">Home</a>
+                <!-- <a class="breadcrumb-item text-dark" href="#">Shop</a> -->
+                <span class="breadcrumb-item active">Wishlist</span>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- {% if wishlist_items|length == 0 %} -->
+        
+<!-- {% endif %} -->
+<ul>
+    {% for item in wishlist_items %}
+        <div style="display: flex
+        ; flex-direction: row; gap: 20px;">
+        <p>{{ item.prod_id.prod_name }}</p>
+        <p>Rs.{{ item.prod_id.price }}</p>
+           
+        </div>
+    {% empty %}
+    <div class="container text-center mt-5">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <div class="card border-0 shadow">
+              <div class="card-body p-5">
+                <h1 class="display-4">Your Wishlist is Empty</h1>
+                <p class="lead">Explore our amazing products and add some to your wishlist!</p>
+                <a href="{% url 'index' %}" class="btn btn-primary btn-lg">Browse Products</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+</ul>
+
+{% endblock %}

@@ -83,7 +83,7 @@ body {
             <button class="submitbtn" type="submit">Sign In</button> {% endcomment %}
             <p class="or"> OR</p>
         </form>
-                            <a style="text-decoration: none;" href="{% provider_login_url 'google'%}?next=/"><button class="googlebtn" ><img src="{% static 'img/login/googleimg.png' %}">Sign In with Google</button></a>
+                            <a style="text-decoration: none;" href="{% provider_login_url 'google'%}?next=/"><button style="border-radius: 9px; border-color:rgb(159, 170, 194);" class="googlebtn" ><img src="{% static 'img/login/googleimg.png' %}">Sign In with Google</button></a>
 
                 <p style="margin-left:50px">Don't have an account?<a href="{% url 'register' %}">Sign Up</a></p>
 

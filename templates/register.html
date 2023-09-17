@@ -104,7 +104,7 @@ body {
              <p class="or"> OR</p>
                     {% comment %} <button class="googlebtn" type="submit"><div class="imggoog"><img  src="{% static 'img/login/googleimg.png' %}"></div>Sign Up with Google</button> {% endcomment %}
         </form>
-        <a style="text-decoration: none;" href="{% provider_login_url 'google'%}?next=/"><button class="googlebtn" ><img src="{% static 'img/login/googleimg.png' %}">Sign Up with Google</button></a>
+        <a style="text-decoration: none;" href="{% provider_login_url 'google'%}?next=/"><button style="border-radius: 9px; border-color:rgb(159, 170, 194);" class="googlebtn" ><img src="{% static 'img/login/googleimg.png' %}">Sign Up with Google</button></a>
 
         {% comment %} <button class="toggle-btn" onclick="toggleForm()">Already have an account? Sign In</button> {% endcomment %}
     <p  style="margin-left:50px">Already have an account?<a href="{% url 'login_user' %}">

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import UserProfile,SellerRequest,HomeSpecialOffer,ProductCategory, ProductSubcategory, Product, ProductDescription, UserAddress, AddCart, CartItems
+from .models import UserProfile,SellerRequest,HomeSpecialOffer,ProductCategory, ProductSubcategory, Product, ProductDescription, UserAddress, AddCart, CartItems, Wishlist
 #  ProductCategory, ProductSubcategory, Product
 
 # class UserProfileAdmin(admin.ModelAdmin):
@@ -23,7 +23,7 @@ class UserAddressAdmin(admin.ModelAdmin):
 admin.site.register(UserAddress, UserAddressAdmin)
 
 class SellerRequestAdmin(admin.ModelAdmin):
-    list_display = ('user', 'gstin', 'document')  # Add other fields here
+    list_display = ('user', 'gstin', 'document', 'request_time')  # Add other fields here
 
 admin.site.register(SellerRequest, SellerRequestAdmin)
 
@@ -52,5 +52,11 @@ admin.site.register(ProductSubcategory, ProductSubcategoryAdmin)
 
 admin.site.register(AddCart)
 admin.site.register(CartItems)
+# admin.site.register(Wishlist)
+
+class WishlistAdmin(admin.ModelAdmin):
+    list_display = ('user_id','wishlist_date','prod_id')  # Add other fields here
+
+admin.site.register(Wishlist, WishlistAdmin)
 
 

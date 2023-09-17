@@ -59,6 +59,7 @@ class SellerRequest(models.Model):
     gstin = models.CharField(max_length=15, blank=True)
     document = models.FileField(upload_to='seller_documents/', blank=True)
     company = models.CharField(max_length=100, blank=True,null=True)
+    request_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.user.username
@@ -146,5 +147,17 @@ class CartItems(models.Model):
         if self.prod:
             self.total_price = self.quantity * self.prod.price  # Assuming 'price' is a field in your Product model
         super().save(*args, **kwargs)
+
+
+
+
+class Wishlist(models.Model):
+    wish_id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)  # Assuming you're using Django's built-in User model
+    wishlist_date = models.DateTimeField(auto_now_add=True) 
+    prod_id = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Wishlist Item {self.wish_id}'
 
 

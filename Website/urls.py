@@ -51,6 +51,8 @@ urlpatterns = [
     path('approve-seller/<int:user_id>/', views.approve_seller, name='approve_seller'),
     path('dis_approve-seller/<int:user_id>/', views.dis_approve_seller, name='dis_approve_seller'),
     path('remove-from-cart/<int:cart_item_id>/', views.remove_cart_item, name='remove_cart_item'),
+    path('add_to_wishlist/<int:prod_id>/', views.add_to_wishlist, name='add_to_wishlist'),
+    path('wishlist/', views.wishlist, name='wishlist'),
     
    path('edit_profile/', views.edit_profile, name='edit_profile'),
     ]

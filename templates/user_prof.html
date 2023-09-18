@@ -5,8 +5,13 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-  <title>Admin</title>
+   {% if user.is_superuser %}
+    <title>Admin</title>      
+      {% elif user.is_staff and not user.is_superuser %}
+<title>Seller</title> 
+       {% else %}
+<title>User</title>        {% endif %}
+  
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -28,6 +33,7 @@
   <link href="{% static 'assets/vendor/quill/quill.bubble.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/remixicon/remixicon.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/simple-datatables/style.css' %}" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.0/echarts.min.js"></script>
 
   <!-- Template Main CSS File -->
   <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
@@ -42,7 +48,6 @@
 
 <body>
   <div style="background-color: black; width: 100%; height: 50px;">
-    jkfe;lfdj;l
   </div>
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -80,10 +85,10 @@
 
         <li class="nav-item dropdown">
 
-          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+          {% comment %} <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-bell"></i>
             <span class="badge bg-primary badge-number">4</span>
-          </a><!-- End Notification Icon -->
+          </a><!-- End Notification Icon --> {% endcomment %}
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
             <li class="dropdown-header">
@@ -155,10 +160,10 @@
 
         <li class="nav-item dropdown">
 
-          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+          {% comment %} <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-chat-left-text"></i>
             <span class="badge bg-success badge-number">3</span>
-          </a><!-- End Messages Icon -->
+          </a><!-- End Messages Icon --> {% endcomment %}
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
             <li class="dropdown-header">
@@ -235,7 +240,15 @@
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
               <h6>{{ user_profile.user.username }}</h6>
-              <span>Web Designer</span>
+              {% if user.is_superuser %}
+        <span class="d-none d-lg-block">Admin</span>
+        {% elif user.is_staff and not user.is_superuser %}
+        <span class="d-none d-lg-block">Seller</span>
+        {% else %}
+        <span class="d-none d-lg-block">User</span>
+        {% endif %}
+
+              {% comment %} <span>Web Designer</span> {% endcomment %}
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -274,8 +287,8 @@
 
             <li>
               <a class="dropdown-item d-flex align-items-center" href="{% url 'loggout' %}">
-                <i class="bi bi-box-arrow-right"></i>
-                <span>Sign Out</span>
+                <i style="color:red" class="ri-logout-circle-line"></i>
+          <span>Logout</span>
               </a>
             </li>
 
@@ -291,13 +304,24 @@
   <aside id="sidebar" class="sidebar">
 
     <ul class="sidebar-nav" id="sidebar-nav">
-
-      <li class="nav-item">
+   {% if user.is_superuser %}
+    <li class="nav-item">
         <a class="nav-link " href="{% url 'user_profile_view' %}">
           <i class="bi bi-grid"></i>
           <span>Dashboard</span>
         </a>
-      </li><!-- End Dashboard Nav -->
+      </li>    
+      {% elif user.is_staff and not user.is_superuser %}
+<li class="nav-item">
+        <a class="nav-link " href="{% url 'user_profile_view' %}">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+       {% else %}
+       
+      {% endif %}
+      <!-- End Dashboard Nav -->
 
       {% if user.is_superuser and user.is_staff %}
       {% comment %} <li class="nav-item">
@@ -327,16 +351,7 @@
               <i class="bi bi-circle"></i><span>Seller Request</span>
             </a>
           </li>
-          {% comment %} <li>
-            <a href="forms-editors.html">
-              <i class="bi bi-circle"></i><span>Form Editors</span>
-            </a>
-          </li>
-          <li>
-            <a href="forms-validation.html">
-              <i class="bi bi-circle"></i><span>Form Validation</span>
-            </a>
-          </li> {% endcomment %}
+          
           {% comment %}
         </ul>
       </li> {% endcomment %}
@@ -396,14 +411,30 @@
           <li>
         </ul>
       </li><!-- End Components Nav -->
-
+  <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#component-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Sub Category</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="component-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="{% url 'list_product_subcat' %}">
+              <i class="bi bi-circle"></i><span>Display Sub Category</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'add_subcategory' %}">
+              <i class="bi bi-circle"></i><span>Add Sub Category</span>
+            </a>
+          </li>
       {% comment %} <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'product_list' %}">
           <i class="bi bi-layout-text-window-reverse"></i><span>Delete Category</span><i
             class="bi bi-chevron-down ms-auto"></i>
         </a>
       </li> {% endcomment %}
-
+<li>
+        </ul>
+      </li>
       {% endif %}
 
       {% if not user.is_superuser and user.is_staff %}
@@ -479,13 +510,13 @@
           <span>Profile</span>
         </a>
       </li><!-- End Profile Page Nav -->
-
-      <!-- <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-faq.html">
-          <i class="bi bi-question-circle"></i>
-          <span>F.A.Q</span>
+  <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'index' %}">
+          <i style="" class="ri-home-2-fill"></i>
+          <span>Home</span>
         </a>
-      </li>End F.A.Q Page Nav -->
+      </li>
+     
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="#">
@@ -494,6 +525,12 @@
         </a>
       </li><!-- End Contact Page Nav -->
 
+   <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'loggout' %}">
+          <i style="color:red" class="ri-logout-circle-line"></i>
+          <span>Logout</span>
+        </a>
+      </li>
       <!-- <li class="nav-item">
         <a class="nav-link collapsed" href="pages-register.html">
           <i class="bi bi-card-list"></i>
@@ -891,7 +928,7 @@
           <!-- Recent Activity -->
           <div class="card">
             <div class="filter">
-              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+              <a class="icon" href="#" data-bs-toggle="dropdown"></a>
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <li class="dropdown-header text-start">
                   <h6>Filter</h6>
@@ -904,7 +941,7 @@
             </div>
 
             <div class="card-body">
-              <h5 class="card-title">Recent Activity <span>| Today</span></h5>
+              <h5 class="card-title">Recent Activity <span></span></h5>
 
               <div class="activity">
                 {% for request in s_req %}
@@ -912,7 +949,7 @@
                   <div class="activite-label">32 min ago</div>
                   <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
                   <div class="activity-content">
-                    <a href="#" class="fw-bold text-dark">{{request.user}} request a seller request</a> 
+                    <a href="#" class="fw-bold text-dark">{{request.user}} requested a seller request</a> 
                   </div>
                 </div>
                 {% endfor %}
@@ -1169,7 +1206,6 @@
           </div>End News & Updates -->
 
         </div><!-- End Right side columns -->
-
       </div>
     </section>
     {% endblock %}

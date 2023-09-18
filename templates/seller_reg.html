@@ -72,26 +72,63 @@ span{
         });
     });
 
-    $(document).ready(function () {
-        $('#email').on('input', function () {
-            // Get the value of the email input
-            var email = $(this).val();
-            
-            // Send an AJAX request to Django to check if the email exists
+   $(document).ready(function () {
+    $('#email').on('input', function () {
+        // Get the value of the email input
+        var email = $(this).val();
+        
+        if (email) {
             $.ajax({
                 url: '/check_email/',  // Replace with your Django URL
                 data: {'email': email},
                 dataType: 'json',
                 success: function (data) {
                     if (data.exists) {
-                        $('#emailError').text('Email already exists.');
+                        $('#emailError').text('Email already exists');
+                        $('#submitButton').prop('disabled', true);
                     } else {
                         $('#emailError').text('');
+                        $('#submitButton').prop('disabled', false);
+                    }
+                },
+                error: function () {
+                    // Handle any AJAX errors here
+                    console.log('Error occurred while checking email existence.');
+                }
+            });
+        } else {
+            $('#emailError').text('');
+            $('#submitButton').prop('disabled', false);
+        }
+    });
+});
+
+
+
+    $(document).ready(function () {
+    $('#gstin').on('input', function () {
+        var gstin = $(this).val();
+        if (gstin) {
+            $.ajax({
+                url: '{% url "check-gstin-exists" %}',
+                data: { 'gstin': gstin },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.exists) {
+                        $('#gstin1Error').text('GSTIN already exists');
+                        $('#submitButton').prop('disabled', true);
+                    } else {
+                        $('#gstin1Error').text('');
+                        $('#submitButton').prop('disabled', false);
                     }
                 }
             });
-        });
+        } else {
+            $('#gstin1Error').text('');
+            $('#submitButton').prop('disabled', false);
+        }
     });
+});
 </script>
 </head>
 
@@ -114,6 +151,9 @@ span{
 
     <input type="text" id="gstin" placeholder="GSTIN" name="gstin" required>
     <span id="gstinError" class="error"></span>
+    <span id="gstin1Error" class="error"></span>
+
+    <div id="responseMessage"></div>
 
     <label style="margin-left:27px; font-size:15px">Upload Document</label>
     <input style="margin-left: 25px;" type="file" id="document" placeholder="Document" name="document" required

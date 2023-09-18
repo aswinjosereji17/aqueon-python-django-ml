@@ -1,0 +1,35 @@
+{% extends 'user_prof.html' %}
+
+
+{% block content %}
+
+<h1>Product Sub Categories</h1></br></br>
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Subcategory Name</th>
+             <th>Category Name</th>
+            <th>Image</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for subcat in subcategories %}
+        <tr>
+            <td>{{ subcat.sub_cat_name }}</td>
+            <td>{{ subcat.categ_id.categ_name }}</td>
+            <td>
+                {% if subcat.subcat_image %}
+                <img style="height: 100px; width: 100px;" src="{{ subcat.subcat_image.url }}" alt="{{ subcat.sub_cat_name }}" class="img-thumbnail" width="100">
+                {% else %}
+                No Image
+                {% endif %}
+            </td>
+            <td>{{ subcat.created_at }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+    {% endblock%}

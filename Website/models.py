@@ -93,6 +93,7 @@ class ProductSubcategory(models.Model):
     sub_cat_id = models.AutoField(primary_key=True)
     categ_id = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
     sub_cat_name = models.CharField(max_length=255,unique=True)
+    subcat_image = models.ImageField(upload_to='category_images/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 

@@ -5,7 +5,30 @@
 
 {% load static %}
 
+<head> <script>
+                  function validatePhoneNumber(phoneNumberValue) {
+    // Define the regular expression pattern
+    const pattern = ^\d{10}$;
 
+    // Get the error message element
+    const errorMessageElement = document.getElementById('error-message');
+
+    // Test if the input matches the pattern
+    if (!pattern.test(phoneNumberValue)) {
+        // The input does not match the pattern, so it's invalid.
+        // Display an error message.
+        errorMessageElement.textContent = 'Please enter a valid Indian phone number.';
+        return false;
+    } else {
+
+        // Clear any existing error message if the input is valid.
+        errorMessageElement.textContent = '';
+        return true;
+    }
+}
+
+                  </script>
+                  </head>
 
 <div class="pagetitle">
   <h1>Profile</h1>
@@ -110,10 +133,10 @@
               </div>
               {% endif %}
 
-              <div class="row">
+              {% comment %} <div class="row">
                 <div class="col-lg-3 col-md-4 label">Mobile</div>
                 <div class="col-lg-9 col-md-8">{{ user_profile.mobile }}</div>
-              </div>
+              </div> {% endcomment %}
 
               <!-- <div class="row">
                     <div class="col-lg-3 col-md-4 label">Email</div>
@@ -136,7 +159,7 @@
 
 
               <!-- Profile Edit Form -->
-              <form method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+              <form method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data" onsubmit="return validatePhoneNumber()">
                 {% csrf_token %}
 
                 <div class="row mb-3">
@@ -159,33 +182,7 @@
                     {% endif %}
                   </div>
                 </div>
-                {% comment %} <input type="hidden" name="img1_current" value="{{ user_profile.profile_image.url }}"> {%
-                endcomment %}
-                {% comment %} {% if user_profile.profile_image %}
-                <img id="img1_preview" src="{{ user_profile.profile_image.url }}" alt="Image 1"><br><br>
-                {% else %}
-                <img id="img1_preview" style=" display: none;">
-                {% endif %} {% endcomment %}
-
-
-                {% comment %} <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
-                <div class="col-md-8 col-lg-9">
-                  {% if user_profile.user.profile_image %}
-                  <img src="{{ user_profile.user.profile_image.url }}" alt="Profile" class="rounded-circle">
-                  {% else %}
-                  <img style=" display: none;" class="rounded-circle">
-                  {% endif %}
-                  <div class="pt-2"> {% endcomment %}
-                    {% comment %} <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i
-                        class="bi bi-upload"></i></a>
-                    <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i
-                        class="bi bi-trash"></i></a> {% endcomment %}
-                    {% comment %} <input type="file" id="img1" name="profile_image" accept="image/*"
-                      class="form-control"> {% endcomment %}
-
-                    {% comment %}
-                  </div>
-                </div> {% endcomment %}
+          
 
 
                 <div class="row mb-3">
@@ -203,33 +200,6 @@
                   </div>
                 </div>
 
-                <!-- <div class="row mb-3">
-                      <label for="about" class="col-md-4 col-lg-3 col-form-label">About</label>
-                      <div class="col-md-8 col-lg-9">
-                        <textarea name="about" class="form-control" id="about" style="height: 100px">Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea>
-                      </div>
-                    </div> -->
-
-                <!-- <div class="row mb-3">
-                      <label for="company" class="col-md-4 col-lg-3 col-form-label">Company</label>
-                      <div class="col-md-8 col-lg-9">
-                        <input name="company" type="text" class="form-control" id="company" value="Lueilwitz, Wisoky and Leuschke">
-                      </div>
-                    </div> -->
-
-                <!-- <div class="row mb-3">
-                      <label for="Job" class="col-md-4 col-lg-3 col-form-label">Job</label>
-                      <div class="col-md-8 col-lg-9">
-                        <input name="job" type="text" class="form-control" id="Job" value="Web Designer">
-                      </div>
-                    </div> -->
-
-                <!-- <div class="row mb-3">
-                      <label for="Country" class="col-md-4 col-lg-3 col-form-label">Country</label>
-                      <div class="col-md-8 col-lg-9">
-                        <input name="country" type="text" class="form-control" id="Country" value="USA">
-                      </div>
-                    </div> -->
                 {% if user.is_staff and not user.is_superuser %}
                 <div class="row mb-3">
                   <label for="Address" class="col-md-4 col-lg-3 col-form-label">Company</label>
@@ -240,13 +210,22 @@
                 </div>
                 {% endif %}
 
-                <div class="row mb-3">
+                {% comment %} <div class="row mb-3">
                   <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Mobile</label>
                   <div class="col-md-8 col-lg-9">
-                    <input name="mobile" type="tel" pattern="[0-9]{10}" class="form-control" id="Phone"
-                      value="{{ user_profile.mobile }}">
-                  </div>
-                </div>
+                    <input
+        name="mobile"
+        type="tel"
+        class="form-control"
+        id="Phone"
+        onchange="validatePhoneNumber(this.value)"
+        value="{{ user_profile.mobile }}"
+    >
+                  </div> {% endcomment %}
+                  {% comment %} <div id="error-message" style="color: red;"></div> {% endcomment %}
+                 
+                {% comment %} </div> {% endcomment %}
+
 
                 <!-- <div class="row mb-3">
                       <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
@@ -271,24 +250,15 @@
                   </div>
                 </div>
 
-                <!-- <div class="row mb-3">
-                      <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram Profile</label>
-                      <div class="col-md-8 col-lg-9">
-                        <input name="instagram" type="text" class="form-control" id="Instagram" value="https://instagram.com/#">
-                      </div>
-                    </div>
-
-                    <div class="row mb-3">
-                      <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin Profile</label>
-                      <div class="col-md-8 col-lg-9">
-                        <input name="linkedin" type="text" class="form-control" id="Linkedin" value="https://linkedin.com/#">
-                      </div>
-                    </div> -->
-
                 <div class="text-center">
                   <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
-              </form><!-- End Profile Edit Form -->
+              </form>
+              
+              
+              
+              
+              <!-- End Profile Edit Form -->
               <script>
                 function viewImage1(event) {
                   document.getElementById('img1_preview').src = URL.createObjectURL(event.target.files[0])

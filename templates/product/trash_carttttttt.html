@@ -45,3 +45,35 @@
                  {% else %}
     <p>Your cart is empty.</p>
     {% endif %} {% endcomment %}
+
+
+
+
+
+          {% comment %} <input type="hidden" name="img1_current" value="{{ user_profile.profile_image.url }}"> {%
+                endcomment %}
+                {% comment %} {% if user_profile.profile_image %}
+                <img id="img1_preview" src="{{ user_profile.profile_image.url }}" alt="Image 1"><br><br>
+                {% else %}
+                <img id="img1_preview" style=" display: none;">
+                {% endif %} {% endcomment %}
+
+
+                {% comment %} <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+                <div class="col-md-8 col-lg-9">
+                  {% if user_profile.user.profile_image %}
+                  <img src="{{ user_profile.user.profile_image.url }}" alt="Profile" class="rounded-circle">
+                  {% else %}
+                  <img style=" display: none;" class="rounded-circle">
+                  {% endif %}
+                  <div class="pt-2"> {% endcomment %}
+                    {% comment %} <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i
+                        class="bi bi-upload"></i></a>
+                    <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i
+                        class="bi bi-trash"></i></a> {% endcomment %}
+                    {% comment %} <input type="file" id="img1" name="profile_image" accept="image/*"
+                      class="form-control"> {% endcomment %}
+
+                    {% comment %}
+                  </div>
+                </div> {% endcomment %}

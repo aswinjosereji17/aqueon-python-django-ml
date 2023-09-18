@@ -165,6 +165,11 @@ def loggout(request):
 
 from django.shortcuts import render
 from .models import UserProfile,Product, ProductSubcategory, UserAddress, Product
+from django.shortcuts import render
+from django.contrib.auth.models import User
+from django.db.models import Count
+import datetime
+from django.db import models 
 
 # def user_profile_view(request):
 #     user_profile = UserProfile.objects.get(user=request.user)
@@ -180,6 +185,8 @@ def user_profile_view(request):
     seller_count = User.objects.filter(Q(is_staff=True) & Q(is_superuser=False)).count()
     prod_count = Product.objects.count()
     s_req= SellerRequest.objects.all()
+
+
     try:
         seller_request = SellerRequest.objects.get(user=request.user)
     except SellerRequest.DoesNotExist:
@@ -207,7 +214,7 @@ def user_profile_view(request):
         'user_count' : user_count,
         'seller_count' : seller_count,
         'prod_count' : prod_count,
-        's_req' : s_req
+        's_req' : s_req,
         # 'product' :product
     }
     
@@ -229,7 +236,7 @@ def edit_profile(request):
         user_addr= UserAddress.objects.get(user=request.user)
 
         # Update the profile fields with the submitted form data
-        user_profile.mobile = request.POST.get('mobile')
+        # user_profile.mobile = request.POST.get('mobile')
         # user_profile.save()
         # user_profile.profile_image=request.POST.get('prof_image')
         uploaded_image = request.FILES.get('img1')
@@ -546,7 +553,7 @@ def add_cat(request):
         new_category = ProductCategory(categ_name=categ_name, categ_image=categ_image)
         new_category.save()
 
-        return redirect('user_profile_view')  # Redirect to a list view of product categories
+        return redirect('list_product_categories')  # Redirect to a list view of product categories
     else:
         return render(request, 'admin/add_cat.html',context)
 
@@ -604,8 +611,13 @@ from .models import AddCart, CartItems, Product
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest
 
-@login_required
+# @login_required
 def add_to_cart(request):
+    if not request.user.is_authenticated:
+        # You can implement your own logic for handling unauthenticated users
+        # For example, you can redirect them to a login page
+        return redirect('login_user') 
+
     if request.method == 'POST':
         prod_id = request.POST.get('prod_id')
         quantity = int(request.POST.get('quantity', 1))  # Default to 1 if not provided
@@ -759,16 +771,6 @@ def seller_request(request):
 
 
 # views.py
-from django.http import JsonResponse
-
-def check_category_exists(request):
-    if request.method == 'POST':
-        categ_name = request.POST.get('categ_name')
-        if ProductCategory.objects.filter(categ_name=categ_name).exists():
-            return JsonResponse({'message': 'Category already exists'}, status=400)
-        else:
-            return JsonResponse({'message': 'Category does not exist'})
-
 
 
 def user_profile(request):
@@ -900,7 +902,131 @@ def wishlist(request):
         # For example, you can redirect them to a login page
         return redirect('login_user')  # Redirect to your login URL
 
-    # Get the user's wishlist items
+    users = User.objects.all()
+
+    try:
+        seller_request = SellerRequest.objects.get(user=request.user)
+    except SellerRequest.DoesNotExist:
+        seller_request = None
+    
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        user_profile = None
+
+    try:
+        user_addr = UserAddress.objects.get(user=request.user)
+    except UserAddress.DoesNotExist:
+        user_addr = None
+    
+
     wishlist_items = Wishlist.objects.filter(user_id=request.user)
 
-    return render(request, 'product/wishlist.html', {'wishlist_items': wishlist_items})
+    # subcategories = ProductSubcategory.objects.all()
+    context = {
+        'users': users,
+        'user_profile': user_profile,
+        'seller_request': seller_request,
+        'user_addr' : user_addr,
+        # 'subcategories': subcategories,
+        'wishlist_items': wishlist_items
+    }
+    # Get the user's wishlist items
+
+    return render(request, 'product/wishlist.html', context)
+
+
+def remove_wish_item(request, wish_id):
+    # Get the CartItems object by cart_item_id
+    wish_item = get_object_or_404(Wishlist, pk=wish_id)
+
+    # Remove the CartItems object from the cart
+    wish_item.delete()
+
+    return redirect('wishlist')
+
+def list_product_subcat(request):
+    users = User.objects.all()
+    try:
+        seller_request = SellerRequest.objects.get(user=request.user)
+    except SellerRequest.DoesNotExist:
+        seller_request = None
+    
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        user_profile = None
+
+    try:
+        user_addr = UserAddress.objects.get(user=request.user)
+    except UserAddress.DoesNotExist:
+        user_addr = None
+    
+    subcategories = ProductSubcategory.objects.all()
+    context = {
+        'users': users,
+        'user_profile': user_profile,
+        'seller_request': seller_request,
+        'user_addr' : user_addr,
+        'subcategories': subcategories
+    }
+    
+    return render(request, 'admin/display_subcat.html', context)
+
+
+from django.shortcuts import render, redirect
+from .models import ProductCategory, ProductSubcategory
+
+def add_subcategory(request):
+    if request.method == 'POST':
+        categ_id = request.POST.get('categ_id')
+        sub_cat_name = request.POST.get('sub_cat_name')
+        subcat_image = request.FILES.get('subcat_image')
+
+        # Create a new ProductSubcategory instance and save it
+        subcategory = ProductSubcategory(categ_id_id=categ_id, sub_cat_name=sub_cat_name, subcat_image=subcat_image)
+        subcategory.save()
+        return redirect('list_product_subcat')  # Redirect to a list view of subcategories
+
+    categories = ProductCategory.objects.all()
+    return render(request, 'admin/add_subcat.html', {'categories': categories})
+
+
+from django.http import JsonResponse
+
+def check_gstin_exists(request):
+    gstin = request.GET.get('gstin')
+    exists = SellerRequest.objects.filter(gstin=gstin).exists()
+    response_data = {'exists': exists}
+    return JsonResponse(response_data)
+
+from django.http import JsonResponse
+from .models import ProductSubcategory
+
+def check_subcategory_exists(request):
+    sub_cat_name = request.GET.get('sub_cat_name', None)
+
+    if sub_cat_name:
+        exists = ProductSubcategory.objects.filter(sub_cat_name=sub_cat_name).exists()
+    else:
+        exists = False
+
+    data = {'exists': exists}
+    return JsonResponse(data)
+
+
+from django.http import JsonResponse
+
+def check_category_exists(request):
+    categ_name = request.GET.get('categ_name', None)
+
+    if categ_name:
+        exists = ProductCategory.objects.filter(categ_name=categ_name).exists()
+    else:
+        exists = False
+
+    data = {'exists': exists}
+    return JsonResponse(data)
+
+
+

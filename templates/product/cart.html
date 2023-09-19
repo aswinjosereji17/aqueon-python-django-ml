@@ -19,6 +19,18 @@
  {% endcomment %}
 
 </head>
+<style>
+  .card-item {
+    width: 500px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+    border-radius: 10px;
+    padding: 2px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+  }
+</style>
 <body>
     <!-- Breadcrumb Start -->
     <div class="container-fluid">
@@ -64,10 +76,10 @@
             {% for item in cart_items %}
       
             <div class="container mt-4">
-              <div class="row">
+              <div class="">
                 <div class="col-md-8">
-                  <div style="margin-left:250px"  class="card">
-                    <div  class="card-body row"> <!-- Apply the row class here -->
+                  <div   class="card">
+                    <div  class="card-item"> <!-- Apply the row class here -->
                       <!-- Left: Product Image -->
                       <img style="max-height: 280px; width: 280px;" src="{{ item.prod.productdescription.img1.url }}" class="mr-3 img-fluid" alt="Product Image">
                       <div class="media-body">

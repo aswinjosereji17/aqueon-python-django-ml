@@ -41,7 +41,7 @@ body {
     $(document).ready(function () {
         $('#username').on('input', function () {
             // Get the value of the username input
-            var username = $(this).val();
+            var username = $(this).val().trim();
             
             // Send an AJAX request to Django to check if the username exists
             $.ajax({
@@ -62,7 +62,7 @@ body {
     $(document).ready(function () {
         $('#email').on('input', function () {
             // Get the value of the email input
-            var email = $(this).val();
+            var email = $(this).val().trim();
             
             // Send an AJAX request to Django to check if the email exists
             $.ajax({

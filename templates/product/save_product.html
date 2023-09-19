@@ -13,10 +13,10 @@
         var saveButton = $('#saveButton');
 
         $('#product_name').on('input', function () {
-            // Get the value of the product name input
-            var productName = $(this).val();
+            // Get the value of the product name input and trim leading/trailing spaces
+            var productName = $(this).val().trim();
 
-            // Send an AJAX request to Django to check if the product name exists
+            // Send an AJAX request to Django to check if the trimmed product name exists
             $.ajax({
                 url: '/check_product_name/',  // Replace with your Django URL
                 data: {'product_name': productName},
@@ -115,10 +115,7 @@
       // Attach the validation function to the price input's change event
       $("#price").change(validatePrice);
 
-
-
-
-
+    
       function validateImages() {
             var img1 = $("#img1").val();
             var img2 = $("#img2").val();
@@ -141,9 +138,16 @@
         // Attach the validation function to the change event of image inputs
         $("#img1, #img2, #img3").change(validateImages);
     });
+
+
+
   </script>
 
+
+
 </head>
+
+
 
 
     <div class="pagetitle">
@@ -160,8 +164,9 @@
       {% csrf_token %}
       <div class="form-group">
     <label for="product_name">Product Name:</label>
-    <input type="text" name="product_name" required class="form-control" id="product_name">
+    <input type="text" name="product_name" required class="form-control" id="product_name" >
     <span id="pnameError" class="error"></span>
+    <span id="pname1Error" class="error"></span>
 </div>
 
       <div class="form-group">
@@ -179,7 +184,7 @@
       </div> -->
       <div class="form-group">
         <label for="price">Price:</label>
-        <input type="number" id="price" name="price" min="0" step="0.01" required class="form-control">
+        <input type="number" id="price" name="price" min="1" step="0.01" required class="form-control">
         <span id="price-error" class="text-danger"></span>
       </div>
 

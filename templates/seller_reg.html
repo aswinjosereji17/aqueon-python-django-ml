@@ -54,7 +54,7 @@ span{
     $(document).ready(function () {
         $('#name').on('input', function () {
             // Get the value of the username input
-            var username = $(this).val();
+            var username = $(this).val().trim();
             
             // Send an AJAX request to Django to check if the username exists
             $.ajax({
@@ -75,7 +75,7 @@ span{
    $(document).ready(function () {
     $('#email').on('input', function () {
         // Get the value of the email input
-        var email = $(this).val();
+        var email = $(this).val().trim();
         
         if (email) {
             $.ajax({
@@ -107,7 +107,7 @@ span{
 
     $(document).ready(function () {
     $('#gstin').on('input', function () {
-        var gstin = $(this).val();
+        var gstin = $(this).val().trim();
         if (gstin) {
             $.ajax({
                 url: '{% url "check-gstin-exists" %}',

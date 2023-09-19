@@ -17,7 +17,7 @@
     <script>
    $(document).ready(function () {
     $('#categ_name').on('input', function () {
-        var categName = $(this).val();
+        var categName = $(this).val().trim();
         if (categName) {
             $.ajax({
                 url: '{% url "check-category-exists" %}',

@@ -465,6 +465,7 @@ def prod_desc(request, prod_id):
 #     return render(request, 'product/modify_product.html', {'products': products, 'query': query})
 #     # return render(request,'product/modify_product.html')
 
+@login_required
 def modify_product(request, prod_id):
     product = get_object_or_404(Product, prod_id=prod_id, user_id=request.user)
     description = ProductDescription.objects.get(prod_id=product)
@@ -511,6 +512,7 @@ def modify_product(request, prod_id):
     
   
     return render(request, 'product/modify_product.html', {'product': product, 'description': description, 'subcategories': subcategories, 'user_profile': user_profile, 'seller_request': seller_request,'user_addr' : user_addr})
+
 
 def delete_product(request, prod_id):
     product = get_object_or_404(Product, prod_id=prod_id, user_id=request.user)

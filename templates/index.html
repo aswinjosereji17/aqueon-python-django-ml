@@ -184,13 +184,22 @@
     .logo{
         filter: drop-shadow(10px 10px 20px yellow);
     }
+
 </style>
 <script>
     function loadform(){
         document.getElementById('id02').style.display='block';
     };
 </script> {% endcomment %}
-
+<style>
+        .sticky-nav {
+        margin:0;
+        padding: 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+</style>
 <body>
     <!-- <div style="position: fixed;"> -->
     <!-- modal login -->
@@ -247,7 +256,7 @@
 
     <!-- Topbar Start -->
     <!-- <div style="position: fixed;"> -->
-    <div  class="container-fluid">
+    <div  class="container-fluid sticky-nav">
         <!-- <div style="position: sticky;"> -->
         <!--<div class="row bg-secondary py-1 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
@@ -296,6 +305,7 @@
                 </div>
             </div>
         </div>-->
+        <div class="">
         <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
             <div class="col-lg-4">
              <img class="logo" style=" filter: drop-shadow( 10px 10px 10px rgb(130, 198, 219)); width:200px; height:50px; border-radius:5px"src="{% static 'img/login/logo3.png' %}" alt="Placeholder Image">
@@ -445,6 +455,8 @@
             </div>
         </div>
     </div>
+</div>
+</div>
 <!-- </div> -->
 <!-- </div> -->
     <!-- Navbar End -->

@@ -14,7 +14,7 @@
 <script>
 $(document).ready(function () {
     $('#sub_cat_name').on('input', function () {
-        var subCatName = $(this).val();
+        var subCatName = $(this).val().trim();
         if (subCatName) {
             $.ajax({
                 url: '{% url "check-subcategory-exists" %}',

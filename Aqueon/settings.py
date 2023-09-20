@@ -31,6 +31,9 @@ TIME_ZONE = 'Asia/Kolkata'
 ALLOWED_HOSTS = []
 
 
+RAZOR_KEY_ID = 'rzp_test_ziRKUSJFdkxNCh'
+RAZOR_KEY_SECRET = '6OUZi2umLsSEYnrvi7TdWaLZ'
+
 # Application definition
 
 INSTALLED_APPS = [

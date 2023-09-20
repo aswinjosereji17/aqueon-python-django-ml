@@ -2,7 +2,30 @@
 
 {% load static %}
 {% block content %}
-<div style="min-height: 500px;">
+
+<head>
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  
+  {% comment %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Shopping Cart</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <!-- Include Bootstrap JS (Popper.js and Bootstrap JS) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  {% endcomment %}
+
+</head>
+<style>
+
+</style>
+
+<body>
+  <!-- Breadcrumb Start -->
   <div class="container-fluid">
     <div class="row px-xl-5">
       <div class="col-12">
@@ -14,74 +37,95 @@
       </div>
     </div>
   </div>
+  <!-- Breadcrumb End -->
 
-  <!-- {% if wishlist_items|length == 0 %} -->
 
-  <!-- {% endif %} -->
-  <ul>
-    {% for item in wishlist_items %}
+  <!-- Cart Start -->
 
-    <div class="container mt-4">
-      <div class="row">
-        <div class="col-md-8">
-          <div style="margin-left:250px" class="card">
-            <div class="card-body row"> <!-- Apply the row class here -->
-              <!-- Left: Product Image -->
-              <img style="max-height: 280px; width: 280px;" src="{{ item.prod_id.productdescription.img1.url }}"
-                class="mr-3 img-fluid" alt="Product Image">
-              <div class="media-body">
-                <!-- Product Name -->
-                <h5 class="mt-0">{{ item.prod_id.prod_name }}</h5>
-                <!-- Price -->
-                <p> Rs.{{ item.prod_id.price }}</p>
-                <!-- In Stock Status -->
-                {% if item.prod_id.stock_quantity == 0 %}
-                <p style="color: red;">Out of Stock</p>
-                {% else %}
-                <p style="color: green;">In Stock</p>
-                {% endif %}
-                 <form method="post" action="{% url 'remove_wish_item' item.wish_id %}">
-                          {% csrf_token %}
-                          <button style="border-radius: 3px;" type="submit" class="btn btn-sm btn-danger">
-                            <i class="bi bi-trash"></i>
-                          </button>
-                        </form>
+
+
+  <div style="height: auto;" class="container-fluid">
+    <div class="row px-xl-5 justify-content-center"> <!-- Center the row horizontally -->
+      
+
+      <!-- Left Column: Cart Items -->
+      <div class="col-lg-8 table-responsive mb-5 mx-auto"> <!-- Center the left column -->
+
+        {% for item in wishlist_items %}
+        <div class="container mt-4">
+          <div class="">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-item"> <!-- Apply the row class here -->
+                  <!-- Left: Product Image -->
+                  <img style="max-height: 280px; width: 280px; height:220px; border-radius: 6px; margin-left:30px"
+                    src="{{ item.prod_id.productdescription.img1.url }}" class="mr-3 img-fluid" alt="Product Image">
+                  <div class="media-body">
+                    <!-- Product Name -->
+                    <h5 class="mt-0"><b>{{ item.prod_id.prod_name }}</b></h5>
+                    <!-- Price -->
+                    <!-- <p> Rs.{{ item.prod.price }}</p> -->
+                    <p> Total Price : Rs.{{ item.prod_id.price }}</p>
+                    <!-- Quantity -->
+                    
+                    
+
+                    
+
+
+
+                   </br></br>
+                   {% if item.prod_id.stock_quantity == 0 %}
+                    <button style="border: none; border-radius: 5px; background-color:red;height:25px;">
+                      <p style="color: white;">Out of Stock</p>
+                    </button>
+                    {% else %}
+                    <button style="border: none; border-radius: 5px; background-color:green; height:30px;">
+                      <p style="color: white;">In Stock</p>
+                    </button>
+                    {% endif %}
+                  <!-- </div> -->
+                  <!-- <div> --></br></br>
+                    <form method="post" action="{% url 'remove_wish_item' item.wish_id %}">
+                      {% csrf_token %}
+                      <button style="border-radius: 3px;" type="submit" class="btn btn-sm btn-danger">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-
-
-
-    <!-- <div style="display: flex
-        ; flex-direction: row; gap: 20px;">
-      <p>{{ item.prod_id.prod_name }}</p>
-      <p>Rs.{{ item.prod_id.price }}</p>
-
-    </div> -->
-
-
-
-    {% empty %}
-    <div class="container text-center mt-5">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <div class="card border-0 shadow">
-            <div class="card-body p-5">
-              <h1 class="display-4">Your Wishlist is Empty</h1>
-              <p class="lead">Explore our amazing products and add some to your wishlist!</p>
-              <a href="{% url 'index' %}" class="btn btn-primary btn-lg">Browse Products</a>
+      <!-- <p>Your cart is empty. (Cart items count: {{ cart_items|length }})</p> -->
+      {% empty %}
+      <div class="container text-center mt-5">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <div class="card border-0 shadow">
+              <div class="card-body p-5">
+                <h1 class="display-4">Your Wishlist is Empty</h1>
+                <p class="lead">Explore our amazing products and add some to your wishlist!</p>
+                <a href="{% url 'index' %}" class="btn btn-primary btn-lg">Browse Products</a>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-</div>
-{% endfor %}
-</ul>
+  </div>
+  {% endfor %}
+
+   
+
+   
 
 
-</div>
+
+
+  </div>
+  </div>
+</body>
+
 {% endblock %}
+<!-- Cart End -->

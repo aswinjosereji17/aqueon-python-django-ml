@@ -52,20 +52,10 @@
   </div>
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
-
+    <img  src="{% static 'img/login/logo2.png' %}" alt="Logo" width="200px" height="50px">
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
-        <img src="assets/img/logo.png" alt="">
-        {% if user.is_superuser %}
-        <span class="d-none d-lg-block">Admin</span>
-        {% elif user.is_staff and not user.is_superuser %}
-        <span class="d-none d-lg-block">Seller</span>
-        {% else %}
-        <span class="d-none d-lg-block">User</span>
-        {% endif %}
-
-      </a>
-      <i class="bi bi-list toggle-sidebar-btn"></i>
+     
+      <i style="margin-left: 40px; color: #f8f6f6;" class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
     <!-- <div class="search-bar">
@@ -534,7 +524,7 @@
      
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#">
+        <a class="nav-link collapsed" href="{% url 'homepage' %}">
           <i class="bi bi-envelope"></i>
           <span>Contact</span>
         </a>

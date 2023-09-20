@@ -1032,3 +1032,112 @@ def check_category_exists(request):
 
 
 
+
+
+
+
+
+
+
+
+from django.shortcuts import render
+import razorpay
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseBadRequest
+from decimal import Decimal 
+
+# authorize razorpay client with API Keys.
+razorpay_client = razorpay.Client(
+	auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
+
+
+def homepage(request):
+    user = request.user
+    user_addr = UserAddress.objects.get(user=request.user)
+    currency = 'INR'
+    cart = AddCart.objects.get(user=user)
+    cart_items = CartItems.objects.filter(cart=cart)
+    total_cart_value = cart_items.aggregate(Sum('total_price'))['total_price__sum']
+    shipping_cost = Decimal('50.00')  # Assuming a fixed shipping cost of $50.00
+
+    total_cart_value = int(total_cart_value * 100)
+    shipping_cost = int(shipping_cost * 100)
+
+    # Calculate the total amount in paisa
+    amount = total_cart_value + shipping_cost
+
+
+    razorpay_order = razorpay_client.order.create(dict(amount=amount,
+                                                      currency=currency,
+                                                      payment_capture='0',
+                                                      ))
+
+    # order id of newly created order.
+    razorpay_order_id = razorpay_order['id']
+    callback_url = 'paymenthandler/'
+
+    # we need to pass these details to frontend.
+    context = {}
+    context['razorpay_order_id'] = razorpay_order_id
+    context['razorpay_merchant_key'] = settings.RAZOR_KEY_ID
+    context['razorpay_amount'] = amount
+    context['currency'] = currency
+    context['callback_url'] = callback_url
+    context['total_cart_value'] = total_cart_value  # Add the total cart value as a string
+    context['shipping_cost'] = shipping_cost  # Add the shipping cost as a string
+    context['user_addr'] = user_addr
+
+    return render(request, 'index1.html', context=context)
+
+
+
+
+
+
+@csrf_exempt
+def paymenthandler(request):
+    # only accept POST request.
+    if request.method == "POST":
+        try:
+            # get the required parameters from post request.
+            payment_id = request.POST.get('razorpay_payment_id', '')
+            razorpay_order_id = request.POST.get('razorpay_order_id', '')
+            signature = request.POST.get('razorpay_signature', '')
+            params_dict = {
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': payment_id,
+                'razorpay_signature': signature
+            }
+
+            # verify the payment signature.
+            result = razorpay_client.utility.verify_payment_signature(params_dict)
+            if result is not None:
+                user = request.user
+                cart = AddCart.objects.get(user=user)
+                cart_items = CartItems.objects.filter(cart=cart)
+                total_cart_value = cart_items.aggregate(Sum('total_price'))['total_price__sum']
+                shipping_cost = Decimal('50.00')  # Assuming a fixed shipping cost of $50.00
+
+                total_cart_value = int(total_cart_value * 100)
+                shipping_cost = int(shipping_cost * 100)
+                amount = total_cart_value + shipping_cost
+
+                try:
+                    # capture the payment
+                    razorpay_client.payment.capture(payment_id, amount)
+
+                    # render success page on successful capture of payment
+                    return render(request, 'paymentsuccess.html')
+                except:
+                    # if there is an error while capturing payment.
+                    return render(request, 'paymentfail.html')
+            else:
+                # if signature verification fails.
+                return render(request, 'paymentfail.html')
+        except:
+            # if we don't find the required parameters in POST data
+            return HttpResponseBadRequest()
+    else:
+        # if other than POST request is made.
+        return HttpResponseBadRequest()

@@ -63,6 +63,9 @@ urlpatterns = [
 
 
 
+    path('homepage', views.homepage, name='homepage'),
+    path('paymenthandler/', views.paymenthandler, name='paymenthandler'),
+
     ]
 
 if settings.DEBUG:

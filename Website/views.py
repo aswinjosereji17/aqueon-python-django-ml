@@ -439,6 +439,14 @@ def prod_desc(request, prod_id):
     
    
     # return render(request, 'product/product_desc.html', {'products': products})
+    # has_reviewed = Review.objects.filter(prod_id=prod_id, user=request.user).exists()
+    product = get_object_or_404(Product, prod_id=prod_id)
+
+    # Retrieve all reviews for the product
+    reviews = Review.objects.filter(prod=product)
+
+   
+
     try:
         products = Product.objects.get(prod_id=prod_id)
     except Product.DoesNotExist:
@@ -452,6 +460,7 @@ def prod_desc(request, prod_id):
     context = {
         'products': products,
         'prod_desc': prod_desc,
+        'reviews' : reviews,
     }
     
     return render(request, 'product/product_desc.html', context)
@@ -1141,3 +1150,32 @@ def paymenthandler(request):
     else:
         # if other than POST request is made.
         return HttpResponseBadRequest()
+
+
+
+
+from .models import Review  # Import your Review model
+
+@login_required  # Ensure the user is authenticated to access this view
+def submit_review(request):
+    if request.method == 'POST':
+        prod = request.POST.get('prod_id')
+        prod = Product.objects.get(prod_id=prod)
+        description = request.POST.get('description')
+        
+        # Calculate the rating based on the number of stars selected
+        rating = int(request.POST.get('rating', 0))
+
+        # Create a new review associated with the product and the authenticated user
+        Review.objects.create(
+            user=request.user,
+            rating=rating,
+            description=description,
+            prod=prod
+        )
+        
+        # Redirect to a success page or the product detail page
+        return redirect('index')
+
+
+

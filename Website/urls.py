@@ -66,6 +66,9 @@ urlpatterns = [
     path('homepage', views.homepage, name='homepage'),
     path('paymenthandler/', views.paymenthandler, name='paymenthandler'),
 
+
+    path('submit_review/', views.submit_review, name='submit_review'),
+
     ]
 
 if settings.DEBUG:

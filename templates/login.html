@@ -75,12 +75,12 @@ body {
             <input type="text" id="name" placeholder="Username/email" name="username" required>
             {% comment %} <input type="email" id="email" placeholder="Email" name="email" required> {% endcomment %}
             <input type="password" id="password" placeholder="Password" name="password" required>
-            <button class="submitbtn" type="submit">Sign In</button>
+            <button id="submit" class="submitbtn" type="submit">Sign In</button>
             <p id="signinelement2"><a href="password_reset" style="margin-left:35px; color: darkblue; text-decoration: none">Forgot password?</a></p>
             <!-- <a href="{% provider_login_url 'google'%}?next=/">Login with Google</a> -->
             {% comment %} <input type="email" id="signin-email" placeholder="Email" required>
             <input type="password" id="signin-password" placeholder="Password" required>
-            <button class="submitbtn" type="submit">Sign In</button> {% endcomment %}
+            <button id="submit" class="submitbtn" type="submit">Sign In</button> {% endcomment %}
             <p class="or"> OR</p>
         </form>
                             <a style="text-decoration: none;" href="{% provider_login_url 'google'%}?next=/"><button style="border-radius: 9px; border-color:rgb(159, 170, 194);" class="googlebtn" ><img src="{% static 'img/login/googleimg.png' %}">Sign In with Google</button></a>

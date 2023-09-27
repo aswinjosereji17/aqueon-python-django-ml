@@ -8,10 +8,13 @@ from django.contrib import messages
 from .models import UserProfile, Product, SellerRequest, HomeSpecialOffer, ProductCategory,UserAddress, Wishlist
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.views.decorators.cache import never_cache
+
 
 
 
 # Create your views here.
+@never_cache
 def index(request):
 
 
@@ -59,7 +62,7 @@ def index(request):
         
         return render(request,'index.html', context)
     
-
+@never_cache
 def login_user(request):
     if request.user.is_authenticated:
         return redirect('index')
@@ -97,7 +100,7 @@ def login_user(request):
 #             user.save()
 
 
-   
+@never_cache  
 def register(request):
     if request.user.is_authenticated:
         return redirect('index')
@@ -124,6 +127,7 @@ def register(request):
     else:
         return render (request, "register.html")
 
+@never_cache
 def seller_register(request):
     if request.user.is_authenticated:
         return redirect('index')
@@ -157,6 +161,8 @@ def seller_register(request):
         return render(request, "seller_reg.html")
 
 @login_required
+@never_cache
+
 def loggout(request):
     # print('Logged Out')
     logout(request)
@@ -170,6 +176,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count
 import datetime
 from django.db import models 
+from django.views.decorators.cache import never_cache
 
 # def user_profile_view(request):
 #     user_profile = UserProfile.objects.get(user=request.user)
@@ -179,7 +186,11 @@ from django.db import models
 #     }
 #     return render(request, 'user_profile.html', context)
 @login_required
+@never_cache
 def user_profile_view(request):
+
+    if not request.user.is_authenticated:
+        return redirect('login_user')
     # user_profile = UserProfile.objects.get(user=request.user)
     user_count = User.objects.filter(is_staff=False).count()
     seller_count = User.objects.filter(Q(is_staff=True) & Q(is_superuser=False)).count()
@@ -224,10 +235,12 @@ def user_profile_view(request):
 from django.shortcuts import render, redirect
 from .models import UserProfile, UserAddress,SellerRequest
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 
 
 # 4-09-2023
 @login_required
+@never_cache
 def edit_profile(request):
     if request.method == 'POST':
         # Get the current user's profile
@@ -328,6 +341,9 @@ def edit_profile(request):
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, ProductSubcategory, ProductDescription
 
+@login_required
+@never_cache
+
 def product_list(request):
     query = request.GET.get('q')
     products = Product.objects.filter(user_id=request.user)
@@ -345,6 +361,7 @@ def product_list(request):
 from django.db import IntegrityError
 
 @login_required
+@never_cache
 def add_product(request):
     users = User.objects.all()
     seller_requests = SellerRequest.objects.all()
@@ -427,6 +444,7 @@ def subcategories_view(request, categ_id):
 from django.shortcuts import render
 from .models import Product,ProductDescription
 
+
 def subcategory_products_view(request, subcat_id):
     products = Product.objects.filter(sub_categ_id=subcat_id)
     
@@ -475,6 +493,8 @@ def prod_desc(request, prod_id):
 #     # return render(request,'product/modify_product.html')
 
 @login_required
+@never_cache
+
 def modify_product(request, prod_id):
     product = get_object_or_404(Product, prod_id=prod_id, user_id=request.user)
     description = ProductDescription.objects.get(prod_id=product)
@@ -522,6 +542,8 @@ def modify_product(request, prod_id):
   
     return render(request, 'product/modify_product.html', {'product': product, 'description': description, 'subcategories': subcategories, 'user_profile': user_profile, 'seller_request': seller_request,'user_addr' : user_addr})
 
+@login_required
+@never_cache
 
 def delete_product(request, prod_id):
     product = get_object_or_404(Product, prod_id=prod_id, user_id=request.user)
@@ -532,6 +554,8 @@ def delete_product(request, prod_id):
 
     return render(request, 'product/delete_product.html', {'product': product})
 
+@login_required
+@never_cache
 
 def add_cat(request):
     users = User.objects.all()
@@ -570,6 +594,8 @@ def add_cat(request):
 
 from .models import ProductCategory
 
+@login_required
+@never_cache
 def list_product_categories(request):
     users = User.objects.all()
     try:
@@ -622,7 +648,9 @@ from .models import AddCart, CartItems, Product
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest
 
-# @login_required
+@login_required
+@never_cache
+
 def add_to_cart(request):
     if not request.user.is_authenticated:
         # You can implement your own logic for handling unauthenticated users
@@ -686,6 +714,9 @@ from django.db.models import Sum
 from decimal import Decimal
 from .models import AddCart, CartItems  # Import your models
 
+@login_required
+@never_cache
+
 def cart_details(request):
 
     if request.user.is_authenticated:
@@ -724,6 +755,9 @@ def check_product_name(request):
 
 from django.contrib.auth.models import User
 
+@login_required
+@never_cache
+
 def users_list(request):
     users = User.objects.all()
     try:
@@ -750,6 +784,8 @@ def users_list(request):
     
     return render(request, 'admin/users_list.html', context)
 
+@login_required
+@never_cache
 
 def seller_request(request):
     users = User.objects.all()
@@ -783,6 +819,8 @@ def seller_request(request):
 
 # views.py
 
+@login_required
+@never_cache
 
 def user_profile(request):
     # user_profile = UserProfile.objects.get(user=request.user)
@@ -822,6 +860,9 @@ from django.http import JsonResponse
 
 from .models import SellerRequest  # Import your SellerRequest model here
 
+@login_required
+@never_cache
+
 def approve_seller(request, user_id):
     # Retrieve the seller request and user objects
     seller_request = get_object_or_404(SellerRequest, user__id=user_id)
@@ -836,6 +877,8 @@ def approve_seller(request, user_id):
     # return JsonResponse({'message': 'Seller approved successfully'})
     return redirect('seller_request')
 
+@login_required
+@never_cache
 
 def dis_approve_seller(request, user_id):
     # Retrieve the seller request and user objects
@@ -854,6 +897,9 @@ def dis_approve_seller(request, user_id):
 
 from django.shortcuts import redirect, get_object_or_404
 from .models import CartItems
+
+@login_required
+@never_cache
 
 def remove_cart_item(request, cart_item_id):
     # Get the CartItems object by cart_item_id
@@ -885,6 +931,9 @@ def check_email_existence(request):
 
 from .models import Wishlist, Product
 
+@login_required
+@never_cache
+
 def add_to_wishlist(request, prod_id):
     # Check if the user is authenticated
     if not request.user.is_authenticated:
@@ -905,6 +954,9 @@ def add_to_wishlist(request, prod_id):
 
 from django.shortcuts import render
 from .models import Wishlist
+
+@login_required
+@never_cache
 
 def wishlist(request):
     # Check if the user is authenticated
@@ -947,6 +999,9 @@ def wishlist(request):
     return render(request, 'product/wishlist.html', context)
 
 
+@login_required
+@never_cache
+
 def remove_wish_item(request, wish_id):
     # Get the CartItems object by cart_item_id
     wish_item = get_object_or_404(Wishlist, pk=wish_id)
@@ -955,6 +1010,9 @@ def remove_wish_item(request, wish_id):
     wish_item.delete()
 
     return redirect('wishlist')
+
+@login_required
+@never_cache
 
 def list_product_subcat(request):
     users = User.objects.all()
@@ -987,6 +1045,9 @@ def list_product_subcat(request):
 
 from django.shortcuts import render, redirect
 from .models import ProductCategory, ProductSubcategory
+
+@login_required
+@never_cache
 
 def add_subcategory(request):
     if request.method == 'POST':
@@ -1157,6 +1218,8 @@ def paymenthandler(request):
 from .models import Review  # Import your Review model
 
 @login_required  # Ensure the user is authenticated to access this view
+@never_cache
+
 def submit_review(request):
     if request.method == 'POST':
         prod = request.POST.get('prod_id')

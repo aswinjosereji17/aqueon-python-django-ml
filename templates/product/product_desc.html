@@ -131,7 +131,7 @@
 
             <form method="post" action="{% url 'add_to_cart' %}">
                 {% csrf_token %}
-                <input type="" id="prod_id" name="prod_id" value="{{products.prod_id}}" required>
+                <input type="hidden" id="prod_id" name="prod_id" value="{{products.prod_id}}" required>
                 <div class="h-100 bg-light p-30">
                     <h3>{{ products.prod_name }}</h3>
                     <div class="d-flex mb-3">
@@ -284,7 +284,7 @@
                             <h4 class="mb-4">{{ reviews|length }} reviews for "{{ reviews.product.prod_name }}"</h4>
                             {% for review in reviews %}
                             <div class="media mb-4">
-                                <img src="img/user.jpg" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
+                                <!-- <img src="img/user.jpg" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;"> -->
                                 <div class="media-body">
                                     <h6>{{ review.user.username }}<small> - <i>{{ review.created_at|date:"d M Y" }}</i></small></h6>
                                     <div class="text-primary mb-2">

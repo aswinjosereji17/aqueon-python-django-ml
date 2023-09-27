@@ -5,6 +5,20 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <script>
+
+if (!userIsAuthenticated) {
+    window.location.href = '/login_user'; // Redirect to the login page
+}
+
+
+  </script>
+
+
    {% if user.is_superuser %}
     <title>Admin</title>      
       {% elif user.is_staff and not user.is_superuser %}

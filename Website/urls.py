@@ -69,6 +69,9 @@ urlpatterns = [
 
     path('submit_review/', views.submit_review, name='submit_review'),
 
+    path('live_search/', views.live_search, name='live_search'),
+
+
     ]
 
 if settings.DEBUG:

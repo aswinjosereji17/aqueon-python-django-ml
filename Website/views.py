@@ -1242,3 +1242,34 @@ def submit_review(request):
 
 
 
+# from django.shortcuts import render
+# from django.http import JsonResponse
+# from .models import Product
+
+# def live_search(request):
+#     if request.method == 'GET':
+#         search_query = request.GET.get('query', '')
+#         results = Product.objects.filter(prod_name__icontains=search_query)
+#         product_data = [{'name': product.prod_name, 'description': product.productdescription.description, 'price': product.price, } for product in results]
+#         return JsonResponse({'products': product_data})
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Product
+
+def live_search(request):
+    if request.method == 'GET':
+        search_query = request.GET.get('query', '')
+        results = Product.objects.filter(prod_name__icontains=search_query)
+        product_data = []
+
+        for product in results:
+            product_info = {
+                'name': product.prod_name,
+                'description': product.productdescription.description,
+                'price': product.price,
+                'prod_id' : product.prod_id,
+                'img1_url': product.productdescription.img1.url,  # Include img1 URL
+            }
+            product_data.append(product_info)
+
+        return JsonResponse({'products': product_data})

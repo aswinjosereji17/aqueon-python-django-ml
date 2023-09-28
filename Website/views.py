@@ -1273,3 +1273,83 @@ def live_search(request):
             product_data.append(product_info)
 
         return JsonResponse({'products': product_data})
+
+
+
+from .models import ProductCategory
+
+# def product_request_form(request):
+#     # Retrieve all categories from the database.
+#     categories = ProductCategory.objects.all()
+
+#     # Pass the categories to the template.
+#     context = {
+#         'categories': categories
+#     }
+
+#     return render(request, 'user/prod_request.html', context)
+
+
+from django.shortcuts import render, redirect
+from .models import ProductRequest
+from django.contrib import messages
+from .models import ProductCategory, ProductSubcategory
+
+
+# def submit_request_view(request):
+#     if request.method == 'POST':
+#         categ_id = request.POST.get('categ_id')
+#         sub_cat_name = request.POST.get('sub_cat_name')
+#         subcat_image = request.FILES.get('subcat_image')
+
+#         # Create a new ProductSubcategory instance and save it
+#         subcategory = ProductRequest(requested_user=request.user,categ_id=categ_id, product_name=sub_cat_name, image=subcat_image)
+#         subcategory.save()
+#         return redirect('index')  # Redirect to a list view of subcategories
+
+#     categories = ProductCategory.objects.all()
+#     return render(request, 'user/prod_request.html', {'categories': categories})
+
+from .models import ProductRequest, ProductCategory
+from django.contrib import messages
+from django.shortcuts import render, redirect, get_object_or_404
+
+@login_required
+@never_cache
+def submit_request_view(request):
+    if request.method == 'POST':
+        categ_id = request.POST.get('categ_id')
+        sub_cat_name = request.POST.get('sub_cat_name')
+        subcat_image = request.FILES.get('subcat_image')
+
+        # Retrieve the ProductCategory instance based on the categ_id.
+        category = get_object_or_404(ProductCategory, pk=categ_id)
+
+        # Create a new ProductRequest instance and save it.
+        product_request = ProductRequest(
+            requested_user=request.user,
+            categ_id=category,  # Assign the ProductCategory instance
+            product_name=sub_cat_name,
+            image=subcat_image
+        )
+        product_request.save()
+        
+        return redirect('index')  # Redirect to a list view of subcategories
+
+    categories = ProductCategory.objects.all()
+    return render(request, 'user/prod_request.html', {'categories': categories})
+
+        
+
+    # Render the form if it's a GET request.
+
+
+
+from django.shortcuts import render
+from .models import ProductRequest
+
+@login_required
+@never_cache
+def product_requests_view(request):
+    product_requests = ProductRequest.objects.all()
+    return render(request, 'admin/product_requests.html', {'product_requests': product_requests})

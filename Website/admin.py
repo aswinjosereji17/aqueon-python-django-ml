@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from .models import UserProfile,SellerRequest,HomeSpecialOffer,ProductCategory, ProductSubcategory, Product, ProductDescription, UserAddress, AddCart, CartItems, Wishlist
 #  ProductCategory, ProductSubcategory, Product
-from .models import Review
+from .models import Review, ProductRequest
 # class UserProfileAdmin(admin.ModelAdmin):
 #     list_display = ('user', 'street_address', 'city', 'state', 'postal_code', 'country')
     # Other customization options
@@ -60,3 +60,4 @@ class WishlistAdmin(admin.ModelAdmin):
 admin.site.register(Wishlist, WishlistAdmin)
 
 admin.site.register(Review)
+admin.site.register(ProductRequest)

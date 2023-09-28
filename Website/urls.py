@@ -71,6 +71,10 @@ urlpatterns = [
 
     path('live_search/', views.live_search, name='live_search'),
 
+    # path('product_request_form/', views.product_request_form, name='product_request_form'),
+    path('submit_request_view/', views.submit_request_view, name='submit_request_view'),
+    path('product_requests_view/', views.product_requests_view, name='product_requests_view'),
+
 
     ]
 

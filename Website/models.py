@@ -174,3 +174,15 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Review by {self.user.username}"
+
+
+class ProductRequest(models.Model):
+    request_id = models.AutoField(primary_key=True)
+    requested_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    categ_id = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='product_request_images/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Request ID: {self.request_id}, Product: {self.product_name}, Requested by: {self.requested_user}"

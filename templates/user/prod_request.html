@@ -1,0 +1,33 @@
+{% extends 'user_prof.html' %}
+
+{% load static %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Request</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <h1>Add Subcategory</h1></br></br>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="categ_id">Category:</label>
+        <select id="categ_id" name="categ_id">
+            {% for category in categories %}
+                <option value="{{ category.categ_id }}">{{ category.categ_name }}</option>
+            {% endfor %}
+        </select></br></br>
+
+        <label for="sub_cat_name">Subcategory Name:</label>
+        <input type="text" id="sub_cat_name" name="sub_cat_name"><br>
+        <span style="color:red" id="subCatNameError" class="error"></span></br>
+
+        <label for="subcat_image">Subcategory Image:</label>
+        <input type="file" id="subcat_image" name="subcat_image"><br></br>
+
+        <button style="border-radius:5px" type="submit" id="submitBtn" >Add Subcategory</button>
+    </form>
+</body>
+{% endblock %}

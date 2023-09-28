@@ -356,6 +356,12 @@ if (!userIsAuthenticated) {
               <i class="bi bi-circle"></i><span>Seller Request</span>
             </a>
           </li>
+
+          <li>
+            <a href="{% url 'product_requests_view' %}">
+              <i class="bi bi-circle"></i><span>Product Requests</span>
+            </a>
+          </li>
           
           {% comment %}
         </ul>
@@ -374,7 +380,9 @@ if (!userIsAuthenticated) {
             <a href="{% url 'add_cat' %}">
               <i class="bi bi-circle"></i><span>Seller Requests</span>
             </a>
-          </li> {% endcomment %}
+          </li>
+         
+          {% endcomment %}
           {% comment %} <li>
             <a href="components-badges.html">
               <i class="bi bi-circle"></i><span>Badges</span>
@@ -431,6 +439,7 @@ if (!userIsAuthenticated) {
               <i class="bi bi-circle"></i><span>Add Sub Category</span>
             </a>
           </li>
+          
       {% comment %} <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'product_list' %}">
           <i class="bi bi-layout-text-window-reverse"></i><span>Delete Category</span><i
@@ -532,6 +541,12 @@ if (!userIsAuthenticated) {
         <a class="nav-link collapsed" href="{% url 'cart_details' %}">
           <i style="" class="bx bx-cart"></i>
           <span>Shopping Cart</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'submit_request_view' %}">
+          <i style="" class="bx bx-cart"></i>
+          <span>Request a product</span>
         </a>
       </li>
       {% endif %}

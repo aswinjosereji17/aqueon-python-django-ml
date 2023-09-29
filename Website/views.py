@@ -21,6 +21,8 @@ def index(request):
     
     homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
     prod_cat = ProductCategory.objects.all()
+    prod_subcat = ProductSubcategory.objects.all()
+
     recent_products = Product.objects.all().order_by('-created_at')[:8]
     
     if request.user.is_authenticated:
@@ -47,7 +49,8 @@ def index(request):
         'prod_cat':prod_cat,
         'cart_item_count': cart_item_count,
         'recent_products': recent_products,
-        'wish_count' : wish_count
+        'wish_count' : wish_count,
+        'prod_subcat':prod_subcat,
         }
         
         return render(request,'index.html', context)
@@ -57,6 +60,7 @@ def index(request):
         context = {
         'homeimg': homeimg,
         'prod_cat':prod_cat,
+        'prod_subcat':prod_subcat,
         'recent_products': recent_products
         }
         
@@ -437,9 +441,26 @@ def add_product(request):
 from .models import ProductSubcategory
 
 def subcategories_view(request, categ_id):
-    subcategories = ProductSubcategory.objects.filter(categ_id=categ_id)
-    return render(request, 'product/subcategory_list.html', {'subcategories': subcategories})
 
+    subcategories = ProductSubcategory.objects.filter(categ_id=categ_id)
+
+    if request.user.is_authenticated:
+        user = request.user.id
+        cart = AddCart.objects.get(user=user)
+        cart_items = CartItems.objects.filter(cart=cart)
+        cart_item_count = cart_items.count()
+        user_id = request.user.id 
+        wish_count = Wishlist.objects.filter(user_id=user_id).count()
+
+        return render(request, 'product/subcategory_list.html', {
+        'subcategories': subcategories,
+        'cart_item_count': cart_item_count,
+        'wish_count': wish_count,
+        })
+    else:
+        return render(request, 'product/subcategory_list.html', {
+        'subcategories': subcategories,
+        })
 
 from django.shortcuts import render
 from .models import Product,ProductDescription
@@ -447,9 +468,20 @@ from .models import Product,ProductDescription
 
 def subcategory_products_view(request, subcat_id):
     products = Product.objects.filter(sub_categ_id=subcat_id)
+    if request.user.is_authenticated:
+        user = request.user.id
+        cart = AddCart.objects.get(user=user)
+        cart_items = CartItems.objects.filter(cart=cart)
+        cart_item_count = cart_items.count()
+        user_id = request.user.id 
+        wish_count = Wishlist.objects.filter(user_id=user_id).count()
     
-   
-    return render(request, 'product/products.html', {'products': products})
+        return render(request, 'product/products.html', {'products': products,'cart_item_count': cart_item_count,
+        'wish_count': wish_count})
+    
+    else:
+        return render(request, 'product/products.html', {'products': products})
+        
 
 
 def prod_desc(request, prod_id):

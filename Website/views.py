@@ -9,7 +9,8 @@ from .models import UserProfile, Product, SellerRequest, HomeSpecialOffer, Produ
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.views.decorators.cache import never_cache
-
+from django.db.models import Avg
+from .models import Product, Review
 
 
 
@@ -20,37 +21,43 @@ def index(request):
 
     
     homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
-    prod_cat = ProductCategory.objects.all()
-    prod_subcat = ProductSubcategory.objects.all()
+    # prod_cat = ProductCategory.objects.all()
+    # prod_subcat = ProductSubcategory.objects.all()
 
     recent_products = Product.objects.all().order_by('-created_at')[:8]
+    product_ratings = []
+    for product in recent_products:
+        avg_rating = Review.objects.filter(prod=product).aggregate(Avg('rating'))['rating__avg'] or 0
+        product_ratings.append({'product': product, 'avg_rating': avg_rating})
+
     
     if request.user.is_authenticated:
         user=request.user
         # homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
         # prod_cat = ProductCategory.objects.all()
         # return redirect('index')
-        try:
-            cart = AddCart.objects.get(user=user)
-            cart_items = CartItems.objects.filter(cart=cart)
-            cart_item_count = cart_items.count()
-            user_id = request.user.id  # Use the user's ID if they are logged in
-            wish_count = Wishlist.objects.filter(user_id=user_id).count()
-        except AddCart.DoesNotExist:
-            cart = None
-            cart_items = []
-            cart_item_count = 0
-            wish_count = 0 
+        # try:
+        #     cart = AddCart.objects.get(user=user)
+        #     cart_items = CartItems.objects.filter(cart=cart)
+        #     cart_item_count = cart_items.count()
+        #     user_id = request.user.id  # Use the user's ID if they are logged in
+        #     # wish_count = Wishlist.objects.filter(user_id=user_id).count()
+        # except AddCart.DoesNotExist:
+        #     cart = None
+        #     cart_items = []
+        #     cart_item_count = 0
+        #     wish_count = 0 
 
         context = {
-        'cart' : cart,
-        'cart_items' : cart_items,
+        # 'cart' : cart,
+        # 'cart_items' : cart_items,
         'homeimg': homeimg,
-        'prod_cat':prod_cat,
-        'cart_item_count': cart_item_count,
+        # 'prod_cat':prod_cat,
+        # 'cart_item_count': cart_item_count,
         'recent_products': recent_products,
-        'wish_count' : wish_count,
-        'prod_subcat':prod_subcat,
+        'product_ratings': product_ratings
+        # 'wish_count' : wish_count,
+        # 'prod_subcat':prod_subcat,
         }
         
         return render(request,'index.html', context)
@@ -59,9 +66,10 @@ def index(request):
         # prod_cat = ProductCategory.objects.all()
         context = {
         'homeimg': homeimg,
-        'prod_cat':prod_cat,
-        'prod_subcat':prod_subcat,
-        'recent_products': recent_products
+        # 'prod_cat':prod_cat,
+        # 'prod_subcat':prod_subcat,
+        'recent_products': recent_products,
+        'product_ratings': product_ratings
         }
         
         return render(request,'index.html', context)
@@ -483,7 +491,7 @@ def subcategory_products_view(request, subcat_id):
         return render(request, 'product/products.html', {'products': products})
         
 
-
+from django.db.models import Avg
 def prod_desc(request, prod_id):
     # products = Product.objects.get(prod_id=prod_id)
     
@@ -494,6 +502,9 @@ def prod_desc(request, prod_id):
 
     # Retrieve all reviews for the product
     reviews = Review.objects.filter(prod=product)
+
+
+    avg_rating = Review.objects.filter(prod=product).aggregate(Avg('rating'))['rating__avg'] or 0
 
    
 
@@ -511,6 +522,7 @@ def prod_desc(request, prod_id):
         'products': products,
         'prod_desc': prod_desc,
         'reviews' : reviews,
+        'avg_rating': avg_rating
     }
     
     return render(request, 'product/product_desc.html', context)
@@ -1385,3 +1397,22 @@ from .models import ProductRequest
 def product_requests_view(request):
     product_requests = ProductRequest.objects.all()
     return render(request, 'admin/product_requests.html', {'product_requests': product_requests})
+
+
+
+
+from django.http import JsonResponse
+
+def update_cart_item(request):
+    if request.method == 'POST' and request.is_ajax():
+        cart_item_id = request.POST.get('cartItemId')
+        quantity = request.POST.get('quantity')
+
+        # Update the quantity in the database
+        cart_item = CartItems.objects.get(cart_item_id=cart_item_id)
+        cart_item.quantity = quantity
+        cart_item.save()
+
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'error'})

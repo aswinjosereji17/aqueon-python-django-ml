@@ -1,3 +1,7 @@
+{% extends 'index.html' %}
+
+
+{% block content_main %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -32,6 +36,12 @@ if (!userIsAuthenticated) {
   <!-- Favicons -->
   <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
   <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+
+
   {% comment %} <link href="{% static 'assets/vendor/boxicons/css/boxicons.min.css' %}" > {% endcomment %}
 
   <!-- Google Fonts -->
@@ -62,248 +72,9 @@ if (!userIsAuthenticated) {
 </head>
 
 <body>
-  <div style="background-color: black; width: 100%; height: 50px;">
-  </div>
+
   <!-- ======= Header ======= -->
-  <header id="header" class="header fixed-top d-flex align-items-center">
-    <img  src="{% static 'img/login/logo2.png' %}" alt="Logo" width="200px" height="50px">
-    <div class="d-flex align-items-center justify-content-between">
-     
-      <i style="margin-left: 40px; color: #f8f6f6;" class="bi bi-list toggle-sidebar-btn"></i>
-    </div><!-- End Logo -->
 
-    <!-- <div class="search-bar">
-      <form class="search-form d-flex align-items-center" method="POST" action="#">
-        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
-        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
-      </form>
-    </div>End Search Bar -->
-
-    <nav class="header-nav ms-auto">
-      <ul class="d-flex align-items-center">
-
-        <li class="nav-item d-block d-lg-none">
-          <a class="nav-link nav-icon search-bar-toggle " href="#">
-            <i class="bi bi-search"></i>
-          </a>
-        </li><!-- End Search Icon-->
-
-        <li class="nav-item dropdown">
-
-          {% comment %} <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-            <i class="bi bi-bell"></i>
-            <span class="badge bg-primary badge-number">4</span>
-          </a><!-- End Notification Icon --> {% endcomment %}
-
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-            <li class="dropdown-header">
-              You have 5 new notifications
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-exclamation-circle text-warning"></i>
-              <div>
-                <h4>Lorem Ipsum</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>30 min. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-x-circle text-danger"></i>
-              <div>
-                <h4>Atque rerum nesciunt</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>1 hr. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-check-circle text-success"></i>
-              <div>
-                <h4>Sit rerum fuga</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>2 hrs. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-info-circle text-primary"></i>
-              <div>
-                <h4>Dicta reprehenderit</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>4 hrs. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li class="dropdown-footer">
-              <a href="#">Show all notifications</a>
-            </li>
-
-          </ul><!-- End Notification Dropdown Items -->
-
-        </li><!-- End Notification Nav -->
-
-        <li class="nav-item dropdown">
-
-          {% comment %} <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-            <i class="bi bi-chat-left-text"></i>
-            <span class="badge bg-success badge-number">3</span>
-          </a><!-- End Messages Icon --> {% endcomment %}
-
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
-            <li class="dropdown-header">
-              You have 3 new messages
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="message-item">
-              <a href="#">
-                <img src="assets/img/messages-1.jpg" alt="" class="rounded-circle">
-                <div>
-                  <h4>Maria Hudson</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>4 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="message-item">
-              <a href="#">
-                <img src="assets/img/messages-2.jpg" alt="" class="rounded-circle">
-                <div>
-                  <h4>Anna Nelson</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>6 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="message-item">
-              <a href="#">
-                <img src="assets/img/messages-3.jpg" alt="" class="rounded-circle">
-                <div>
-                  <h4>David Muldon</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>8 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="dropdown-footer">
-              <a href="#">Show all messages</a>
-            </li>
-
-          </ul><!-- End Messages Dropdown Items -->
-
-        </li><!-- End Messages Nav -->
-
-        <li class="nav-item dropdown pe-3">
-
-          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            {% if user_profile.profile_image %}
-            <img src="{{ user_profile.profile_image.url }}" alt="Profile" class="rounded-circle">
-            {% else %}
-            <img src="{% static 'img\fish_images\lionfish.jpg' %}" alt="Profile" class="rounded-circle">
-
-            <!-- <img src="{% static 'img\fish_images\lionfish.jpg' %}" alt="Default Profile" class="rounded-circle"> -->
-            {% endif %}
-            <span class="d-none d-md-block dropdown-toggle ps-2">{{ user_profile.user.username }}</span>
-          </a><!-- End Profile Iamge Icon -->
-
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-            <li class="dropdown-header">
-              <h6>{{ user_profile.user.username }}</h6>
-              {% if user.is_superuser %}
-        <span class="d-none d-lg-block">Admin</span>
-        {% elif user.is_staff and not user.is_superuser %}
-        <span class="d-none d-lg-block">Seller</span>
-        {% else %}
-        <span class="d-none d-lg-block">User</span>
-        {% endif %}
-
-              {% comment %} <span>Web Designer</span> {% endcomment %}
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <!-- <li onclick="showmain('main2')"> -->
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="{% url 'user_profile' %}">
-                <i class="bi bi-person"></i>
-                <span>My Profile</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <!-- <li>
-              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
-                <i class="bi bi-gear"></i>
-                <span>Account Settings</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
-                <i class="bi bi-question-circle"></i>
-                <span>Need Help?</span>
-              </a>
-            </li> -->
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="{% url 'loggout' %}">
-                <i style="color:red" class="ri-logout-circle-line"></i>
-          <span>Logout</span>
-              </a>
-            </li>
-
-          </ul><!-- End Profile Dropdown Items -->
-        </li><!-- End Profile Nav -->
-
-      </ul>
-    </nav><!-- End Icons Navigation -->
-
-  </header><!-- End Header -->
 
   <!-- ======= Sidebar ======= -->
   <aside id="sidebar" class="sidebar">
@@ -314,7 +85,8 @@ if (!userIsAuthenticated) {
         <a class="nav-link " href="{% url 'user_profile_view' %}">
           <i class="bi bi-grid"></i>
           <span>Dashboard</span>
-        </a>
+        </a>      
+
       </li>    
       {% elif user.is_staff and not user.is_superuser %}
 <li class="nav-item">
@@ -471,7 +243,7 @@ if (!userIsAuthenticated) {
           
         </ul>
 
-      </li><!-- End Tables Nav -->
+      </li>-->
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'add_product' %}">
           <i class="bi bi-menu-button-wide"></i><span>Add Product</span></i>
@@ -598,9 +370,12 @@ if (!userIsAuthenticated) {
   </aside><!-- End Sidebar-->
 
   <main id="main1" class="main">
-    <div class="pagetitle">
       {% block content %}
-      <h1>Dashboard</h1>
+      <div id="main11">
+      <div class="pagetitle">
+
+      <h1>Dashboard</h1>      <i style="margin-left: 40px; color: #090505;" class="bi bi-list toggle-sidebar-btn"></i>
+
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'user_profile_view' %}">Home</a></li>
@@ -1242,6 +1017,8 @@ if (!userIsAuthenticated) {
         </div><!-- End Right side columns -->
       </div>
     </section>
+
+  </div>
     {% endblock %}
 
   </main><!-- End #main -->
@@ -1651,9 +1428,7 @@ if (!userIsAuthenticated) {
 
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
-    <div class="copyright">
-      &copy; Copyright <strong><span>Aqueon</span></strong>. All Rights Reserved
-    </div>
+    
     <div class="credits">
       <!-- All the links in the footer should remain intact. -->
       <!-- You can delete the links only if you purchased the pro version. -->
@@ -1661,7 +1436,79 @@ if (!userIsAuthenticated) {
       <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
       <!-- Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> -->
     </div>
+    <div style="background-color: #010110;" id="contactus" class="container-fluid">
+      <div class="row px-xl-5 pt-5">
+          <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
+              <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
+              {% comment %} <p class="mb-4">No dolore ipsum accusam no lorem. Invidunt sed clita kasd clita et et
+                  dolor sed dolor. Rebum tempor no vero est magna amet no</p> {% endcomment %}
+              <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i> Pathanamthitta, Kerala, India</p>
+              <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>aqueon17@gmail.com</p>
+              <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+91 8639794330</p>
+          </div>
+          <div class="col-lg-8 col-md-12">
+              <div class="row">
+                  <div class="col-md-4 mb-5">
+                      <h5 class="text-secondary text-uppercase mb-4">Quick Shop</h5>
+                      <div class="d-flex flex-column justify-content-start">
+                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
+                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop
+                              Detail</a>
+                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping
+                              Cart</a>
+                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
+                          <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                      </div>
+                  </div>
+                  <div class="col-md-4 mb-5">
+                      <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
+                      <div class="d-flex flex-column justify-content-start">
+                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
+                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop
+                              Detail</a>
+                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping
+                              Cart</a>
+                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
+                          <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                      </div>
+                  </div>
+                  <div class="col-md-4 mb-5">
+                      <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
+                      <p>Duo stet tempor ipsum sit amet magna ipsum tempor est</p>
+                      <form action="">
+                          <div class="input-group">
+                              <input style="height: 40px; background-color: white;border-bottom-left-radius: 7px; border-top-left-radius: 7px;" type="text" class="form-control" placeholder="Your Email Address">
+                              <div class="input-group-append">
+                                  <button style="height: 41px; background-color: #FFD333;border-bottom-right-radius: 7px; border-top-right-radius: 7px;" class=" ">Sign Up</button>
+                              </div>
+                          </div>
+                      </form>
+                      <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
+                      <div class="d-flex">
+                          <a style="border-radius:5px; background-color: #FFD333;" class=" btn-square mr-2" href="#"><i
+                                  class="fab fa-twitter" ></i></a>
+                          <a style="border-radius:5px; background-color: #FFD333;" class=" btn-square mr-2" href="#"><i
+                                  class="fab fa-facebook-f"></i></a>
+                          <a style="border-radius:5px; background-color: #FFD333;" class=" btn-square mr-2" href="#"><i
+                                  class="fab fa-linkedin-in"></i></a>
+                          <a style="border-radius:5px; background-color: #FFD333;"  class="btn-square" href="#"><i
+                                  class="fab fa-instagram"></i></a>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div  class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
+        <div style="color: white;" class="copyright">
+          &copy; Copyright <strong><span>Aqueon</span></strong>. All Rights Reservedd
+        </div>
+         
+      </div>
+  </div>
   </footer><!-- End Footer -->
+
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
       class="bi bi-arrow-up-short"></i></a>
@@ -1678,7 +1525,13 @@ if (!userIsAuthenticated) {
 
   <!-- Template Main JS File -->
   <script src="{% static 'assets/js/main.js' %}"></script>
+  {% endblock %}
+
+
 
 </body>
 
+
 </html>
+
+

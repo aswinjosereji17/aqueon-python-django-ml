@@ -402,21 +402,21 @@
         <div class="container-fluid bg-dark mb-30">
             <div class="row px-xl-5">
                 <div class="col-lg-3 d-none d-lg-block" onmouseenter="openDropdown(this)" onmouseleave="closeDropdown(this)">
-                    <a class="btn d-flex align-items-center justify-content-between bg-primary w-100"
-                        data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
+                    <a class="btn d-flex align-items-center justify-content-between w-100"
+                        data-toggle="collapse" href="#navbar-vertical" style="background-color: #FFD333; height: 65px; padding: 0 30px; border-radius: 6px;">
                         <h6 class="text-dark m-0"><i class="fa fa-bars mr-2"></i>Categories</h6>
                         <i class="fa fa-angle-down text-dark"></i>
                     </a>
                     <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light"
                         id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999;">
                         <div class="navbar-nav w-100">
-                            {% for category in prod_cat %}
+                            {% for category in request.prod_cat %}
                                 <div class="nav-item dropdown dropright">
                                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
                                         <i class="fa fa-angle-right float-right mt-1"></i>{{ category.categ_name }}
                                     </a>
                                     <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
-                                        {% for subcategory in prod_subcat %}
+                                        {% for subcategory in request.prod_subcat %}
                                             {% if subcategory.categ_id == category %}
                                                 <a href="{% url 'subcategory_products' subcat_id=subcategory.sub_cat_id %}" class="dropdown-item">
                                                     {{ subcategory.sub_cat_name }}
@@ -471,16 +471,16 @@
                                 {% if user.is_authenticated %}
 
                                 {% if user.is_superuser %}
-                                <a href="{% url 'user_profile_view' %}" class="btn px-0">
+                                <a style="color: white;" href="{% url 'user_profile_view' %}" class="btn px-0">
                                     Hi, {{ request.user.username }}
                                 </a>
                                 {% elif user.is_staff and not user.is_superuser %}
-                                <a href="{% url 'user_profile_view' %}" class="btn px-0">
+                                <a style="color: white;" href="{% url 'user_profile_view' %}" class="btn px-0">
                                     Hi, {{ request.user.username }}
                                 </a>
                                 {% else %}
 
-                                <a href="{% url 'user_profile' %}" class="btn px-0">
+                                <a style="color: white;" href="{% url 'user_profile' %}" class="btn px-0">
                                     Hi, {{ request.user.username }}
                                 </a>
 
@@ -525,12 +525,12 @@
                                 {% if not user.is_staff and not user.is_superuser %}
 
                                 <a href="{% url 'wishlist' %}" class="btn px-0 ml-3">
-                                    <i class="fa fa-heart text-primary"></i>
+                                    <i style="color: #FFD333;" class="fa fa-heart"></i>
                                     <span class="badge text-secondary border border-secondary rounded-circle"
                                         style="padding-bottom: 2px;">{{wish_count}}</span>
                                 </a>
                                 <a href="{% url 'cart_details' %}" class="btn px-0 ml-3">
-                                    <i class="fas fa-shopping-cart text-primary"></i>
+                                    <i style="color: #FFD333;" class="fas fa-shopping-cart "></i>
                                     <span class="badge text-secondary border border-secondary rounded-circle"
                                         style="padding-bottom: 2px;">{{ cart_item_count }}</span>
                                 </a>
@@ -584,10 +584,13 @@ resultsHtml += '</div>';
             if (query) {
                 $('#search-results').html(resultsHtml);
                 $('#search-results').show();
+                $('#search-results').show();
+                $('#main1').hide();
                 $('#whole').hide();
             } else {
                 $('#search-results').hide();
                 $('#whole').show();
+                $('#main1').show();
             }
         }
                 });
@@ -605,11 +608,20 @@ resultsHtml += '</div>';
     <!-- </div> -->
     <!-- Navbar End -->
     <!-- </div> -->
-    {% block content %}
+
+
+
+       <div id="whole" class="whole">
+ 
+    {% block content_main %}
+
+    {% block content_mainn %}
+
+
     <!-- Carousel Start -->
     <!-- <div style="padding-top: 300px;"> -->
 
-    <div id="whole" class="whole">
+    <!-- <div id="whole" class="whole"> -->
 
         <div class="container-fluid mb-3">
             <div class="row px-xl-5">
@@ -732,7 +744,7 @@ resultsHtml += '</div>';
             <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span
                     class="bg-secondary pr-3">Categories</span></h2>
             <div class="row px-xl-5 pb-3">
-                {% for prod_categ in prod_cat %}
+                {% for prod_categ in request.prod_cat %}
 
                 <div class="col-lg-3 col-md-4 col-sm-6 pb-1"
                     onclick="navigateToSubcategories({{ prod_categ.categ_id }})">
@@ -1034,18 +1046,19 @@ resultsHtml += '</div>';
             <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span
                     class="bg-secondary pr-3">Recent Products</span></h2>
             <div style="border-radius:10px;" class="row px-xl-5">
-                {% for product in recent_products %}
-                <div style="border-radius:10px;" class="col-lg-3 col-md-4 col-sm-6 pb-1"
-                    onclick="navigateToSubcategoryProducts({{ product.prod_id }})">
+                {% for product_rating in product_ratings %}
+                <div style="border-radius:10px; max-width: 284px; border-radius: 14px;" class=" col-md-4 col-sm-6 pb-1"
+                    onclick="navigateToSubcategoryProducts({{product_rating.product.prod_id }})">
                     <div class="product-item bg-light mb-4">
                         <div class="product-img position-relative overflow-hidden">
-                            <img style="height: 300px; align-self: unset;" class="img-fluid w-100"
-                                src="{{ product.productdescription.img1.url }}" alt="">
+                            <img style="height: 225px; align-self: unset;" class="img-fluid w-100"
+                    src="{{ product_rating.product.productdescription.img1.url }}" alt="">
+            
                             <div class="product-action">
                                 {% comment %} <a class="btn btn-outline-dark btn-square" href=""><i
                                         class="fa fa-shopping-cart"></i></a> {% endcomment %}
                                 <a class="btn btn-outline-dark btn-square"
-                                    href="{% url 'add_to_wishlist' product.prod_id %}"><i class="far fa-heart"></i></a>
+                                    href="{% url 'add_to_wishlist' product_rating.product.prod_id %}"><i class="far fa-heart"></i></a>
                                 {% comment %} <a class="btn btn-outline-dark btn-square" href=""><i
                                         class="fa fa-sync-alt"></i></a> {% endcomment %}
                                 {% comment %} <a class="btn btn-outline-dark btn-square" href=""><i
@@ -1053,19 +1066,42 @@ resultsHtml += '</div>';
                             </div>
                         </div>
                         <div class="text-center py-4">
-                            <a class="h6 text-decoration-none text-truncate" href="">{{ product.prod_name }}</a>
+                            <a class="h6 text-decoration-none" href="">
+                                <span class="text-truncate">{{ product_rating.product.prod_name|truncatechars:21 }}</span>
+                              </a>
+                              
                             <div class="d-flex align-items-center justify-content-center mt-2">
-                                <h5>Rs. {{ product.price }}</h5>
-                                <h6 class="text-muted ml-2"><del>Rs.{{ product.price }}</del></h6>
+                                <h5>Rs. {{ product_rating.product.price }}</h5>
+                                <h6 class="text-muted ml-2"><del>Rs.{{ product_rating.product.price }}</del></h6>
                             </div>
                             <div class="d-flex align-items-center justify-content-center mb-1">
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small>(99)</small>
+                                {% if product_rating.avg_rating == 5 %}
+                                    <small class="fa fa-star text-success mr-1"></small>
+                                    <small class="fa fa-star text-success mr-1"></small>
+                                    <small class="fa fa-star text-success mr-1"></small>
+                                    <small class="fa fa-star text-success mr-1"></small>
+                                    <small class="fa fa-star text-success mr-1"></small>
+                                {% elif product_rating.avg_rating  == 4 %}
+                                    <small class="fa fa-star text-success mr-1"></small>
+                                    <small class="fa fa-star text-success mr-1"></small>
+                                    <small class="fa fa-star text-success mr-1"></small>
+                                    <small class="fa fa-star text-success mr-1"></small>
+                                    
+                                {% elif product_rating.avg_rating  == 3 %}
+                                    <small class="fa fa-star text-success mr-1"></small>
+                                    <small class="fa fa-star text-success mr-1"></small>
+                                    <small class="fa fa-star text-success mr-1"></small>
+                                    
+                                {% elif product_rating.avg_rating  == 2 %}
+                                    <small class="fa fa-star text-danger mr-1"></small>
+                                    <small class="fa fa-star text-danger mr-1"></small>
+                                    
+                                {% elif product_rating.avg_rating  <= 1 %}
+                                    <small class="fa fa-star text-danger mr-1"></small>
+                                    
+                                {% endif %}
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -1298,10 +1334,11 @@ resultsHtml += '</div>';
             </div>
         </div>
 
-    </div>
+    <!-- </div> -->
     <!-- Vendor End -->
     <!-- </div> -->
-    {% endblock%}
+    {% endblock%}    
+</div>
     <!-- Footer Start -->
     <div id="contactus" class="container-fluid bg-dark text-secondary mt-5 pt-5">
         <div class="row px-xl-5 pt-5">
@@ -1367,7 +1404,7 @@ resultsHtml += '</div>';
                 </div>
             </div>
         </div>
-        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
+        <div  class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
             <div class="col-md-6 px-xl-0">
                 <p class="mb-md-0 text-center text-md-left text-secondary">
                     &copy; <a class="text-primary" href="#">Aqueon</a>. All Rights Reserved. Designed
@@ -1384,8 +1421,7 @@ resultsHtml += '</div>';
 
 
     <!-- Back to Top -->
-    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
-
+    <a href="#" class="btn btn-primary back-to-top" ><i class="fa fa-angle-double-up"></i></a>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -1402,3 +1438,5 @@ resultsHtml += '</div>';
 </body>
 
 </html>
+
+{% endblock%}

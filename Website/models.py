@@ -169,6 +169,7 @@ class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     prod = models.ForeignKey(Product, on_delete=models.CASCADE)
     rating = models.IntegerField()
+    outof_rating = models.IntegerField(default=5, editable=False)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -59,5 +59,11 @@ class WishlistAdmin(admin.ModelAdmin):
 
 admin.site.register(Wishlist, WishlistAdmin)
 
-admin.site.register(Review)
+
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('review_id','user','prod','rating','outof_rating','description','created_at') 
+
+
+
+admin.site.register(Review,ReviewAdmin)
 admin.site.register(ProductRequest)

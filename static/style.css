@@ -1243,7 +1243,7 @@ pre code {
   }
   .col-lg-3 {
     flex: 0 0 25%;
-    max-width: 25%;
+    max-width: 350px;
   }
   .col-lg-4 {
     flex: 0 0 33.33333%;

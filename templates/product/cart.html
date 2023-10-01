@@ -81,15 +81,29 @@
                     <h5 class="mt-0"><b>{{ item.prod.prod_name }}</b></h5>
                     <!-- Price -->
                     <!-- <p> Rs.{{ item.prod.price }}</p> -->
-                    <p> Total Price : Rs.{{ item.total_price }}</p>
-                    <!-- Quantity -->
+<!-- Update the Total Price display -->
+
+
+
+
+
+
+
+
+
+<p id="total_price_{{ item.cart_item_id }}"> Total Price: Rs.{{ item.total_price }}</p>
+
+
+
+
+<!-- Quantity -->
                     
                     <button style="width:25px; border-radius: 5px; background-color:#FFD333; border:none; outline:none;" type="button" onclick="decrementValue()">-</button>
                     <input style="text-align:center;  width:30px; border:none; outline:none;" type="number" id="quantity" name="quantity" value="{{ item.quantity }}" min="1" required oninput="calculateTotalPrice()">
                     <button style="width:25px; border-radius: 5px; background-color:#FFD333; border:none; outline:none;" type="button" onclick="incrementValue()">+</button>
 
 
-                    <script>
+                    <!-- <script>
                       function incrementValue() {
                       var input = document.getElementById('quantity');
                       var value = parseInt(input.value, 10);
@@ -106,7 +120,7 @@
                       calculateTotalPrice(); // Recalculate total when quantity changes
                   }
                   
-                  </script>
+                  </script> -->
 
 
 
@@ -123,6 +137,54 @@
                       <p style="color: white;">In Stock</p>
                     </button>
                     {% endif %}
+
+
+                    <!-- Update the Quantity input field to include data attributes -->
+<input style="text-align:center; width:30px; border:none; outline:none;"
+type="number" id="quantity_{{ item.cart_item_id }}"
+name="quantity" value="{{ item.quantity }}"
+data-price="{{ item.prod.price }}"
+min="1" required oninput="calculateTotalPrice({{ item.cart_item_id }})">
+
+
+
+
+<script>
+  function calculateTotalPrice(cartItemId) {
+      // Retrieve quantity and price from the input field and data attribute
+      const quantity = document.getElementById(`quantity_${cartItemId}`).value;
+      const price = document.getElementById(`quantity_${cartItemId}`).dataset.price;
+
+      // Perform the calculation
+      const totalPrice = quantity * price;
+
+      // Update the total price display
+      const totalPriceTag = document.getElementById(`total_price_${cartItemId}`);
+      totalPriceTag.innerText = `Total Price: Rs.${totalPrice}`;
+
+      // Send an AJAX request to update the server-side data
+      const url = "{% url 'update_cart_item' %}";
+
+      // Use Fetch API to send a POST request
+      fetch(url, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: JSON.stringify({
+              cartItemId: cartItemId,
+              quantity: quantity,
+          }),
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));
+  }
+</script>
+
+
+
                   <!-- </div> -->
                   <!-- <div> --></br></br>
                     <form method="post" action="{% url 'remove_cart_item' item.cart_item_id %}">

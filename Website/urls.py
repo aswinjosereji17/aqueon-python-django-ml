@@ -76,6 +76,8 @@ urlpatterns = [
     path('product_requests_view/', views.product_requests_view, name='product_requests_view'),
 
 
+    path('update_cart_item/', views.update_cart_item, name='update_cart_item'),
+
     ]
 
 if settings.DEBUG:

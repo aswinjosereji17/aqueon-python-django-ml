@@ -32,7 +32,6 @@ h6 {
 # Main
 --------------------------------------------------------------*/
 #main2, #main3, #main1 {
-  margin-top: 60px;
   height: auto;
   min-height: 780px;
   padding: 20px 30px;
@@ -611,7 +610,7 @@ h6 {
   border-right: 0.5px solid #d2dae1;
   box-shadow: 2px 2px 4px rgba(205, 204, 204, 0.9);
   position: fixed;
-  top: 60px;
+  top: 150px;
   left: 0;
   bottom: 0;
   width: 300px;

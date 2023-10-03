@@ -476,6 +476,17 @@ from .models import Product,ProductDescription
 
 def subcategory_products_view(request, subcat_id):
     products = Product.objects.filter(sub_categ_id=subcat_id)
+
+    for product in products:
+            # Retrieve all reviews for the product
+        reviews = Review.objects.filter(prod=product)
+
+            # Calculate the average rating for the product
+        avg_rating = reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+
+            # Add the average rating to the product object
+        product.avg_rating = avg_rating
+    
     if request.user.is_authenticated:
         user = request.user.id
         cart = AddCart.objects.get(user=user)
@@ -691,6 +702,7 @@ from django.shortcuts import render, redirect
 from .models import AddCart, CartItems, Product
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest
+from django.contrib import messages
 
 @login_required
 @never_cache
@@ -717,13 +729,15 @@ def add_to_cart(request):
             # Check if the product is already in the cart, if so, update the quantity
             existing_item = CartItems.objects.filter(cart=cart, prod=prod).first()
             if existing_item:
-                existing_item.quantity += quantity
-                existing_item.save()
+                # existing_item.quantity += quantity
+                # existing_item.save()
+                messages.info(request, f'Already added to Cart')
             else:
                 # Create a new cart item
                 CartItems.objects.create(cart=cart, prod=prod, quantity=quantity)
+                messages.info(request, f'Added to Cart')
 
-            return redirect('cart_details')  # Redirect to the cart page or wherever you want
+            return redirect(request.META.get('HTTP_REFERER', 'index'))  # Redirect to the cart page or wherever you want
         else:
             return HttpResponseBadRequest("Invalid product ID")
 
@@ -781,7 +795,7 @@ def cart_details(request):
         except AddCart.DoesNotExist:
             return redirect('index')  # Redirect to 'index' if the user has no AddCart entry
 
-        return render(request, 'product/cart.html', {'cart': cart, 'cart_items': cart_items, 'total_cart_value': total_cart_value, 'multiplied_value': multiplied_value})
+        return render(request, 'product/cartt.html', {'cart': cart, 'cart_items': cart_items, 'total_cart_value': total_cart_value, 'multiplied_value': multiplied_value})
     else:
 
       return redirect('login_user')
@@ -951,6 +965,7 @@ def remove_cart_item(request, cart_item_id):
 
     # Remove the CartItems object from the cart
     cart_item.delete()
+    messages.success(request, f'Product removed')
 
     return redirect('cart_details')  # Redirect to your cart page or wherever you want
 
@@ -974,9 +989,11 @@ def check_email_existence(request):
 
 
 from .models import Wishlist, Product
+from django.contrib import messages
 
 @login_required
 @never_cache
+
 
 def add_to_wishlist(request, prod_id):
     # Check if the user is authenticated
@@ -989,11 +1006,20 @@ def add_to_wishlist(request, prod_id):
     product = get_object_or_404(Product, pk=prod_id)
 
     # Check if the product is not already in the user's wishlist
-    if not Wishlist.objects.filter(user_id=request.user, prod_id=product).exists():
+    if Wishlist.objects.filter(user_id=request.user, prod_id=product).exists():
+        # Product is already in the wishlist, display a message
+        messages.info(request, f'Already in your wishlist')
+    else:
+        # Product is not in the wishlist, add it
         Wishlist.objects.create(user_id=request.user, prod_id=product)
+        
+        # Add a success message for displaying the toast
+        messages.success(request, f'Added to wishlist')
 
-    # Redirect to a success page or back to the product detail page
-    return redirect('index')  # Redirect to the product detail page
+    # Redirect to the previous page or back to the product detail page
+    return redirect(request.META.get('HTTP_REFERER', 'index'))
+
+
 
 
 from django.shortcuts import render
@@ -1052,6 +1078,7 @@ def remove_wish_item(request, wish_id):
 
     # Remove the CartItems object from the cart
     wish_item.delete()
+    messages.info(request, f'Product Removed')
 
     return redirect('wishlist')
 
@@ -1307,11 +1334,13 @@ def live_search(request):
         product_data = []
 
         for product in results:
+            avg_rating = Review.objects.filter(prod=product).aggregate(Avg('rating'))['rating__avg'] or 0
             product_info = {
                 'name': product.prod_name,
                 'description': product.productdescription.description,
                 'price': product.price,
                 'prod_id' : product.prod_id,
+                'avg_rating': avg_rating, 
                 'img1_url': product.productdescription.img1.url,  # Include img1 URL
             }
             product_data.append(product_info)
@@ -1357,6 +1386,7 @@ from .models import ProductCategory, ProductSubcategory
 from .models import ProductRequest, ProductCategory
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 
 @login_required
 @never_cache
@@ -1377,8 +1407,9 @@ def submit_request_view(request):
             image=subcat_image
         )
         product_request.save()
+        messages.success(request, f'Product request submitted')
         
-        return redirect('index')  # Redirect to a list view of subcategories
+        return redirect('product_requests_view')  # Redirect to a list view of subcategories
 
     categories = ProductCategory.objects.all()
     return render(request, 'user/prod_request.html', {'categories': categories})
@@ -1401,18 +1432,75 @@ def product_requests_view(request):
 
 
 
+# from django.http import JsonResponse
+
+# def update_cart_item(request):
+#     if request.method == 'POST' and request.is_ajax():
+#         cart_item_id = request.POST.get('cartItemId')
+#         quantity = request.POST.get('quantity')
+
+#         # Update the quantity in the database
+#         cart_item = CartItems.objects.get(cart_item_id=cart_item_id)
+#         cart_item.quantity = quantity
+#         cart_item.save()
+
+#         return JsonResponse({'status': 'success'})
+#     else:
+#         return JsonResponse({'status': 'error'})
+
+
 from django.http import JsonResponse
+from django.shortcuts import render
 
-def update_cart_item(request):
-    if request.method == 'POST' and request.is_ajax():
-        cart_item_id = request.POST.get('cartItemId')
-        quantity = request.POST.get('quantity')
+def update_cart_quantity(request):
+    if request.method == 'POST':
+        cart_item_id = request.POST.get('cart_item_id')
+        action = request.POST.get('action')
 
-        # Update the quantity in the database
+        # Fetch the cart item from the database
         cart_item = CartItems.objects.get(cart_item_id=cart_item_id)
-        cart_item.quantity = quantity
+
+        # Update quantity based on the action
+        
+        if action == 'increment':
+            if cart_item.quantity < cart_item.prod.stock_quantity:
+                cart_item.quantity += 1
+        elif action == 'decrement':
+            if cart_item.quantity > 1:
+                cart_item.quantity -= 1
+
+        # Save the updated cart item
         cart_item.save()
 
-        return JsonResponse({'status': 'success'})
-    else:
-        return JsonResponse({'status': 'error'})
+        # Recalculate total price if needed
+        cart_item.total_price = cart_item.quantity * cart_item.prod.price
+        cart_item.save()
+
+        return JsonResponse({'message': 'Quantity updated successfully'})
+
+    return JsonResponse({'message': 'Invalid request'})
+
+
+
+from django.shortcuts import render
+from .models import ProductRequest
+from django.contrib.auth.decorators import login_required
+
+@login_required
+@never_cache
+def requested_products(request):
+    user = request.user
+    requested_products = ProductRequest.objects.filter(requested_user=user)
+    return render(request, 'user/req_view.html', {'requested_products': requested_products})
+
+
+
+# views.py
+# from django.shortcuts import render
+# from .models import ProductRequest
+
+# @login_required
+# @never_cache
+# def product_requests_view(request):
+#     product_requests = ProductRequest.objects.all()
+#     return render(request, 'admin/user_req_view.html', {'product_requests': product_requests})

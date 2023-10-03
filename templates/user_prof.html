@@ -135,6 +135,7 @@ if (!userIsAuthenticated) {
             </a>
           </li>
           
+          
           {% comment %}
         </ul>
       </li> {% endcomment %}
@@ -287,8 +288,11 @@ if (!userIsAuthenticated) {
 
       {% endif %}
 
-
-      <li class="nav-heading">Pages</li>
+      <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+        <li class="nav-heading">Pages</li>
+          <!-- <i style=" color: #090505; cursor: pointer;" class="bi bi-list toggle-sidebar-btn"></i> -->
+      </div>
+      
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'user_profile' %}">
@@ -321,11 +325,17 @@ if (!userIsAuthenticated) {
           <span>Request a product</span>
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'requested_products' %}">
+          <i style="" class="bx bx-cart"></i>
+          <span>Requested Products</span>
+        </a>
+      </li>
       {% endif %}
      
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'homepage' %}">
+        <a class="nav-link collapsed" href="#">
           <i class="bi bi-envelope"></i>
           <span>Contact</span>
         </a>

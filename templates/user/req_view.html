@@ -1,0 +1,19 @@
+<!-- requested_products.html -->
+{% extends 'user_prof.html' %}  <!-- Assuming you have a base template -->
+
+{% block content %}
+    <h2>Requested Products</h2>
+
+    {% if requested_products %}
+        <ul>
+            {% for product in requested_products %}
+                <li>
+                    <strong>{{ product.product_name }}</strong> - Category: {{ product.categ_id.categ_name }}
+                    <br>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No requested products.</p>
+    {% endif %}
+{% endblock %}

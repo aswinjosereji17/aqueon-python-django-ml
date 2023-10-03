@@ -174,8 +174,41 @@
                                     <h5>Rs.{{ product.price }}</h5><h6 class="text-muted ml-2"><del>Rs.{{ product.price }}</del></h6>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-center mb-1">
-                                    <small class="fa fa-star text-primary mr-1"></small>
-                                    <!-- Rest of the star ratings and review count -->
+                                    <div class="d-flex align-items-center justify-content-center mb-1">
+                                        {% if product.avg_rating == 5 %}
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                        {% elif product.avg_rating == 4 %}
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                        {% elif product.avg_rating == 3 %}
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                        {% elif product.avg_rating == 2 %}
+                                            <small class="fa fa-star text-danger mr-1"></small>
+                                            <small class="fa fa-star text-danger mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                        {% elif product.avg_rating <= 1 %}
+                                            <small class="fa fa-star text-danger mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                        {% endif %}
+                                        <small></small>
+                                    </div>
+                
                                 </div>
                             </div>
                         </div>

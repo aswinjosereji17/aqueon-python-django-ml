@@ -10,7 +10,7 @@
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
 </head>
 <body>
-    <h1>Add Subcategory</h1></br></br>
+    <h1>Request Product</h1></br></br>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <label for="categ_id">Category:</label>
@@ -20,14 +20,14 @@
             {% endfor %}
         </select></br></br>
 
-        <label for="sub_cat_name">Subcategory Name:</label>
-        <input type="text" id="sub_cat_name" name="sub_cat_name"><br>
+        <label for="sub_cat_name">Product Name:</label>
+        <input type="text" id="sub_cat_name" name="sub_cat_name" required><br>
         <span style="color:red" id="subCatNameError" class="error"></span></br>
 
-        <label for="subcat_image">Subcategory Image:</label>
+        <label for="subcat_image">Product Image:</label>
         <input type="file" id="subcat_image" name="subcat_image"><br></br>
 
-        <button style="border-radius:5px" type="submit" id="submitBtn" >Add Subcategory</button>
+        <button style="border-radius:5px" type="submit" id="submitBtn" >Request Product</button>
     </form>
 </body>
 {% endblock %}

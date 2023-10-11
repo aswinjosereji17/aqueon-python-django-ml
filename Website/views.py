@@ -1669,88 +1669,13 @@ def requested_products(request):
 
 
 
-# # qa/views.py
-# from django.shortcuts import render
-# from django.http import JsonResponse
-# from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
-# import speech_recognition as sr
-# import pyttsx3
-
-# import os
-
-# # Get the absolute path of the directory containing this script
-# current_directory = os.path.dirname(os.path.realpath(__file__))
-
-# # Specify the absolute path to 'demo1.csv'
-# file_path = os.path.join(current_directory, 'demo1.csv')
-# import pandas as pd
-# from sklearn.neighbors import NearestNeighbors
-
-# # Load fish data from a CSV file
-# fish_data = pd.read_csv(file_path)
-
-# # Initialize the KNN model
-# nn_model = NearestNeighbors(n_neighbors=5, metric='cosine', algorithm='brute')
-# nn_model.fit(fish_data[['Aggression Level', 'Social Behavior', 'Territoriality', 'Schooling Behavior', 'Predatory', 'Size', 'Compatibility']])
-
-
-# def homeee(request):
-#     if request.method == 'POST':
-#         user_question = request.POST.get('description')
-
-#         # Make predictions here
-#         context = 'Betta fish prefer their water’s pH to be slightly acidic. They do best in the pH range of 6.5 to 7.5 (7 is neutral). Some tap water and spring water may be significantly higher than 7.5 which means you should always test your water before adding it to your betta’s tank. Consider purchasing a pH kit to keep it in a healthy range if necessary. Also consider adding aquarium salt to your aquarium’s water to reduce stress and swelling, and to promote healthy fins. A systematic maintenance schedule must be adhered to. Tanks under 3 gallons will need more frequent and complete water changes to avoid dangerous levels of ammonia. It can be done, it’s just more work. Non-filtered tanks require 1-2 water cycles at around 25% and a full 100% water change each week (depending on water quality). A 5-gallon filtered tank will only need 1-2 water cycles per week at around 25% of total volume and a 100% water change once per month depending on water quality. Keep a pH kit in your supplies to test your tank’s water. Don’t combine your betta with fish that are notorious for fin nippers. Smaller tanks and those that are unfiltered are more work in the long-run because of how rapidly the water’s quality can decline. Cleaning your tank and its decorations every week is very important for your betta fish’s health. Only use approved aquarium decorations and materials that are safe for fish. Use a magnetic or algae cleaning wand for regular algae removal while the tank is filled. Filters and their media should be cleaned by rinsing them in existing tank water to preserve healthy bacteria. Other components should be cleaned and disinfected. Never clean a tank or its components with soap! It’s very tough to remove all the soap and it can poison your betta once the tank is refilled. Remember, adding live plants can also help reduce ammonia levels in the water naturally. Water cycling (removing some and adding new) and changes (complete volume replacement) are necessary for filtered tanks too but are more frequent and important in non-filtered habitats. If you’re only cycling the water, don’t remove your betta. Unnecessary removal can lead to potential stress and injury. Only remove your betta during 100% water changes. Betta fish get used to their ecosystem and don’t like abrupt changes to it. Because of this, you should cycle more than you do a complete change. Removing too much of the existing water in the tank and then adding new can cause your fish to go into shock. This may be due to changes in water parameters or temperature. Always acclimate your betta fish when re-introducing them to their tank after a complete water change.'
-
-#         model_name = "deepset/roberta-base-squad2"
-#         model = AutoModelForQuestionAnswering.from_pretrained(model_name)
-#         tokenizer = AutoTokenizer.from_pretrained(model_name)
-#         nlp = pipeline('question-answering', model=model, tokenizer=tokenizer)
-
-#         res = nlp({'question': user_question, 'context': context})
-#         predicted_answer = res['answer']
-
-
-#         if any(keyword in user_question.lower() for keyword in ['similar fish', 'similar fishes', 'fish similar', 'fish similar to this fish']):
-#             # Assume 'input_fish_name' is extracted from the user's question (modify as needed)
-#             input_fish_name = "Arapaima"
-#             input_fish_features = fish_data.loc[fish_data['Species'] == input_fish_name, ['Aggression Level', 'Social Behavior', 'Territoriality', 'Schooling Behavior', 'Predatory', 'Size', 'Compatibility']].values[0]
-            
-#             # Find similar fish using KNN
-#             _, neighbor_indices = nn_model.kneighbors(input_fish_features.reshape(1, -1))
-#             similar_fish_indices = neighbor_indices[0][1:]
-#             similar_fish = fish_data.iloc[similar_fish_indices]
-
-#             # Convert similar fish data to JSON format
-#             similar_fish_json = similar_fish['Species'].tolist()
-
-#             # Print or use the similar fish data as needed
-#             print(f"Fish similar to {input_fish_name} ")
-#             print(similar_fish[['Species']])
-
-#             similar_fish_text = ", ".join(similar_fish_json)
-#             engine = pyttsx3.init()
-#             engine.say(f"Fish similar to {input_fish_name} are: {similar_fish_text}")
-#             engine.runAndWait()
-
-#             return JsonResponse({'similar_fish': similar_fish_json})
-        
-#         else:
-#             # Speak the predicted result
-#             engine = pyttsx3.init()
-#             engine.say("The predicted answer is: " + predicted_answer)
-#             engine.runAndWait()
-
-#             return JsonResponse({'predicted_answer': predicted_answer})
-
-        
- 
-
 # qa/views.py
 from django.shortcuts import render
 from django.http import JsonResponse
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
 import speech_recognition as sr
 import pyttsx3
+
 import os
 
 # Get the absolute path of the directory containing this script
@@ -1769,30 +1694,15 @@ nn_model = NearestNeighbors(n_neighbors=5, metric='cosine', algorithm='brute')
 nn_model.fit(fish_data[['Aggression Level', 'Social Behavior', 'Territoriality', 'Schooling Behavior', 'Predatory', 'Size', 'Compatibility']])
 
 
-def homeee(request):
+def homeee(request, prod_id):
+    product = get_object_or_404(Product, pk=prod_id)
+    product_description = get_object_or_404(ProductDescription, prod_id=product)
     if request.method == 'POST':
-        user_input_method = request.POST.get('input_method')
-        context = 'Betta fish prefer their water’s pH to be slightly acidic. They do best in the pH range of 6.5 to 7.5 (7 is neutral). Some tap water and spring water may be significantly higher than 7.5 which means you should always test your water before adding it to your betta’s tank. Consider purchasing a pH kit to keep it in a healthy range if necessary. Also consider adding aquarium salt to your aquarium’s water to reduce stress and swelling, and to promote healthy fins. A systematic maintenance schedule must be adhered to. Tanks under 3 gallons will need more frequent and complete water changes to avoid dangerous levels of ammonia. It can be done, it’s just more work. Non-filtered tanks require 1-2 water cycles at around 25% and a full 100% water change each week (depending on water quality). A 5-gallon filtered tank will only need 1-2 water cycles per week at around 25% of total volume and a 100% water change once per month depending on water quality. Keep a pH kit in your supplies to test your tank’s water. Don’t combine your betta with fish that are notorious for fin nippers. Smaller tanks and those that are unfiltered are more work in the long-run because of how rapidly the water’s quality can decline. Cleaning your tank and its decorations every week is very important for your betta fish’s health. Only use approved aquarium decorations and materials that are safe for fish. Use a magnetic or algae cleaning wand for regular algae removal while the tank is filled. Filters and their media should be cleaned by rinsing them in existing tank water to preserve healthy bacteria. Other components should be cleaned and disinfected. Never clean a tank or its components with soap! It’s very tough to remove all the soap and it can poison your betta once the tank is refilled. Remember, adding live plants can also help reduce ammonia levels in the water naturally. Water cycling (removing some and adding new) and changes (complete volume replacement) are necessary for filtered tanks too but are more frequent and important in non-filtered habitats. If you’re only cycling the water, don’t remove your betta. Unnecessary removal can lead to potential stress and injury. Only remove your betta during 100% water changes. Betta fish get used to their ecosystem and don’t like abrupt changes to it. Because of this, you should cycle more than you do a complete change. Removing too much of the existing water in the tank and then adding new can cause your fish to go into shock. This may be due to changes in water parameters or temperature. Always acclimate your betta fish when re-introducing them to their tank after a complete water change.'
-
-
-        if user_input_method == 'text':
-            user_question = request.POST.get('description')
-        elif user_input_method == 'speech':
-            # Capture audio input for speech recognition
-            recognizer = sr.Recognizer()
-            with sr.Microphone() as source:
-                print("Say something:")
-                audio = recognizer.listen(source)
-            
-            try:
-                user_question = recognizer.recognize_google(audio)
-            except sr.UnknownValueError:
-                user_question = "Sorry, I couldn't understand the audio."
-            except sr.RequestError:
-                user_question = "There was an error with the speech recognition service."
+        user_question = request.POST.get('description')
 
         # Make predictions here
-        context = '...'  # Your context remains the same
+        # context = 'Betta fish prefer their water’s pH to be slightly acidic. They do best in the pH range of 6.5 to 7.5 (7 is neutral). Some tap water and spring water may be significantly higher than 7.5 which means you should always test your water before adding it to your betta’s tank. Consider purchasing a pH kit to keep it in a healthy range if necessary. Also consider adding aquarium salt to your aquarium’s water to reduce stress and swelling, and to promote healthy fins. A systematic maintenance schedule must be adhered to. Tanks under 3 gallons will need more frequent and complete water changes to avoid dangerous levels of ammonia. It can be done, it’s just more work. Non-filtered tanks require 1-2 water cycles at around 25% and a full 100% water change each week (depending on water quality). A 5-gallon filtered tank will only need 1-2 water cycles per week at around 25% of total volume and a 100% water change once per month depending on water quality. Keep a pH kit in your supplies to test your tank’s water. Don’t combine your betta with fish that are notorious for fin nippers. Smaller tanks and those that are unfiltered are more work in the long-run because of how rapidly the water’s quality can decline. Cleaning your tank and its decorations every week is very important for your betta fish’s health. Only use approved aquarium decorations and materials that are safe for fish. Use a magnetic or algae cleaning wand for regular algae removal while the tank is filled. Filters and their media should be cleaned by rinsing them in existing tank water to preserve healthy bacteria. Other components should be cleaned and disinfected. Never clean a tank or its components with soap! It’s very tough to remove all the soap and it can poison your betta once the tank is refilled. Remember, adding live plants can also help reduce ammonia levels in the water naturally. Water cycling (removing some and adding new) and changes (complete volume replacement) are necessary for filtered tanks too but are more frequent and important in non-filtered habitats. If you’re only cycling the water, don’t remove your betta. Unnecessary removal can lead to potential stress and injury. Only remove your betta during 100% water changes. Betta fish get used to their ecosystem and don’t like abrupt changes to it. Because of this, you should cycle more than you do a complete change. Removing too much of the existing water in the tank and then adding new can cause your fish to go into shock. This may be due to changes in water parameters or temperature. Always acclimate your betta fish when re-introducing them to their tank after a complete water change.'
+        context = product_description.description
 
         model_name = "deepset/roberta-base-squad2"
         model = AutoModelForQuestionAnswering.from_pretrained(model_name)
@@ -1802,11 +1712,12 @@ def homeee(request):
         res = nlp({'question': user_question, 'context': context})
         predicted_answer = res['answer']
 
+
         if any(keyword in user_question.lower() for keyword in ['similar fish', 'similar fishes', 'fish similar', 'fish similar to this fish']):
             # Assume 'input_fish_name' is extracted from the user's question (modify as needed)
-            input_fish_name = "Arapaima"
+            input_fish_name = product.fish_name.fish_name
             input_fish_features = fish_data.loc[fish_data['Species'] == input_fish_name, ['Aggression Level', 'Social Behavior', 'Territoriality', 'Schooling Behavior', 'Predatory', 'Size', 'Compatibility']].values[0]
-
+            
             # Find similar fish using KNN
             _, neighbor_indices = nn_model.kneighbors(input_fish_features.reshape(1, -1))
             similar_fish_indices = neighbor_indices[0][1:]
@@ -1825,6 +1736,7 @@ def homeee(request):
             engine.runAndWait()
 
             return JsonResponse({'similar_fish': similar_fish_json})
+        
         else:
             # Speak the predicted result
             engine = pyttsx3.init()
@@ -1832,3 +1744,6 @@ def homeee(request):
             engine.runAndWait()
 
             return JsonResponse({'predicted_answer': predicted_answer})
+
+        
+ 

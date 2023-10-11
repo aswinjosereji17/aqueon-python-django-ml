@@ -320,18 +320,12 @@
                         <div class="col-md-6">
                             <h4 class="mb-4">Ask Question:</h4>
                             <div class="d-flex my-3">
-                                <form method="POST" action="{% url 'homeee' %}">
+                                <form method="POST" action="{% url 'homeee' products.prod_id %}">
                                     {% csrf_token %}
                                     <div class="form-group">
-                                        <label for="input-method">Choose Input Method:</label>
-                                        <select id="input-method" name="input_method" class="form-control" required>
-                                            <option value="text">Text</option>
-                                            <option value="speech">Speech</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
                                         <label for="message">Question :</label>
-                                        <textarea id="message" name="description" cols="30" rows="5" class="form-control" required></textarea>
+                                        <textarea id="message" name="description" cols="30" rows="5"
+                                            class="form-control" required></textarea>
                                     </div>
                                     <div class="form-group mb-0">
                                         <input type="submit" value="Ask Question" class="btn btn-primary px-3">
@@ -350,13 +344,13 @@
                                 </div>
                                 {% else %}
                                 <div>
-                                    <h4 class="mb-3">Predicted Answer:</h4>
+                                    <h4 class="mb-3">Pred</h4>
                                     <p id="predicted-answer-label">{{ predicted_answer }}</p>
                                 </div>
                                 {% endif %}
+
                             </div>
                         </div>
-                        
                     </div>
 
 
@@ -401,8 +395,7 @@
                             <div class="media mb-4">
                                 <!-- <img src="img/user.jpg" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;"> -->
                                 <div class="media-body">
-                                    <h6>{{ review.user.username }}<small> - <i>{{ review.created_at|date:"d M Y"
-                                                }}</i></small></h6>
+                                    <h6>{{ review.user.username }}<small> - <i>{{ review.created_at|date:"d M Y" }}</i></small></h6>
                                     <div class="text-primary mb-2">
 
                                     </div>

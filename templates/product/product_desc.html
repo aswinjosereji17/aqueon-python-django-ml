@@ -4,35 +4,37 @@
 {% block content_mainn %}
 
 <head>
-    
+
     <script>
         function calculateTotalPricee() {
             // Get the quantity input element and the total price input element
             var quantityInput = document.getElementById('quantity');
             var totalPriceInput = document.getElementById('t_price');
-    
-            // Get the price per item (you may need to fetch this from your server)
-            var pricePerItem = {{ products.price }};
-    
-            // Calculate the total price based on quantity and price per item
-            var quantity = parseInt(quantityInput.value);
-            var total = quantity * pricePerItem;
-    
-            // Update the total price input field with the calculated total
-            totalPriceInput.value = total.toFixed(2); // Display the total with 2 decimal places
-        }
-    
-        function incrementValue() {
-    var quantityInput = document.getElementById('quantity');
-    var currentQuantity = parseInt(quantityInput.value);
-    var stockQuantity = {{ products.stock_quantity }};  // Use the actual stock quantity from your Django model
 
-    if (currentQuantity < stockQuantity) {
-        quantityInput.value = currentQuantity + 1;
-        calculateTotalPricee(); // Recalculate total when quantity changes
-    }
+            // Get the price per item (you may need to fetch this from your server)
+            var pricePerItem = {{ products.price }
+        };
+
+        // Calculate the total price based on quantity and price per item
+        var quantity = parseInt(quantityInput.value);
+        var total = quantity * pricePerItem;
+
+        // Update the total price input field with the calculated total
+        totalPriceInput.value = total.toFixed(2); // Display the total with 2 decimal places
+        }
+
+        function incrementValue() {
+            var quantityInput = document.getElementById('quantity');
+            var currentQuantity = parseInt(quantityInput.value);
+            var stockQuantity = {{ products.stock_quantity }
+        };  // Use the actual stock quantity from your Django model
+
+        if (currentQuantity < stockQuantity) {
+            quantityInput.value = currentQuantity + 1;
+            calculateTotalPricee(); // Recalculate total when quantity changes
+        }
 }
-    
+
         function decrementValue() {
             var quantityInput = document.getElementById('quantity');
             var currentValue = parseInt(quantityInput.value);
@@ -41,11 +43,11 @@
                 calculateTotalPricee(); // Recalculate total when quantity changes
             }
         }
-    
+
         // Call calculateTotalPrice initially
         calculateTotalPricee();
     </script>
-    
+
 </head>
 <style>
     #d_img {
@@ -137,43 +139,42 @@
                 <input type="hidden" id="prod_id" name="prod_id" value="{{products.prod_id}}" required>
                 <div class="h-100 bg-light p-30">
                     <h3>{{ products.prod_name }}</h3>
-                    
+
                     <div class="d-flex mb-3">
                         <div class="d-flex align-items-center justify-content-center mb-1">
                             {% if avg_rating == 5 %}
-                                <small class="fa fa-star text-success mr-1"></small>
-                                <small class="fa fa-star text-success mr-1"></small>
-                                <small class="fa fa-star text-success mr-1"></small>
-                                <small class="fa fa-star text-success mr-1"></small>
-                                <small class="fa fa-star text-success mr-1"></small>
+                            <small class="fa fa-star text-success mr-1"></small>
+                            <small class="fa fa-star text-success mr-1"></small>
+                            <small class="fa fa-star text-success mr-1"></small>
+                            <small class="fa fa-star text-success mr-1"></small>
+                            <small class="fa fa-star text-success mr-1"></small>
                             {% elif avg_rating == 4 %}
-                                <small class="fa fa-star text-success mr-1"></small>
-                                <small class="fa fa-star text-success mr-1"></small>
-                                <small class="fa fa-star text-success mr-1"></small>
-                                <small class="fa fa-star text-success mr-1"></small>
-                                <small class="fa fa-star text-secondary mr-1"></small>
+                            <small class="fa fa-star text-success mr-1"></small>
+                            <small class="fa fa-star text-success mr-1"></small>
+                            <small class="fa fa-star text-success mr-1"></small>
+                            <small class="fa fa-star text-success mr-1"></small>
+                            <small class="fa fa-star text-secondary mr-1"></small>
                             {% elif avg_rating == 3 %}
-                                <small class="fa fa-star text-success mr-1"></small>
-                                <small class="fa fa-star text-success mr-1"></small>
-                                <small class="fa fa-star text-success mr-1"></small>
-                                <small class="fa fa-star text-secondary mr-1"></small>
-                                <small class="fa fa-star text-secondary mr-1"></small>
+                            <small class="fa fa-star text-success mr-1"></small>
+                            <small class="fa fa-star text-success mr-1"></small>
+                            <small class="fa fa-star text-success mr-1"></small>
+                            <small class="fa fa-star text-secondary mr-1"></small>
+                            <small class="fa fa-star text-secondary mr-1"></small>
                             {% elif avg_rating == 2 %}
-                                <small class="fa fa-star text-danger mr-1"></small>
-                                <small class="fa fa-star text-danger mr-1"></small>
+                            <small class="fa fa-star text-danger mr-1"></small>
+                            <small class="fa fa-star text-danger mr-1"></small>
+                            <small class="fa fa-star text-secondary mr-1"></small>
+                            <small class="fa fa-star text-secondary mr-1"></small>
+                            <small class="fa fa-star text-secondary mr-1"></small>
+                            {% elif avg_rating <= 1 %} <small class="fa fa-star text-danger mr-1"></small>
                                 <small class="fa fa-star text-secondary mr-1"></small>
                                 <small class="fa fa-star text-secondary mr-1"></small>
                                 <small class="fa fa-star text-secondary mr-1"></small>
-                            {% elif avg_rating <= 1 %}
-                                <small class="fa fa-star text-danger mr-1"></small>
                                 <small class="fa fa-star text-secondary mr-1"></small>
-                                <small class="fa fa-star text-secondary mr-1"></small>
-                                <small class="fa fa-star text-secondary mr-1"></small>
-                                <small class="fa fa-star text-secondary mr-1"></small>
-                            {% endif %}
-                            <!-- <small>({{ avg_rating }})</small> -->
+                                {% endif %}
+                                <!-- <small>({{ avg_rating }})</small> -->
                         </div>
-    
+
                         <!-- <small class="pt-1">(99 Reviews)</small> -->
 
                     </div>
@@ -183,28 +184,26 @@
                     {% else %}
                     <p style="color: green;">In Stock</p>
                     {% endif %}
-                    <p class="mb-4">{{ prod_desc.description }}</p>
 
                     <div class="d-flex align-items-center mb-4 pt-2">
-                        <div class="input-group quantity mr-3" style="width: 130px;">
+                        {% comment %} <div class="input-group quantity mr-3" style="width: 130px;">
 
                             <div class="input-group-btn">
-                                {% comment %} <button class="btn btn-primary btn-minus">
-                                    <i class="fa fa-minus"></i>
-                                </button> {% endcomment %}
+                               
                             </div>
                             <div style="display: flex; flex-direction: row; gap: 10px;">
                                 <div style="height: 25px; width: 25px; border-radius: 5px; color: black; background-color: #FFD333; text-align: center;"
-                                onmouseover="this.style.cursor='pointer';" onmouseout="this.style.cursor='default';"
+                                    onmouseover="this.style.cursor='pointer';" onmouseout="this.style.cursor='default';"
                                     onclick="decrementValue()">-</div>
-                                    <div>
-                                <!-- <input style="text-align:center;  width:30px; border:none; outline:none;" type="number" id="quantity" name="quantity" value="1" min="1" required> -->
-                                <input style="text-align:center;  width:30px; border:none; outline:none;" type="number"
-                                    id="quantity" name="quantity" value="1" min="1" required
-                                    oninput="calculateTotalPricee()">
+                                <div>
+                                    <!-- <input style="text-align:center;  width:30px; border:none; outline:none;" type="number" id="quantity" name="quantity" value="1" min="1" required> -->
+                                    <input style="text-align:center;  width:30px; border:none; outline:none;"
+                                        type="number" id="quantity" name="quantity" value="1" min="1" required
+                                        oninput="calculateTotalPricee()">
                                 </div>
                                 <div style="height: 25px; width: 25px; border-radius: 5px; color: black; background-color: #FFD333; text-align: center;"
-                                 onclick="incrementValue()" onmouseover="this.style.cursor='pointer';" onmouseout="this.style.cursor='default';">+</div>
+                                    onclick="incrementValue()" onmouseover="this.style.cursor='pointer';"
+                                    onmouseout="this.style.cursor='default';">+</div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 20px; margin-top: 15px;">
 
@@ -214,7 +213,7 @@
                                 <input id="t_price" style=" margin: 0; text-align:center;  border:none; outline:none;"
                                     type="text" disabled>
                             </div>
-                        </div>
+                        </div> {% endcomment %}
 
                         <div class="input-group-btn">
 
@@ -227,7 +226,7 @@
                     <button style="border-radius: 5px;" type="submit" class="btn btn-primary px-3"><i
                             class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
                     {% endif %}
-<!-- 
+                    <!-- 
                     <script>
                         function incrementValuee() {
                             var input = document.getElementById('quantity');
@@ -304,12 +303,87 @@
             </div>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="tab-pane-1">
-                    <h4 class="mb-3">Product Description</h4>
-                    <p>{{ prod_desc.description }}</p>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- <h4 class="mb-4">{{ reviews|length }} reviews for "{{ reviews.product.prod_name }}"</h4> -->
+                            <div class="media mb-4">
+                                <!-- <img src="img/user.jpg" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;"> -->
+                                <div class="media-body">
+                                    <h4 class="mb-3">Product Description</h4>
+
+                                    <p>{{ prod_desc.description }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h4 class="mb-4">Ask Question:</h4>
+                            <div class="d-flex my-3">
+                                <form method="POST" action="{% url 'homeee' %}">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="input-method">Choose Input Method:</label>
+                                        <select id="input-method" name="input_method" class="form-control" required>
+                                            <option value="text">Text</option>
+                                            <option value="speech">Speech</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="message">Question :</label>
+                                        <textarea id="message" name="description" cols="30" rows="5" class="form-control" required></textarea>
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <input type="submit" value="Ask Question" class="btn btn-primary px-3">
+                                    </div>
+                                </form>
+                            </div>
+                            <div>
+                                {% if similar_fish %}
+                                <div>
+                                    <h4 class="mb-3">Similar Fish Species:</h4>
+                                    <ul>
+                                        {% for fish in similar_fish %}
+                                        <li>{{ fish }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% else %}
+                                <div>
+                                    <h4 class="mb-3">Predicted Answer:</h4>
+                                    <p id="predicted-answer-label">{{ predicted_answer }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                    </div>
 
 
-                   
-                    
+
+                    <script>
+                        // Use JavaScript to handle form submission and update the result
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const form = document.querySelector('form');
+                            const predictedAnswerLabel = document.getElementById('predicted-answer-label');
+
+                            form.addEventListener('submit', function (event) {
+                                event.preventDefault();
+
+                                // Use Fetch API to submit the form asynchronously
+                                fetch(form.action, {
+                                    method: form.method,
+                                    body: new FormData(form),
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        // Update the result label
+                                        predictedAnswerLabel.textContent = data.predicted_answer;
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                            });
+                        });
+                    </script>
 
 
 
@@ -327,24 +401,28 @@
                             <div class="media mb-4">
                                 <!-- <img src="img/user.jpg" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;"> -->
                                 <div class="media-body">
-                                    <h6>{{ review.user.username }}<small> - <i>{{ review.created_at|date:"d M Y" }}</i></small></h6>
+                                    <h6>{{ review.user.username }}<small> - <i>{{ review.created_at|date:"d M Y"
+                                                }}</i></small></h6>
                                     <div class="text-primary mb-2">
-                                      
+
                                     </div>
                                     <p>{{ review.description }}</p>
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
-                        
+
                         <div class="col-md-6">
                             <h4 class="mb-4">Leave a review</h4>
-                            <small>Your email address will not be published. Required fields are marked *</small>
+                            <!-- <small>Your email address will not be published. Required fields are marked *</small> -->
                             <div class="d-flex my-3">
 
+
+                                {% if user_has_purchased_product %}
                                 <form method="POST" action="{% url 'submit_review' %}">
                                     {% csrf_token %}
-                                    <input type="hidden" id="prod_id" name="prod_id" value="{{ products.prod_id }}" required>
+                                    <input type="hidden" id="prod_id" name="prod_id" value="{{ products.prod_id }}"
+                                        required>
 
                                     <p class="mb-0 mr-2">Your Rating * :</p>
                                     <div class="star-rating">
@@ -367,6 +445,10 @@
                                         <input type="submit" value="Leave Your Review" class="btn btn-primary px-3">
                                     </div>
                                 </form>
+
+                                {% else %}
+                                <p>You can only leave a review if you have purchased this product.</p>
+                                {% endif %}
                             </div>
 
 

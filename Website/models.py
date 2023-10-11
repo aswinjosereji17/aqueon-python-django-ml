@@ -100,19 +100,27 @@ class ProductSubcategory(models.Model):
     def __str__(self):
         return self.sub_cat_name
 
+class Fish(models.Model):
+    fish_id = models.AutoField(primary_key=True)
+    fish_name = models.CharField(max_length=255)
+    
+
+    def __str__(self):
+        return self.fish_name
 
 from django.db import models
 
 
 class Product(models.Model):
     prod_id = models.AutoField(primary_key=True)
-    prod_name = models.CharField(max_length=255, null=False,unique=True)
+    prod_name = models.CharField(max_length=255, null=False, unique=True)
+    fish_name = models.ForeignKey(Fish, on_delete=models.CASCADE)
     sub_categ_id = models.ForeignKey(ProductSubcategory, on_delete=models.CASCADE)
     price = models.FloatField(null=False)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)  # Use Django's default user model
     stock_quantity = models.PositiveIntegerField(default=0) 
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
     def __str__(self):
         return self.prod_name
 
@@ -167,6 +175,7 @@ class Wishlist(models.Model):
 class Review(models.Model):
     review_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
     prod = models.ForeignKey(Product, on_delete=models.CASCADE)
     rating = models.IntegerField()
     outof_rating = models.IntegerField(default=5, editable=False)
@@ -187,3 +196,36 @@ class ProductRequest(models.Model):
 
     def __str__(self):
         return f"Request ID: {self.request_id}, Product: {self.product_name}, Requested by: {self.requested_user}"
+
+
+class Order(models.Model):
+    class PaymentStatusChoices(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        SUCCESSFUL = 'successful', 'Successful'
+        FAILED = 'failed', 'Failed'
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    products = models.ManyToManyField(Product)  # Assuming you have a Product model
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    order_date = models.DateTimeField(auto_now_add=True)
+    razorpay_order_id = models.CharField(max_length=255, default=None)
+    payment_status = models.CharField(
+        max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
+    def str(self):
+        return self.user.username 
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def save(self, *args, **kwargs):
+        # Calculate the total price for this order item based on quantity and price
+        self.total_price = self.quantity * self.price
+        super(OrderItem, self).save(*args, **kwargs)
+        
+        # Update the total order price in the associated Order model
+        order = self.order
+        order.total_order_price = sum(order_item.total_price for order_item in order.orderitem_set.all())
+        order.save()

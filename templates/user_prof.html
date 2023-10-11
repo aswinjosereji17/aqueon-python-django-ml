@@ -15,21 +15,21 @@
 
   <script>
 
-if (!userIsAuthenticated) {
-    window.location.href = '/login_user'; // Redirect to the login page
-}
+    if (!userIsAuthenticated) {
+      window.location.href = '/login_user'; // Redirect to the login page
+    }
 
 
   </script>
 
 
-   {% if user.is_superuser %}
-    <title>Admin</title>      
-      {% elif user.is_staff and not user.is_superuser %}
-<title>Seller</title> 
-       {% else %}
-<title>User</title>        {% endif %}
-  
+  {% if user.is_superuser %}
+  <title>Admin</title>
+  {% elif user.is_staff and not user.is_superuser %}
+  <title>Seller</title>
+  {% else %}
+  <title>User</title> {% endif %}
+
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -42,7 +42,8 @@ if (!userIsAuthenticated) {
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
 
 
-  {% comment %} <link href="{% static 'assets/vendor/boxicons/css/boxicons.min.css' %}" > {% endcomment %}
+  {% comment %}
+  <link href="{% static 'assets/vendor/boxicons/css/boxicons.min.css' %}"> {% endcomment %}
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -71,6 +72,16 @@ if (!userIsAuthenticated) {
 
 </head>
 
+
+
+
+
+
+
+
+
+
+
 <body>
 
   <!-- ======= Header ======= -->
@@ -78,25 +89,25 @@ if (!userIsAuthenticated) {
 
   <!-- ======= Sidebar ======= -->
   <aside id="sidebar" class="sidebar">
-
+    <i id="hamb" style="position: relative; margin-left: 0px; color: #030000;" class="bi bi-list toggle-sidebar-btn"></i>
     <ul class="sidebar-nav" id="sidebar-nav">
-   {% if user.is_superuser %}
-    <li class="nav-item">
+      {% if user.is_superuser %}
+      <li class="nav-item">
         <a class="nav-link " href="{% url 'user_profile_view' %}">
-          <i class="bi bi-grid"></i>
+          <i class="bi bi-grid "></i>
           <span>Dashboard</span>
-        </a>      
+        </a>
 
-      </li>    
+      </li>
       {% elif user.is_staff and not user.is_superuser %}
-<li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link " href="{% url 'user_profile_view' %}">
           <i class="bi bi-grid"></i>
           <span>Dashboard</span>
         </a>
       </li>
-       {% else %}
-       
+      {% else %}
+
       {% endif %}
       <!-- End Dashboard Nav -->
 
@@ -134,14 +145,14 @@ if (!userIsAuthenticated) {
               <i class="bi bi-circle"></i><span>Product Requests</span>
             </a>
           </li>
-          
-          
+
+
           {% comment %}
         </ul>
       </li> {% endcomment %}
       {% comment %} <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Users</span><i class="bi bi-chevron-down ms-auto"></i>
+        <a class="nav-link collapsed " data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide "></i><span>Users</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
@@ -154,7 +165,7 @@ if (!userIsAuthenticated) {
               <i class="bi bi-circle"></i><span>Seller Requests</span>
             </a>
           </li>
-         
+
           {% endcomment %}
           {% comment %} <li>
             <a href="components-badges.html">
@@ -184,20 +195,11 @@ if (!userIsAuthenticated) {
               <i class="bi bi-circle"></i><span>Add Category</span>
             </a>
           </li>
-          {% comment %} <li>
-            <a href="components-badges.html">
-              <i class="bi bi-circle"></i><span>Badges</span>
-            </a>
-          </li>
-          <li>
-            <a href="components-breadcrumbs.html">
-              <i class="bi bi-circle"></i><span>Breadcrumbs</span>
-            </a>
-          </li> {% endcomment %}
+
           <li>
         </ul>
       </li><!-- End Components Nav -->
-  <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#component-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-menu-button-wide"></i><span>Sub Category</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
@@ -212,14 +214,9 @@ if (!userIsAuthenticated) {
               <i class="bi bi-circle"></i><span>Add Sub Category</span>
             </a>
           </li>
-          
-      {% comment %} <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'product_list' %}">
-          <i class="bi bi-layout-text-window-reverse"></i><span>Delete Category</span><i
-            class="bi bi-chevron-down ms-auto"></i>
-        </a>
-      </li> {% endcomment %}
-<li>
+
+
+          <li>
         </ul>
       </li>
       {% endif %}
@@ -230,69 +227,24 @@ if (!userIsAuthenticated) {
         <a class="nav-link collapsed" href="{% url 'product_list' %}?user_id={{ request.user.id }}">
           <i class="bi bi-layout-text-window-reverse"></i><span>List all products</span></i>
         </a>
-        <!-- <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav"> -->
-        <!-- <li>
-            <a href="tables-general.html">
-              <i class="bi bi-circle"></i><span>General Tables</span>
-            </a>
-          </li>
-          <li>
-            <a href="tables-data.html">
-              <i class="bi bi-circle"></i><span>Data Tables</span>
-            </a>
-          </li>
-          
-        </ul>
 
-      </li>-->
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'add_product' %}">
           <i class="bi bi-menu-button-wide"></i><span>Add Product</span></i>
         </a>
-        <!-- <li onclick="showmain('main1')">Show main 1</li>
-          <li onclick="showmain('main2')">Show main 2</li> -->
-        <!-- <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="components-alerts.html">
-              <i class="bi bi-circle"></i><span>Alerts</span>
-            </a>
-          </li>
-          <li>
-            <a href="components-accordion.html">
-              <i class="bi bi-circle"></i><span>Accordion</span>
-            </a>
-          </li>
-          
-        </ul> -->
+
       </li><!-- End Components Nav -->
 
-      <!-- <li class="nav-item">
-        <a class="nav-link collapsed"  href="">
-          <i class="bi bi-journal-text"></i><span>Modify Product</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        
-      </li>End Forms Nav
 
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-bar-chart"></i><span>Delete products</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a> -->
-      <!-- <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="charts-chartjs.html">
-              <i class="bi bi-circle"></i><span>Chart.js</span>
-            </a>
-          </li>
-        </ul> -->
       </li><!-- End Charts Nav -->
 
       {% endif %}
 
       <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
-        <li class="nav-heading">Pages</li>
-          <!-- <i style=" color: #090505; cursor: pointer;" class="bi bi-list toggle-sidebar-btn"></i> -->
+        <!-- <li class="nav-heading">Pages</li> -->
+        <!-- <i style=" color: #090505; cursor: pointer;" class="bi bi-list toggle-sidebar-btn"></i> -->
       </div>
-      
+
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'user_profile' %}">
@@ -300,7 +252,7 @@ if (!userIsAuthenticated) {
           <span>Profile</span>
         </a>
       </li><!-- End Profile Page Nav -->
-  <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'index' %}">
           <i style="" class="ri-home-2-fill"></i>
           <span>Home</span>
@@ -332,7 +284,7 @@ if (!userIsAuthenticated) {
         </a>
       </li>
       {% endif %}
-     
+
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="#">
@@ -341,175 +293,149 @@ if (!userIsAuthenticated) {
         </a>
       </li><!-- End Contact Page Nav -->
 
-   <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'loggout' %}">
           <i style="color:red" class="ri-logout-circle-line"></i>
           <span>Logout</span>
         </a>
       </li>
-      <!-- <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-register.html">
-          <i class="bi bi-card-list"></i>
-          <span>Register</span>
-        </a>
-      </li>End Register Page Nav -->
 
-      <!-- <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-login.html">
-          <i class="bi bi-box-arrow-in-right"></i>
-          <span>Login</span>
-        </a>
-      </li>End Login Page Nav -->
-
-      <!-- <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-error-404.html">
-          <i class="bi bi-dash-circle"></i>
-          <span>Error 404</span>
-        </a>
-      </li>End Error 404 Page Nav -->
-
-      <!-- <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-blank.html">
-          <i class="bi bi-file-earmark"></i>
-          <span>Blank</span>
-        </a>
-      </li>End Blank Page Nav -->
 
     </ul>
 
   </aside><!-- End Sidebar-->
 
   <main id="main1" class="main">
-      {% block content %}
-      <div id="main11">
+    {% block content %}
+    <div id="main11">
       <div class="pagetitle">
 
-      <h1>Dashboard</h1>      <i style="margin-left: 40px; color: #090505;" class="bi bi-list toggle-sidebar-btn"></i>
+        <h1>Dashboard</h1> 
 
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="{% url 'user_profile_view' %}">Home</a></li>
-          <li class="breadcrumb-item active"><a href="{% url 'user_profile_view' %}">Dashboard</a></li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
+        <nav>
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'user_profile_view' %}">Home</a></li>
+            <li class="breadcrumb-item active"><a href="{% url 'user_profile_view' %}">Dashboard</a></li>
+          </ol>
+        </nav>
+      </div><!-- End Page Title -->
 
-    <section class="section dashboard">
-      <div class="row">
+      <section class="section dashboard">
+        <div class="row">
 
-        <!-- Left side columns -->
-        <div class="col-lg-8">
-          <div class="row">
+          <!-- Left side columns -->
+          <div class="col-lg-8">
+            <div class="row">
 
-            <!-- Sales Card -->
-            <div class="col-xxl-4 col-md-6">
-              <div class="card info-card sales-card">
+              <!-- Sales Card -->
+              <div class="col-xxl-4 col-md-6">
+                <div class="card info-card sales-card">
 
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
+                  <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                      <li class="dropdown-header text-start">
+                        <h6>Filter</h6>
+                      </li>
 
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Products <span>| Today</span></h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-box"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>{{prod_count}}</h6>
-                      <!-- <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
-
-                    </div>
+                      <li><a class="dropdown-item" href="#">Today</a></li>
+                      <li><a class="dropdown-item" href="#">This Month</a></li>
+                      <li><a class="dropdown-item" href="#">This Year</a></li>
+                    </ul>
                   </div>
-                </div>
 
-              </div>
-            </div><!-- End Sales Card -->
+                  <div class="card-body">
+                    <h5 class="card-title">Products <span>| Today</span></h5>
 
-            <!-- Revenue Card -->
-            <div class="col-xxl-4 col-md-6">
-              <div class="card info-card revenue-card">
+                    <div class="d-flex align-items-center">
+                      <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-box"></i>
+                      </div>
+                      <div class="ps-3">
+                        <h6>{{prod_count}}</h6>
+                        <!-- <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
 
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Sellers <span>| This Month</span></h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-people"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>{{seller_count}}</h6>
-                      <!-- <span class="text-success small pt-1 fw-bold">8%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
-
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div><!-- End Revenue Card -->
-
-            <!-- Customers Card -->
-            <div class="col-xxl-4 col-xl-12">
-
-              <div class="card info-card customers-card">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Users <span>| This Year</span></h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-people"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>{{user_count}}</h6>
-                      <!-- <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span> -->
-
+                      </div>
                     </div>
                   </div>
 
                 </div>
-              </div>
+              </div><!-- End Sales Card -->
 
-            </div><!-- End Customers Card -->
+              <!-- Revenue Card -->
+              <div class="col-xxl-4 col-md-6">
+                <div class="card info-card revenue-card">
 
-            <!-- Reports -->
-            <!-- <div class="col-12">
+                  <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                      <li class="dropdown-header text-start">
+                        <h6>Filter</h6>
+                      </li>
+
+                      <li><a class="dropdown-item" href="#">Today</a></li>
+                      <li><a class="dropdown-item" href="#">This Month</a></li>
+                      <li><a class="dropdown-item" href="#">This Year</a></li>
+                    </ul>
+                  </div>
+
+                  <div class="card-body">
+                    <h5 class="card-title">Sellers <span>| This Month</span></h5>
+
+                    <div class="d-flex align-items-center">
+                      <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-people"></i>
+                      </div>
+                      <div class="ps-3">
+                        <h6>{{seller_count}}</h6>
+                        <!-- <span class="text-success small pt-1 fw-bold">8%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
+
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div><!-- End Revenue Card -->
+
+              <!-- Customers Card -->
+              <div class="col-xxl-4 col-xl-12">
+
+                <div class="card info-card customers-card">
+
+                  <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                      <li class="dropdown-header text-start">
+                        <h6>Filter</h6>
+                      </li>
+
+                      <li><a class="dropdown-item" href="#">Today</a></li>
+                      <li><a class="dropdown-item" href="#">This Month</a></li>
+                      <li><a class="dropdown-item" href="#">This Year</a></li>
+                    </ul>
+                  </div>
+
+                  <div class="card-body">
+                    <h5 class="card-title">Users <span>| This Year</span></h5>
+
+                    <div class="d-flex align-items-center">
+                      <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-people"></i>
+                      </div>
+                      <div class="ps-3">
+                        <h6>{{user_count}}</h6>
+                        <!-- <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span> -->
+
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div><!-- End Customers Card -->
+
+              <!-- Reports -->
+              <!-- <div class="col-12">
               <div class="card">
 
                 <div class="filter">
@@ -590,8 +516,8 @@ if (!userIsAuthenticated) {
               </div>
             </div>End Reports -->
 
-            <!-- Recent Sales -->
-            <!-- <div class="col-12">
+              <!-- Recent Sales -->
+              <!-- <div class="col-12">
               <div class="card recent-sales overflow-auto">
 
                 <div class="filter">
@@ -664,8 +590,8 @@ if (!userIsAuthenticated) {
               </div>
             </div>End Recent Sales -->
 
-            <!-- Top Selling -->
-            <!-- <div class="col-12">
+              <!-- Top Selling -->
+              <!-- <div class="col-12">
               <div class="card top-selling overflow-auto">
 
                 <div class="filter">
@@ -738,42 +664,42 @@ if (!userIsAuthenticated) {
               </div>
             </div>End Top Selling -->
 
-          </div>
-        </div><!-- End Left side columns -->
-
-        <!-- Right side columns -->
-        <div class="col-lg-4">
-
-          <!-- Recent Activity -->
-          <div class="card">
-            <div class="filter">
-              <a class="icon" href="#" data-bs-toggle="dropdown"></a>
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li class="dropdown-header text-start">
-                  <h6>Filter</h6>
-                </li>
-
-                <li><a class="dropdown-item" href="#">Today</a></li>
-                <li><a class="dropdown-item" href="#">This Month</a></li>
-                <li><a class="dropdown-item" href="#">This Year</a></li>
-              </ul>
             </div>
+          </div><!-- End Left side columns -->
 
-            <div class="card-body">
-              <h5 class="card-title">Recent Activity <span></span></h5>
+          <!-- Right side columns -->
+          <div class="col-lg-4">
 
-              <div class="activity">
-                {% for request in s_req %}
-                <div class="activity-item d-flex">
-                  <div class="activite-label">32 min ago</div>
-                  <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
-                  <div class="activity-content">
-                    <a href="#" class="fw-bold text-dark">{{request.user}} requested a seller request</a> 
+            <!-- Recent Activity -->
+            <div class="card">
+              <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"></a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                  <li class="dropdown-header text-start">
+                    <h6>Filter</h6>
+                  </li>
+
+                  <li><a class="dropdown-item" href="#">Today</a></li>
+                  <li><a class="dropdown-item" href="#">This Month</a></li>
+                  <li><a class="dropdown-item" href="#">This Year</a></li>
+                </ul>
+              </div>
+
+              <div class="card-body">
+                <h5 class="card-title">Recent Activity <span></span></h5>
+
+                <div class="activity">
+                  {% for request in s_req %}
+                  <div class="activity-item d-flex">
+                    <div class="activite-label">32 min ago</div>
+                    <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+                    <div class="activity-content">
+                      <a href="#" class="fw-bold text-dark">{{request.user}} requested a seller request</a>
+                    </div>
                   </div>
-                </div>
-                {% endfor %}
+                  {% endfor %}
 
-                <!-- <div class="activity-item d-flex">
+                  <!-- <div class="activity-item d-flex">
                   <div class="activite-label">56 min</div>
                   <i class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
                   <div class="activity-content">
@@ -813,13 +739,13 @@ if (!userIsAuthenticated) {
                   </div>
                 </div> -->
 
+                </div>
+
               </div>
+            </div><!-- End Recent Activity -->
 
-            </div>
-          </div><!-- End Recent Activity -->
-
-          <!-- Budget Report -->
-          <!-- <div class="card">
+            <!-- Budget Report -->
+            <!-- <div class="card">
             <div class="filter">
               <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -892,8 +818,8 @@ if (!userIsAuthenticated) {
             </div> 
           </div>End Budget Report -->
 
-          <!-- Website Traffic -->
-          <!-- <div class="card">
+            <!-- Website Traffic -->
+            <!-- <div class="card">
             <div class="filter">
               <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -970,8 +896,8 @@ if (!userIsAuthenticated) {
             </div>
           </div>End Website Traffic -->
 
-          <!-- News & Updates Traffic -->
-          <!-- <div class="card">
+            <!-- News & Updates Traffic -->
+            <!-- <div class="card">
             <div class="filter">
               <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -1024,11 +950,11 @@ if (!userIsAuthenticated) {
             </div>
           </div>End News & Updates -->
 
-        </div><!-- End Right side columns -->
-      </div>
-    </section>
+          </div><!-- End Right side columns -->
+        </div>
+      </section>
 
-  </div>
+    </div>
     {% endblock %}
 
   </main><!-- End #main -->
@@ -1438,7 +1364,7 @@ if (!userIsAuthenticated) {
 
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
-    
+
     <div class="credits">
       <!-- All the links in the footer should remain intact. -->
       <!-- You can delete the links only if you purchased the pro version. -->
@@ -1448,75 +1374,79 @@ if (!userIsAuthenticated) {
     </div>
     <div style="background-color: #010110;" id="contactus" class="container-fluid">
       <div class="row px-xl-5 pt-5">
-          <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-              <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
-              {% comment %} <p class="mb-4">No dolore ipsum accusam no lorem. Invidunt sed clita kasd clita et et
-                  dolor sed dolor. Rebum tempor no vero est magna amet no</p> {% endcomment %}
-              <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i> Pathanamthitta, Kerala, India</p>
-              <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>aqueon17@gmail.com</p>
-              <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+91 8639794330</p>
-          </div>
-          <div class="col-lg-8 col-md-12">
-              <div class="row">
-                  <div class="col-md-4 mb-5">
-                      <h5 class="text-secondary text-uppercase mb-4">Quick Shop</h5>
-                      <div class="d-flex flex-column justify-content-start">
-                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop
-                              Detail</a>
-                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping
-                              Cart</a>
-                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
-                          <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
-                      </div>
-                  </div>
-                  <div class="col-md-4 mb-5">
-                      <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
-                      <div class="d-flex flex-column justify-content-start">
-                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop
-                              Detail</a>
-                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping
-                              Cart</a>
-                          <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
-                          <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
-                      </div>
-                  </div>
-                  <div class="col-md-4 mb-5">
-                      <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
-                      <p>Duo stet tempor ipsum sit amet magna ipsum tempor est</p>
-                      <form action="">
-                          <div class="input-group">
-                              <input style="height: 40px; background-color: white;border-bottom-left-radius: 7px; border-top-left-radius: 7px;" type="text" class="form-control" placeholder="Your Email Address">
-                              <div class="input-group-append">
-                                  <button style="height: 41px; background-color: #FFD333;border-bottom-right-radius: 7px; border-top-right-radius: 7px;" class=" ">Sign Up</button>
-                              </div>
-                          </div>
-                      </form>
-                      <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
-                      <div class="d-flex">
-                          <a style="border-radius:5px; background-color: #FFD333;" class=" btn-square mr-2" href="#"><i
-                                  class="fab fa-twitter" ></i></a>
-                          <a style="border-radius:5px; background-color: #FFD333;" class=" btn-square mr-2" href="#"><i
-                                  class="fab fa-facebook-f"></i></a>
-                          <a style="border-radius:5px; background-color: #FFD333;" class=" btn-square mr-2" href="#"><i
-                                  class="fab fa-linkedin-in"></i></a>
-                          <a style="border-radius:5px; background-color: #FFD333;"  class="btn-square" href="#"><i
-                                  class="fab fa-instagram"></i></a>
-                      </div>
-                  </div>
+        <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
+          <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
+          {% comment %} <p class="mb-4">No dolore ipsum accusam no lorem. Invidunt sed clita kasd clita et et
+            dolor sed dolor. Rebum tempor no vero est magna amet no</p> {% endcomment %}
+          <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i> Pathanamthitta, Kerala, India</p>
+          <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>aqueon17@gmail.com</p>
+          <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+91 8639794330</p>
+        </div>
+        <div class="col-lg-8 col-md-12">
+          <div class="row">
+            <div class="col-md-4 mb-5">
+              <h5 class="text-secondary text-uppercase mb-4">Quick Shop</h5>
+              <div class="d-flex flex-column justify-content-start">
+                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
+                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop
+                  Detail</a>
+                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping
+                  Cart</a>
+                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
+                <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
               </div>
+            </div>
+            <div class="col-md-4 mb-5">
+              <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
+              <div class="d-flex flex-column justify-content-start">
+                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
+                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop
+                  Detail</a>
+                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping
+                  Cart</a>
+                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
+                <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+              </div>
+            </div>
+            <div class="col-md-4 mb-5">
+              <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
+              <p>Duo stet tempor ipsum sit amet magna ipsum tempor est</p>
+              <form action="">
+                <div class="input-group">
+                  <input
+                    style="height: 40px; background-color: white;border-bottom-left-radius: 7px; border-top-left-radius: 7px;"
+                    type="text" class="form-control" placeholder="Your Email Address">
+                  <div class="input-group-append">
+                    <button
+                      style="height: 41px; background-color: #FFD333;border-bottom-right-radius: 7px; border-top-right-radius: 7px;"
+                      class=" ">Sign Up</button>
+                  </div>
+                </div>
+              </form>
+              <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
+              <div class="d-flex">
+                <a style="border-radius:5px; background-color: #FFD333;" class=" btn-square mr-2" href="#"><i
+                    class="fab fa-twitter"></i></a>
+                <a style="border-radius:5px; background-color: #FFD333;" class=" btn-square mr-2" href="#"><i
+                    class="fab fa-facebook-f"></i></a>
+                <a style="border-radius:5px; background-color: #FFD333;" class=" btn-square mr-2" href="#"><i
+                    class="fab fa-linkedin-in"></i></a>
+                <a style="border-radius:5px; background-color: #FFD333;" class="btn-square" href="#"><i
+                    class="fab fa-instagram"></i></a>
+              </div>
+            </div>
           </div>
+        </div>
       </div>
-      <div  class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
+      <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
         <div style="color: white;" class="copyright">
           &copy; Copyright <strong><span>Aqueon</span></strong>. All Rights Reservedd
         </div>
-         
+
       </div>
-  </div>
+    </div>
   </footer><!-- End Footer -->
 
 
@@ -1543,5 +1473,3 @@ if (!userIsAuthenticated) {
 
 
 </html>
-
-

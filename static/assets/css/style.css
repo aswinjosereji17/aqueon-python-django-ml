@@ -662,11 +662,15 @@ h6 {
   .toggle-sidebar #main3,
   .toggle-sidebar #main1,
   .toggle-sidebar #footer {
-    margin-left: 0;
+    margin-left: 65px;
+  }
+  .toggle-sidebar #hamb{
+    margin-left: -5px;
   }
 
   .toggle-sidebar .sidebar {
-    left: -300px;
+    /* left: -100px; */
+    width: 50px;
   }
 }
 
@@ -702,13 +706,13 @@ h6 {
   color: #4154f1;
   transition: 0.3;
   background: #f6f9ff;
-  padding: 10px 15px;
+  padding: 10px 0px;
   border-radius: 4px;
 }
 
 .sidebar-nav .nav-link i {
   font-size: 16px;
-  margin-right: 10px;
+  margin-right: 14px;
   color: #4154f1;
 }
 

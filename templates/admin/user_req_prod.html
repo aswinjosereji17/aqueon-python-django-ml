@@ -19,7 +19,7 @@
             {% for request in product_requests %}
                 <tr>
                     <td>{{ request.requested_user.username }}</td>
-                    <td>{{ request.categ_id.name }}</td>
+                    <td>{{ request.categ_id.categ_name }}</td>
                     <td>{{ request.product_name }}</td>
                     {% if request.image %}
                         <td><img src="{{ request.image.url }}" alt="Product Image"></td>

@@ -351,7 +351,7 @@ def edit_profile(request):
 # product
 
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Product, ProductSubcategory, ProductDescription
+from .models import Product, ProductSubcategory, ProductDescription,Fish
 
 @login_required
 @never_cache
@@ -377,6 +377,7 @@ from django.db import IntegrityError
 def add_product(request):
     users = User.objects.all()
     seller_requests = SellerRequest.objects.all()
+    fish=Fish.objects.all()
     try:
         seller_request = SellerRequest.objects.get(user=request.user)
     except SellerRequest.DoesNotExist:
@@ -399,11 +400,13 @@ def add_product(request):
         'seller_request': seller_request,
         'user_addr' : user_addr,
         'seller_requests' : seller_requests,
-        'subcategories': subcategories
+        'subcategories': subcategories,
+        'fish' :fish,
     }
 
     if request.method == 'POST':
         product_name = request.POST['product_name']
+        fish = request.POST['fish']
         subcategory_id = request.POST['subcategory']
         price = request.POST['price']
         quantity=request.POST['quantity']
@@ -419,10 +422,12 @@ def add_product(request):
             return HttpResponse("Product with this name already exists.")
 
         subcategory = ProductSubcategory.objects.get(pk=subcategory_id)
+        fish1=Fish.objects.get(pk=fish)
         
         # Create and save the product using the provided data
         product = Product(
             prod_name=product_name,
+            fish_name=fish1,
             sub_categ_id=subcategory,
             price=price,
             stock_quantity=quantity,
@@ -510,15 +515,8 @@ def prod_desc(request, prod_id):
     # return render(request, 'product/product_desc.html', {'products': products})
     # has_reviewed = Review.objects.filter(prod_id=prod_id, user=request.user).exists()
     product = get_object_or_404(Product, prod_id=prod_id)
-
-    # Retrieve all reviews for the product
     reviews = Review.objects.filter(prod=product)
-
-
     avg_rating = Review.objects.filter(prod=product).aggregate(Avg('rating'))['rating__avg'] or 0
-
-   
-
     try:
         products = Product.objects.get(prod_id=prod_id)
     except Product.DoesNotExist:
@@ -528,13 +526,41 @@ def prod_desc(request, prod_id):
         prod_desc = ProductDescription.objects.get(prod_id=prod_id)
     except ProductDescription.DoesNotExist:
         prod_desc = None
+
+
+    # user_has_purchased_product = False
+    if request.user.is_authenticated:
+        user_has_purchased_product = Order.objects.filter(
+            user=request.user,
+            orderitem__product=product,
+            payment_status=Order.PaymentStatusChoices.SUCCESSFUL
+        ).exists()
+
+
     
-    context = {
-        'products': products,
-        'prod_desc': prod_desc,
-        'reviews' : reviews,
-        'avg_rating': avg_rating
-    }
+
+
+
+   
+
+    
+    
+    if request.user.is_authenticated:
+        context = {
+            'products': products,
+            'prod_desc': prod_desc,
+            'reviews': reviews,
+            'avg_rating': avg_rating,
+            'user_has_purchased_product': user_has_purchased_product,
+
+        }
+    else:
+        context = {
+            'products': products,
+            'prod_desc': prod_desc,
+            'reviews': reviews,
+            'avg_rating': avg_rating,
+        }
     
     return render(request, 'product/product_desc.html', context)
 
@@ -1193,95 +1219,223 @@ razorpay_client = razorpay.Client(
 	auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
 
 
+# def homepage(request):
+#     user = request.user
+#     user_addr = UserAddress.objects.get(user=request.user)
+#     currency = 'INR'
+#     cart = AddCart.objects.get(user=user)
+#     cart_items = CartItems.objects.filter(cart=cart)
+#     total_cart_value = cart_items.aggregate(Sum('total_price'))['total_price__sum']
+#     shipping_cost = Decimal('50.00')  # Assuming a fixed shipping cost of $50.00
+
+#     total_cart_value = int(total_cart_value * 100)
+#     shipping_cost = int(shipping_cost * 100)
+
+#     # Calculate the total amount in paisa
+#     amount = total_cart_value + shipping_cost
+
+
+#     razorpay_order = razorpay_client.order.create(dict(amount=amount,
+#                                                       currency=currency,
+#                                                       payment_capture='0',
+#                                                       ))
+
+#     # order id of newly created order.
+#     razorpay_order_id = razorpay_order['id']
+#     callback_url = 'paymenthandler/'
+
+#     # we need to pass these details to frontend.
+#     context = {}
+#     context['razorpay_order_id'] = razorpay_order_id
+#     context['razorpay_merchant_key'] = settings.RAZOR_KEY_ID
+#     context['razorpay_amount'] = amount
+#     context['currency'] = currency
+#     context['callback_url'] = callback_url
+#     context['total_cart_value'] = total_cart_value  # Add the total cart value as a string
+#     context['shipping_cost'] = shipping_cost  # Add the shipping cost as a string
+#     context['user_addr'] = user_addr
+
+#     return render(request, 'index1.html', context=context)
+
+# @csrf_exempt
+# def paymenthandler(request):
+#     # only accept POST request.
+#     if request.method == "POST":
+#         try:
+#             # get the required parameters from post request.
+#             payment_id = request.POST.get('razorpay_payment_id', '')
+#             razorpay_order_id = request.POST.get('razorpay_order_id', '')
+#             signature = request.POST.get('razorpay_signature', '')
+#             params_dict = {
+#                 'razorpay_order_id': razorpay_order_id,
+#                 'razorpay_payment_id': payment_id,
+#                 'razorpay_signature': signature
+#             }
+
+#             # verify the payment signature.
+#             result = razorpay_client.utility.verify_payment_signature(params_dict)
+#             if result is not None:
+#                 user = request.user
+#                 cart = AddCart.objects.get(user=user)
+#                 cart_items = CartItems.objects.filter(cart=cart)
+#                 total_cart_value = cart_items.aggregate(Sum('total_price'))['total_price__sum']
+#                 shipping_cost = Decimal('50.00')  # Assuming a fixed shipping cost of $50.00
+
+#                 total_cart_value = int(total_cart_value * 100)
+#                 shipping_cost = int(shipping_cost * 100)
+#                 amount = total_cart_value + shipping_cost
+
+#                 try:
+#                     # capture the payment
+#                     razorpay_client.payment.capture(payment_id, amount)
+
+#                     # render success page on successful capture of payment
+#                     return render(request, 'paymentsuccess.html')
+#                 except:
+#                     # if there is an error while capturing payment.
+#                     return render(request, 'paymentfail.html')
+#             else:
+#                 # if signature verification fails.
+#                 return render(request, 'paymentfail.html')
+#         except:
+#             # if we don't find the required parameters in POST data
+#             return HttpResponseBadRequest()
+#     else:
+#         # if other than POST request is made.
+#         return HttpResponseBadRequest()
+
+
+
+
+#updated payment
+
+from .models import AddCart, CartItems, Order, OrderItem
+
 def homepage(request):
-    user = request.user
-    user_addr = UserAddress.objects.get(user=request.user)
+    # Assuming the user can have only one AddCart instance
+    add_cart = get_object_or_404(AddCart, user=request.user)
+
+    # Get all cart items associated with the AddCart
+    cart_items = CartItems.objects.filter(cart=add_cart)
+
+    total_price = Decimal(sum(cart_item.total_price for cart_item in cart_items))
+    
     currency = 'INR'
-    cart = AddCart.objects.get(user=user)
-    cart_items = CartItems.objects.filter(cart=cart)
-    total_cart_value = cart_items.aggregate(Sum('total_price'))['total_price__sum']
-    shipping_cost = Decimal('50.00')  # Assuming a fixed shipping cost of $50.00
 
-    total_cart_value = int(total_cart_value * 100)
-    shipping_cost = int(shipping_cost * 100)
+    # Set the 'amount' variable to 'total_price'
+    amount = int(total_price * 100)
 
-    # Calculate the total amount in paisa
-    amount = total_cart_value + shipping_cost
+    # Create a Razorpay Order
+    razorpay_order = razorpay_client.order.create(dict(
+        amount=amount,
+        currency=currency,
+        payment_capture='0'
+    ))
 
-
-    razorpay_order = razorpay_client.order.create(dict(amount=amount,
-                                                      currency=currency,
-                                                      payment_capture='0',
-                                                      ))
-
-    # order id of newly created order.
+    # Order id of the newly created order
     razorpay_order_id = razorpay_order['id']
-    callback_url = 'paymenthandler/'
+    callback_url = '/paymenthandler/'
 
-    # we need to pass these details to frontend.
-    context = {}
-    context['razorpay_order_id'] = razorpay_order_id
-    context['razorpay_merchant_key'] = settings.RAZOR_KEY_ID
-    context['razorpay_amount'] = amount
-    context['currency'] = currency
-    context['callback_url'] = callback_url
-    context['total_cart_value'] = total_cart_value  # Add the total cart value as a string
-    context['shipping_cost'] = shipping_cost  # Add the shipping cost as a string
-    context['user_addr'] = user_addr
+    order = Order.objects.create(
+        user=request.user,
+        total_price=total_price,
+        razorpay_order_id=razorpay_order_id,
+        payment_status=Order.PaymentStatusChoices.PENDING,
+    )
+
+    # Add the products to the order
+    for cart_item in cart_items:
+        product = cart_item.prod
+        price = product.price
+        quantity = cart_item.quantity
+        total_item_price = cart_item.total_price
+
+        # Create an OrderItem for this product
+        order_item = OrderItem.objects.create(
+            order=order,
+            product=product,
+            quantity=quantity,
+            price=price,
+            total_price=total_item_price,
+        )
+
+    # Save the order to generate an order ID
+    order.save()
+
+    # Create a context dictionary with all the variables you want to pass to the template
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'razorpay_order_id': razorpay_order_id,
+        'razorpay_merchant_key': settings.RAZOR_KEY_ID,
+        'razorpay_amount': amount,  # Set to 'total_price'
+        'currency': currency,
+        'callback_url': callback_url,
+    }
 
     return render(request, 'index1.html', context=context)
 
-
-
-
-
-
 @csrf_exempt
 def paymenthandler(request):
-    # only accept POST request.
     if request.method == "POST":
+        payment_id = request.POST.get('razorpay_payment_id', '')
+        razorpay_order_id = request.POST.get('razorpay_order_id', '')
+        signature = request.POST.get('razorpay_signature', '')
+
+        # Verify the payment signature.
+        params_dict = {
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': payment_id,
+            'razorpay_signature': signature
+        }
+        result = razorpay_client.utility.verify_payment_signature(params_dict)
+
+        if not result:
+            # Signature verification failed.
+            return render(request, 'paymentfail.html')
+
+        # Signature verification succeeded.
+        # Retrieve the order from the database
         try:
-            # get the required parameters from post request.
-            payment_id = request.POST.get('razorpay_payment_id', '')
-            razorpay_order_id = request.POST.get('razorpay_order_id', '')
-            signature = request.POST.get('razorpay_signature', '')
-            params_dict = {
-                'razorpay_order_id': razorpay_order_id,
-                'razorpay_payment_id': payment_id,
-                'razorpay_signature': signature
-            }
+            order = Order.objects.get(razorpay_order_id=razorpay_order_id)
+        except Order.DoesNotExist:
+            return HttpResponseBadRequest("Order not found")
 
-            # verify the payment signature.
-            result = razorpay_client.utility.verify_payment_signature(params_dict)
-            if result is not None:
-                user = request.user
-                cart = AddCart.objects.get(user=user)
-                cart_items = CartItems.objects.filter(cart=cart)
-                total_cart_value = cart_items.aggregate(Sum('total_price'))['total_price__sum']
-                shipping_cost = Decimal('50.00')  # Assuming a fixed shipping cost of $50.00
+        if order.payment_status == Order.PaymentStatusChoices.SUCCESSFUL:
+            # Payment is already marked as successful, ignore this request.
+            return HttpResponse("Payment is already successful")
 
-                total_cart_value = int(total_cart_value * 100)
-                shipping_cost = int(shipping_cost * 100)
-                amount = total_cart_value + shipping_cost
+        if order.payment_status != Order.PaymentStatusChoices.PENDING:
+            # Order is not in a pending state, do not proceed with stock update.
+            return HttpResponseBadRequest("Invalid order status")
 
-                try:
-                    # capture the payment
-                    razorpay_client.payment.capture(payment_id, amount)
+        # Capture the payment amount
+        amount = int(order.total_price * 100)  # Convert Decimal to paise
+        razorpay_client.payment.capture(payment_id, amount)
 
-                    # render success page on successful capture of payment
-                    return render(request, 'paymentsuccess.html')
-                except:
-                    # if there is an error while capturing payment.
-                    return render(request, 'paymentfail.html')
-            else:
-                # if signature verification fails.
-                return render(request, 'paymentfail.html')
-        except:
-            # if we don't find the required parameters in POST data
-            return HttpResponseBadRequest()
-    else:
-        # if other than POST request is made.
-        return HttpResponseBadRequest()
+        # Update the order with payment ID and change status to "Successful"
+        order.payment_id = payment_id
+        order.payment_status = Order.PaymentStatusChoices.SUCCESSFUL
+        order.save()
+
+        # Assuming the user can have only one AddCart instance
+        add_cart = get_object_or_404(AddCart, user=request.user)
+
+        # Get all cart items associated with the AddCart
+        cart_items = CartItems.objects.filter(cart=add_cart)
+        # Redirect to a payment success page
+        return redirect('index')
+
+    return HttpResponseBadRequest("Invalid request method")
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1504,3 +1658,177 @@ def requested_products(request):
 # def product_requests_view(request):
 #     product_requests = ProductRequest.objects.all()
 #     return render(request, 'admin/user_req_view.html', {'product_requests': product_requests})
+
+
+
+
+
+
+
+
+
+
+
+# # qa/views.py
+# from django.shortcuts import render
+# from django.http import JsonResponse
+# from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
+# import speech_recognition as sr
+# import pyttsx3
+
+# import os
+
+# # Get the absolute path of the directory containing this script
+# current_directory = os.path.dirname(os.path.realpath(__file__))
+
+# # Specify the absolute path to 'demo1.csv'
+# file_path = os.path.join(current_directory, 'demo1.csv')
+# import pandas as pd
+# from sklearn.neighbors import NearestNeighbors
+
+# # Load fish data from a CSV file
+# fish_data = pd.read_csv(file_path)
+
+# # Initialize the KNN model
+# nn_model = NearestNeighbors(n_neighbors=5, metric='cosine', algorithm='brute')
+# nn_model.fit(fish_data[['Aggression Level', 'Social Behavior', 'Territoriality', 'Schooling Behavior', 'Predatory', 'Size', 'Compatibility']])
+
+
+# def homeee(request):
+#     if request.method == 'POST':
+#         user_question = request.POST.get('description')
+
+#         # Make predictions here
+#         context = 'Betta fish prefer their water’s pH to be slightly acidic. They do best in the pH range of 6.5 to 7.5 (7 is neutral). Some tap water and spring water may be significantly higher than 7.5 which means you should always test your water before adding it to your betta’s tank. Consider purchasing a pH kit to keep it in a healthy range if necessary. Also consider adding aquarium salt to your aquarium’s water to reduce stress and swelling, and to promote healthy fins. A systematic maintenance schedule must be adhered to. Tanks under 3 gallons will need more frequent and complete water changes to avoid dangerous levels of ammonia. It can be done, it’s just more work. Non-filtered tanks require 1-2 water cycles at around 25% and a full 100% water change each week (depending on water quality). A 5-gallon filtered tank will only need 1-2 water cycles per week at around 25% of total volume and a 100% water change once per month depending on water quality. Keep a pH kit in your supplies to test your tank’s water. Don’t combine your betta with fish that are notorious for fin nippers. Smaller tanks and those that are unfiltered are more work in the long-run because of how rapidly the water’s quality can decline. Cleaning your tank and its decorations every week is very important for your betta fish’s health. Only use approved aquarium decorations and materials that are safe for fish. Use a magnetic or algae cleaning wand for regular algae removal while the tank is filled. Filters and their media should be cleaned by rinsing them in existing tank water to preserve healthy bacteria. Other components should be cleaned and disinfected. Never clean a tank or its components with soap! It’s very tough to remove all the soap and it can poison your betta once the tank is refilled. Remember, adding live plants can also help reduce ammonia levels in the water naturally. Water cycling (removing some and adding new) and changes (complete volume replacement) are necessary for filtered tanks too but are more frequent and important in non-filtered habitats. If you’re only cycling the water, don’t remove your betta. Unnecessary removal can lead to potential stress and injury. Only remove your betta during 100% water changes. Betta fish get used to their ecosystem and don’t like abrupt changes to it. Because of this, you should cycle more than you do a complete change. Removing too much of the existing water in the tank and then adding new can cause your fish to go into shock. This may be due to changes in water parameters or temperature. Always acclimate your betta fish when re-introducing them to their tank after a complete water change.'
+
+#         model_name = "deepset/roberta-base-squad2"
+#         model = AutoModelForQuestionAnswering.from_pretrained(model_name)
+#         tokenizer = AutoTokenizer.from_pretrained(model_name)
+#         nlp = pipeline('question-answering', model=model, tokenizer=tokenizer)
+
+#         res = nlp({'question': user_question, 'context': context})
+#         predicted_answer = res['answer']
+
+
+#         if any(keyword in user_question.lower() for keyword in ['similar fish', 'similar fishes', 'fish similar', 'fish similar to this fish']):
+#             # Assume 'input_fish_name' is extracted from the user's question (modify as needed)
+#             input_fish_name = "Arapaima"
+#             input_fish_features = fish_data.loc[fish_data['Species'] == input_fish_name, ['Aggression Level', 'Social Behavior', 'Territoriality', 'Schooling Behavior', 'Predatory', 'Size', 'Compatibility']].values[0]
+            
+#             # Find similar fish using KNN
+#             _, neighbor_indices = nn_model.kneighbors(input_fish_features.reshape(1, -1))
+#             similar_fish_indices = neighbor_indices[0][1:]
+#             similar_fish = fish_data.iloc[similar_fish_indices]
+
+#             # Convert similar fish data to JSON format
+#             similar_fish_json = similar_fish['Species'].tolist()
+
+#             # Print or use the similar fish data as needed
+#             print(f"Fish similar to {input_fish_name} ")
+#             print(similar_fish[['Species']])
+
+#             similar_fish_text = ", ".join(similar_fish_json)
+#             engine = pyttsx3.init()
+#             engine.say(f"Fish similar to {input_fish_name} are: {similar_fish_text}")
+#             engine.runAndWait()
+
+#             return JsonResponse({'similar_fish': similar_fish_json})
+        
+#         else:
+#             # Speak the predicted result
+#             engine = pyttsx3.init()
+#             engine.say("The predicted answer is: " + predicted_answer)
+#             engine.runAndWait()
+
+#             return JsonResponse({'predicted_answer': predicted_answer})
+
+        
+ 
+
+# qa/views.py
+from django.shortcuts import render
+from django.http import JsonResponse
+from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
+import speech_recognition as sr
+import pyttsx3
+import os
+
+# Get the absolute path of the directory containing this script
+current_directory = os.path.dirname(os.path.realpath(__file__))
+
+# Specify the absolute path to 'demo1.csv'
+file_path = os.path.join(current_directory, 'demo1.csv')
+import pandas as pd
+from sklearn.neighbors import NearestNeighbors
+
+# Load fish data from a CSV file
+fish_data = pd.read_csv(file_path)
+
+# Initialize the KNN model
+nn_model = NearestNeighbors(n_neighbors=5, metric='cosine', algorithm='brute')
+nn_model.fit(fish_data[['Aggression Level', 'Social Behavior', 'Territoriality', 'Schooling Behavior', 'Predatory', 'Size', 'Compatibility']])
+
+
+def homeee(request):
+    if request.method == 'POST':
+        user_input_method = request.POST.get('input_method')
+        context = 'Betta fish prefer their water’s pH to be slightly acidic. They do best in the pH range of 6.5 to 7.5 (7 is neutral). Some tap water and spring water may be significantly higher than 7.5 which means you should always test your water before adding it to your betta’s tank. Consider purchasing a pH kit to keep it in a healthy range if necessary. Also consider adding aquarium salt to your aquarium’s water to reduce stress and swelling, and to promote healthy fins. A systematic maintenance schedule must be adhered to. Tanks under 3 gallons will need more frequent and complete water changes to avoid dangerous levels of ammonia. It can be done, it’s just more work. Non-filtered tanks require 1-2 water cycles at around 25% and a full 100% water change each week (depending on water quality). A 5-gallon filtered tank will only need 1-2 water cycles per week at around 25% of total volume and a 100% water change once per month depending on water quality. Keep a pH kit in your supplies to test your tank’s water. Don’t combine your betta with fish that are notorious for fin nippers. Smaller tanks and those that are unfiltered are more work in the long-run because of how rapidly the water’s quality can decline. Cleaning your tank and its decorations every week is very important for your betta fish’s health. Only use approved aquarium decorations and materials that are safe for fish. Use a magnetic or algae cleaning wand for regular algae removal while the tank is filled. Filters and their media should be cleaned by rinsing them in existing tank water to preserve healthy bacteria. Other components should be cleaned and disinfected. Never clean a tank or its components with soap! It’s very tough to remove all the soap and it can poison your betta once the tank is refilled. Remember, adding live plants can also help reduce ammonia levels in the water naturally. Water cycling (removing some and adding new) and changes (complete volume replacement) are necessary for filtered tanks too but are more frequent and important in non-filtered habitats. If you’re only cycling the water, don’t remove your betta. Unnecessary removal can lead to potential stress and injury. Only remove your betta during 100% water changes. Betta fish get used to their ecosystem and don’t like abrupt changes to it. Because of this, you should cycle more than you do a complete change. Removing too much of the existing water in the tank and then adding new can cause your fish to go into shock. This may be due to changes in water parameters or temperature. Always acclimate your betta fish when re-introducing them to their tank after a complete water change.'
+
+
+        if user_input_method == 'text':
+            user_question = request.POST.get('description')
+        elif user_input_method == 'speech':
+            # Capture audio input for speech recognition
+            recognizer = sr.Recognizer()
+            with sr.Microphone() as source:
+                print("Say something:")
+                audio = recognizer.listen(source)
+            
+            try:
+                user_question = recognizer.recognize_google(audio)
+            except sr.UnknownValueError:
+                user_question = "Sorry, I couldn't understand the audio."
+            except sr.RequestError:
+                user_question = "There was an error with the speech recognition service."
+
+        # Make predictions here
+        context = '...'  # Your context remains the same
+
+        model_name = "deepset/roberta-base-squad2"
+        model = AutoModelForQuestionAnswering.from_pretrained(model_name)
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        nlp = pipeline('question-answering', model=model, tokenizer=tokenizer)
+
+        res = nlp({'question': user_question, 'context': context})
+        predicted_answer = res['answer']
+
+        if any(keyword in user_question.lower() for keyword in ['similar fish', 'similar fishes', 'fish similar', 'fish similar to this fish']):
+            # Assume 'input_fish_name' is extracted from the user's question (modify as needed)
+            input_fish_name = "Arapaima"
+            input_fish_features = fish_data.loc[fish_data['Species'] == input_fish_name, ['Aggression Level', 'Social Behavior', 'Territoriality', 'Schooling Behavior', 'Predatory', 'Size', 'Compatibility']].values[0]
+
+            # Find similar fish using KNN
+            _, neighbor_indices = nn_model.kneighbors(input_fish_features.reshape(1, -1))
+            similar_fish_indices = neighbor_indices[0][1:]
+            similar_fish = fish_data.iloc[similar_fish_indices]
+
+            # Convert similar fish data to JSON format
+            similar_fish_json = similar_fish['Species'].tolist()
+
+            # Print or use the similar fish data as needed
+            print(f"Fish similar to {input_fish_name} ")
+            print(similar_fish[['Species']])
+
+            similar_fish_text = ", ".join(similar_fish_json)
+            engine = pyttsx3.init()
+            engine.say(f"Fish similar to {input_fish_name} are: {similar_fish_text}")
+            engine.runAndWait()
+
+            return JsonResponse({'similar_fish': similar_fish_json})
+        else:
+            # Speak the predicted result
+            engine = pyttsx3.init()
+            engine.say("The predicted answer is: " + predicted_answer)
+            engine.runAndWait()
+
+            return JsonResponse({'predicted_answer': predicted_answer})

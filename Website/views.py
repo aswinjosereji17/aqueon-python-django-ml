@@ -28,6 +28,7 @@ def index(request):
     product_ratings = []
     for product in recent_products:
         avg_rating = Review.objects.filter(prod=product).aggregate(Avg('rating'))['rating__avg'] or 0
+        print(avg_rating)
         product_ratings.append({'product': product, 'avg_rating': avg_rating})
 
     
@@ -1403,6 +1404,7 @@ def paymenthandler(request):
 
         if order.payment_status == Order.PaymentStatusChoices.SUCCESSFUL:
             # Payment is already marked as successful, ignore this request.
+            
             return HttpResponse("Payment is already successful")
 
         if order.payment_status != Order.PaymentStatusChoices.PENDING:
@@ -1417,6 +1419,9 @@ def paymenthandler(request):
         order.payment_id = payment_id
         order.payment_status = Order.PaymentStatusChoices.SUCCESSFUL
         order.save()
+        add_cart = get_object_or_404(AddCart, user=request.user)
+        cart_items = CartItems.objects.filter(cart=add_cart)
+        cart_items.delete()
 
         # Assuming the user can have only one AddCart instance
         add_cart = get_object_or_404(AddCart, user=request.user)
@@ -1661,6 +1666,25 @@ def requested_products(request):
 
 
 
+def activate_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    user.is_active = True
+    user.save()
+    return redirect('users_list')  # Replace 'your_user_list_view' with the actual URL name of your user list view
+
+def deactivate_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    user.is_active = False
+    user.save()
+    return redirect('users_list') 
+
+
+
+
+
+
+
+
 
 
 
@@ -1675,8 +1699,106 @@ from django.http import JsonResponse
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
 import speech_recognition as sr
 import pyttsx3
-
+import torch.nn.functional as F
+from torch import Tensor
+from transformers import AutoTokenizer, AutoModel
 import os
+
+import torch
+import torchvision
+from torchvision import datasets, models
+from torchvision.transforms import functional as FT
+from torchvision import transforms as T
+from torch import nn, optim
+from torch.nn import functional as F
+from torch.utils.data import DataLoader, sampler, random_split, Dataset
+import copy
+import math
+from PIL import Image
+import cv2
+import albumentations as A  # our data augmentation library
+
+import matplotlib.pyplot as plt
+from pycocotools.coco import COCO
+from albumentations.pytorch import ToTensorV2
+from torchvision.utils import draw_bounding_boxes
+import torchvision.transforms as transforms
+import os
+class AquariumDetection(datasets.VisionDataset):
+    def __init__(self, root, split='train', transform=None, target_transform=None, transforms=None):
+        # the 3 transform parameters are reuqired for datasets.VisionDataset
+        super().__init__(root, transforms, transform, target_transform)
+        self.split = split #train, valid, test
+        self.coco = COCO(os.path.join(root, split, "_annotations.coco.json")) # annotatiosn stored here
+        self.ids = list(sorted(self.coco.imgs.keys()))
+        self.ids = [id for id in self.ids if (len(self._load_target(id)) > 0)]
+
+    def _load_image(self, id: int):
+        path = self.coco.loadImgs(id)[0]['file_name']
+        image = cv2.imread(os.path.join(self.root, self.split, path))
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        return image
+    def _load_target(self, id):
+        return self.coco.loadAnns(self.coco.getAnnIds(id))
+
+    def __getitem__(self, index):
+        id = self.ids[index]
+        image = self._load_image(id)
+        target = self._load_target(id)
+        target = copy.deepcopy(self._load_target(id))
+
+        boxes = [t['bbox'] + [t['category_id']] for t in target] # required annotation format for albumentations
+        if self.transforms is not None:
+            transformed = self.transforms(image=image, bboxes=boxes)
+
+        image = transformed['image']
+        boxes = transformed['bboxes']
+
+        new_boxes = [] # convert from xywh to xyxy
+        for box in boxes:
+            xmin = box[0]
+            xmax = xmin + box[2]
+            ymin = box[1]
+            ymax = ymin + box[3]
+            new_boxes.append([xmin, ymin, xmax, ymax])
+
+        boxes = torch.tensor(new_boxes, dtype=torch.float32)
+
+        targ = {} # here is our transformed target
+        targ['boxes'] = boxes
+        targ['labels'] = torch.tensor([t['category_id'] for t in target], dtype=torch.int64)
+        targ['image_id'] = torch.tensor([t['image_id'] for t in target])
+        targ['area'] = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0]) # we have a different area
+        targ['iscrowd'] = torch.tensor([t['iscrowd'] for t in target], dtype=torch.int64)
+        return image.div(255), targ # scale images
+    def __len__(self):
+        return len(self.ids)
+def get_transforms(train=False):
+    if train:
+        transform = A.Compose([
+            A.Resize(600, 600), # our input size can be 600px
+            A.HorizontalFlip(p=0.3),
+            A.VerticalFlip(p=0.3),
+            A.RandomBrightnessContrast(p=0.1),
+            A.ColorJitter(p=0.1),
+            ToTensorV2()
+        ], bbox_params=A.BboxParams(format='coco'))
+    else:
+        transform = A.Compose([
+            A.Resize(600, 600), # our input size can be 600px
+            ToTensorV2()
+        ], bbox_params=A.BboxParams(format='coco'))
+    return transform
+
+
+
+
+def average_pool(last_hidden_states: Tensor,
+                 attention_mask: Tensor) -> Tensor:
+    last_hidden = last_hidden_states.masked_fill(~attention_mask[..., None].bool(), 0.0)
+    return last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
+
+
 
 # Get the absolute path of the directory containing this script
 current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -1699,22 +1821,58 @@ def homeee(request, prod_id):
     product_description = get_object_or_404(ProductDescription, prod_id=product)
     if request.method == 'POST':
         user_question = request.POST.get('description')
+        
 
         # Make predictions here
         # context = 'Betta fish prefer their water’s pH to be slightly acidic. They do best in the pH range of 6.5 to 7.5 (7 is neutral). Some tap water and spring water may be significantly higher than 7.5 which means you should always test your water before adding it to your betta’s tank. Consider purchasing a pH kit to keep it in a healthy range if necessary. Also consider adding aquarium salt to your aquarium’s water to reduce stress and swelling, and to promote healthy fins. A systematic maintenance schedule must be adhered to. Tanks under 3 gallons will need more frequent and complete water changes to avoid dangerous levels of ammonia. It can be done, it’s just more work. Non-filtered tanks require 1-2 water cycles at around 25% and a full 100% water change each week (depending on water quality). A 5-gallon filtered tank will only need 1-2 water cycles per week at around 25% of total volume and a 100% water change once per month depending on water quality. Keep a pH kit in your supplies to test your tank’s water. Don’t combine your betta with fish that are notorious for fin nippers. Smaller tanks and those that are unfiltered are more work in the long-run because of how rapidly the water’s quality can decline. Cleaning your tank and its decorations every week is very important for your betta fish’s health. Only use approved aquarium decorations and materials that are safe for fish. Use a magnetic or algae cleaning wand for regular algae removal while the tank is filled. Filters and their media should be cleaned by rinsing them in existing tank water to preserve healthy bacteria. Other components should be cleaned and disinfected. Never clean a tank or its components with soap! It’s very tough to remove all the soap and it can poison your betta once the tank is refilled. Remember, adding live plants can also help reduce ammonia levels in the water naturally. Water cycling (removing some and adding new) and changes (complete volume replacement) are necessary for filtered tanks too but are more frequent and important in non-filtered habitats. If you’re only cycling the water, don’t remove your betta. Unnecessary removal can lead to potential stress and injury. Only remove your betta during 100% water changes. Betta fish get used to their ecosystem and don’t like abrupt changes to it. Because of this, you should cycle more than you do a complete change. Removing too much of the existing water in the tank and then adding new can cause your fish to go into shock. This may be due to changes in water parameters or temperature. Always acclimate your betta fish when re-introducing them to their tank after a complete water change.'
         context = product_description.description
 
-        model_name = "deepset/roberta-base-squad2"
-        model = AutoModelForQuestionAnswering.from_pretrained(model_name)
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-        nlp = pipeline('question-answering', model=model, tokenizer=tokenizer)
 
-        res = nlp({'question': user_question, 'context': context})
-        predicted_answer = res['answer']
+        input_texts = [
+        "similar fish",
+        "fish akin",
+        "fish not similar",
+        "how many fishes kept in a fish tank,tank prediction",
+        "identify the fishes" 
+        ]
 
+        # Get another word from the user
+        # user_input = input("Enter another word or phrase: ")
+        input_texts.append(user_question)
 
-        if any(keyword in user_question.lower() for keyword in ['similar fish', 'similar fishes', 'fish similar', 'fish similar to this fish']):
-            # Assume 'input_fish_name' is extracted from the user's question (modify as needed)
+        tokenizer = AutoTokenizer.from_pretrained("thenlper/gte-large")
+        model = AutoModel.from_pretrained("thenlper/gte-large")
+
+        # Tokenize the input texts
+        batch_dict = tokenizer(input_texts, max_length=512, padding=True, truncation=True, return_tensors='pt')
+
+        outputs = model(**batch_dict)
+        embeddings = average_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
+
+        # (Optionally) normalize embeddings
+        embeddings = F.normalize(embeddings, p=2, dim=1)
+
+        # Calculate similarity scores
+        similar_threshold = 95
+        not_similar_threshold = 95
+        tank_threshold = 95
+
+        # ... (previous code)
+
+        # Calculate similarity scores
+        max_similarity = -1
+        max_similarity_index = -1
+        threshold = 94
+
+        for i, text in enumerate(input_texts[:-1]):
+            scores = (embeddings[i] @ embeddings[-1].T) * 100
+            print(f"Similarity between '{text}' and '{user_question}': {scores.item()}")
+
+            if scores.item() > max_similarity and scores.item() > threshold:
+                max_similarity = scores.item()
+                max_similarity_index = i
+
+        if max_similarity_index == 0 or max_similarity_index == 1:
             input_fish_name = product.fish_name.fish_name
             input_fish_features = fish_data.loc[fish_data['Species'] == input_fish_name, ['Aggression Level', 'Social Behavior', 'Territoriality', 'Schooling Behavior', 'Predatory', 'Size', 'Compatibility']].values[0]
             
@@ -1735,15 +1893,158 @@ def homeee(request, prod_id):
             engine.say(f"Fish similar to {input_fish_name} are: {similar_fish_text}")
             engine.runAndWait()
 
-            return JsonResponse({'similar_fish': similar_fish_json})
-        
-        else:
-            # Speak the predicted result
+            return JsonResponse({'similar_fish': similar_fish_json, 'input_fish_name': input_fish_name})
+        elif max_similarity_index == 2:
+            print("he")
+        elif max_similarity_index == 4:
+            if 'upload-image' in request.FILES:
+                image = request.FILES['upload-image']
+                print(image)
+                print(os.getcwd())
+                device = torch.device("cpu")  # use GPU to train
+                model = torch.load('./outt')
+                model.eval()
+                torch.cuda.empty_cache()
+                dataset_path = "./Aquarium Combined/"
+                coco = COCO(os.path.join(dataset_path, "train", "_annotations.coco.json"))
+                categories = coco.cats
+                n_classes = len(categories.keys())
+                classes = [i[1]['name'] for i in categories.items()]
+
+                img = Image.open(image)
+                transform = transforms.Compose([transforms.ToTensor()])
+                img_tensor = transform(img)
+
+                img_int = (img_tensor * 255).to(torch.uint8)
+
+                fig = plt.figure(figsize=(14, 10)) 
+                with torch.no_grad():
+                    prediction = model([img_tensor])
+                    pred = prediction[0]
+                    print(pred)
+                    plt.imshow(draw_bounding_boxes(img_int,
+                                                    pred['boxes'][pred['scores'] > 0.8],
+                                                    [classes[i] for i in pred['labels'][pred['scores'] > 0.8].tolist()],
+                                                    width=4
+                                                    ).permute(1, 2, 0))
+                    temp_file_path = "static/ml/temp_image9.png"
+                    fig.savefig(temp_file_path)
+
+                return JsonResponse({'image_predicted_answer': 'doe'})
+            else:
+                return JsonResponse({'error': 'No image file provided'})
+        elif max_similarity_index == -1:
+            model_name = "deepset/roberta-base-squad2"
+            model = AutoModelForQuestionAnswering.from_pretrained(model_name)
+            tokenizer = AutoTokenizer.from_pretrained(model_name)
+            nlp = pipeline('question-answering', model=model, tokenizer=tokenizer)
+
+            res = nlp({'question': user_question, 'context': context})
+            predicted_answer = res['answer']
             engine = pyttsx3.init()
             engine.say("The predicted answer is: " + predicted_answer)
             engine.runAndWait()
 
             return JsonResponse({'predicted_answer': predicted_answer})
+        else:
+            print(f"No index with similarity score greater than the threshold :{max_similarity_index}")
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # model_name = "deepset/roberta-base-squad2"
+        # model = AutoModelForQuestionAnswering.from_pretrained(model_name)
+        # tokenizer = AutoTokenizer.from_pretrained(model_name)
+        # nlp = pipeline('question-answering', model=model, tokenizer=tokenizer)
+
+        # res = nlp({'question': user_question, 'context': context})
+        # predicted_answer = res['answer']
+
+
+        # if any(keyword in user_question.lower() for keyword in ['similar fish', 'similar fishes', 'fish similar', 'fish similar to this fish']):
+        #     # Assume 'input_fish_name' is extracted from the user's question (modify as needed)
+        #     input_fish_name = product.fish_name.fish_name
+        #     input_fish_features = fish_data.loc[fish_data['Species'] == input_fish_name, ['Aggression Level', 'Social Behavior', 'Territoriality', 'Schooling Behavior', 'Predatory', 'Size', 'Compatibility']].values[0]
+            
+        #     # Find similar fish using KNN
+        #     _, neighbor_indices = nn_model.kneighbors(input_fish_features.reshape(1, -1))
+        #     similar_fish_indices = neighbor_indices[0][1:]
+        #     similar_fish = fish_data.iloc[similar_fish_indices]
+
+        #     # Convert similar fish data to JSON format
+        #     similar_fish_json = similar_fish['Species'].tolist()
+
+        #     # Print or use the similar fish data as needed
+        #     print(f"Fish similar to {input_fish_name} ")
+        #     print(similar_fish[['Species']])
+
+        #     similar_fish_text = ", ".join(similar_fish_json)
+        #     engine = pyttsx3.init()
+        #     engine.say(f"Fish similar to {input_fish_name} are: {similar_fish_text}")
+        #     engine.runAndWait()
+
+        #     return JsonResponse({'similar_fish': similar_fish_json})
         
+        # else:
+        #     # Speak the predicted result
+        #     engine = pyttsx3.init()
+        #     engine.say("The predicted answer is: " + predicted_answer)
+        #     engine.runAndWait()
+
+           #     return JsonResponse({'predicted_answer': predicted_answer})
+
+
+def imagee(request):
+    if request.method == "POST":
+        image = request.FILES['upload-image']
+        print(image)
+        print(os.getcwd())
+        device = torch.device("cpu") # use GPU to train
+        model = torch.load('./outt')
+        model.eval()
+        torch.cuda.empty_cache()
+        dataset_path = "./Aquarium Combined/"
+        coco = COCO(os.path.join(dataset_path, "train", "_annotations.coco.json"))
+        categories = coco.cats
+        n_classes = len(categories.keys())
+        classes = [i[1]['name'] for i in categories.items()]
+
+        # test_dataset = AquariumDetection(root=dataset_path, split="test", transforms=get_transforms(False))
+        # img, _ = test_dataset[9]
+        # img_int = torch.tensor(img*255, dtype=torch.uint8)
+        img = Image.open(image)
+        transform = transforms.Compose([transforms.ToTensor()])
+        img_tensor = transform(img)
+
+        img_int = (img_tensor * 255).to(torch.uint8)
+
+
+        # img_int = torch.tensor(img * 255, dtype=torch.uint8)
+
+        fig = plt.figure(figsize=(14, 10))
+        with torch.no_grad():
+            # prediction = model([img.to(device)])
+            prediction = model([img_tensor])
+            pred = prediction[0]
+            print(pred)
+            plt.imshow(draw_bounding_boxes(img_int,
+                                    pred['boxes'][pred['scores'] > 0.8],
+                                    [classes[i] for i in pred['labels'][pred['scores'] > 0.8].tolist()], width=4
+                                    ).permute(1, 2, 0))
+            temp_file_path = "static/ml/temp_image9.png"
+            fig.savefig(temp_file_path)
+    return redirect('index')
  

@@ -79,10 +79,13 @@ urlpatterns = [
     # path('update_cart_item/', views.update_cart_item, name='update_cart_item'),
 
     path('update_cart_quantity/', views.update_cart_quantity, name='update_cart_quantity'),
+    path('activate_user/<int:user_id>/', views.activate_user, name='activate_user'),
+    path('deactivate_user/<int:user_id>/', views.deactivate_user, name='deactivate_user'),
+
 
     path('requested_products/', views.requested_products, name='requested_products'),
     path('homeee/<int:prod_id>/', views.homeee, name='homeee'),
-
+    path('ml', views.imagee,name='ml')
 
     # path('product_requests_view/', views.product_requests_view, name='product_requests_view'),
 

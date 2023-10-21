@@ -42,6 +42,7 @@
             <th>Role</th>
             {% comment %} <th>Image</th> {% endcomment %}
             <th>Joined At</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
@@ -66,6 +67,13 @@
             {% endif %}
         </td> {% endcomment %}
             <td>{{ user.date_joined }}</td>
+            <td>{% if user.is_active %}<form method="post" action="{% url 'deactivate_user' user.id %}">
+                {% csrf_token %}
+                <button style="background-color: red; border: none; padding: 5px; width: 120px; color: white; border-radius: 6px;" type="submit">Deactivate</button>
+            </form>{% else %}<form method="post" action="{% url 'activate_user' user.id %}">
+                {% csrf_token %}
+                <button style="background-color: green; border: none; width: 120px; padding: 5px; color: white; border-radius: 6px;" type="submit">Activate</button>
+            </form>{% endif %}</td>
         </tr>
         {% endfor %}
     </tbody>

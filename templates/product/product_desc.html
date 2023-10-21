@@ -142,25 +142,25 @@
 
                     <div class="d-flex mb-3">
                         <div class="d-flex align-items-center justify-content-center mb-1">
-                            {% if avg_rating == 5 %}
+                            {% if avg_rating <= 5 and avg_rating >= 4.1 %}
                             <small class="fa fa-star text-success mr-1"></small>
                             <small class="fa fa-star text-success mr-1"></small>
                             <small class="fa fa-star text-success mr-1"></small>
                             <small class="fa fa-star text-success mr-1"></small>
                             <small class="fa fa-star text-success mr-1"></small>
-                            {% elif avg_rating == 4 %}
+                            {% elif avg_rating <= 4 and avg_rating >= 3.1 %}
                             <small class="fa fa-star text-success mr-1"></small>
                             <small class="fa fa-star text-success mr-1"></small>
                             <small class="fa fa-star text-success mr-1"></small>
                             <small class="fa fa-star text-success mr-1"></small>
                             <small class="fa fa-star text-secondary mr-1"></small>
-                            {% elif avg_rating == 3 %}
+                            {% elif avg_rating <= 3 and avg_rating >= 2.1 %}
                             <small class="fa fa-star text-success mr-1"></small>
                             <small class="fa fa-star text-success mr-1"></small>
                             <small class="fa fa-star text-success mr-1"></small>
                             <small class="fa fa-star text-secondary mr-1"></small>
                             <small class="fa fa-star text-secondary mr-1"></small>
-                            {% elif avg_rating == 2 %}
+                            {% elif avg_rating <= 2 and avg_rating >= 1.1 %}
                             <small class="fa fa-star text-danger mr-1"></small>
                             <small class="fa fa-star text-danger mr-1"></small>
                             <small class="fa fa-star text-secondary mr-1"></small>
@@ -189,7 +189,7 @@
                         {% comment %} <div class="input-group quantity mr-3" style="width: 130px;">
 
                             <div class="input-group-btn">
-                               
+
                             </div>
                             <div style="display: flex; flex-direction: row; gap: 10px;">
                                 <div style="height: 25px; width: 25px; border-radius: 5px; color: black; background-color: #FFD333; text-align: center;"
@@ -320,42 +320,199 @@
                         <div class="col-md-6">
                             <h4 class="mb-4">Ask Question:</h4>
                             <div class="d-flex my-3">
-                                <form method="POST" action="{% url 'homeee' products.prod_id %}">
+                                <form id="question-form" method="POST" enctype="multipart/form-data" action="{% url 'homeee' products.prod_id %}">
                                     {% csrf_token %}
                                     <div class="form-group">
                                         <label for="message">Question :</label>
                                         <textarea id="message" name="description" cols="30" rows="5"
                                             class="form-control" required></textarea>
+                                        <input type="file" name="upload-image" accept="image/*">
                                     </div>
                                     <div class="form-group mb-0">
                                         <input type="submit" value="Ask Question" class="btn btn-primary px-3">
                                     </div>
                                 </form>
-                            </div>
-                            <div>
-                                {% if similar_fish %}
-                                <div>
-                                    <h4 class="mb-3">Similar Fish Species:</h4>
-                                    <ul>
-                                        {% for fish in similar_fish %}
-                                        <li>{{ fish }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                                {% else %}
-                                <div>
-                                    <h4 class="mb-3">Pred</h4>
-                                    <p id="predicted-answer-label">{{ predicted_answer }}</p>
-                                </div>
-                                {% endif %}
+                                <button style="margin-left: 20px; background-color: white; border: none; height: 20px; width: 20px; margin-top: 40px;" id="voice-button" class=""><i style="font-size:48px;" class="bi bi-mic"></i></button>
+                                <!-- <form action="/ml" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <input type="file" name="upload-image" accept="image/*">
+                                    <button type="submit">Upload image</button>
+                                </form> -->
+                               
 
                             </div>
+
+                            <div id="response-container">
+                                <div id="loading-message" style="display: none;">Loading...</div>
+                                <div id="similar-fish-section" style="display: none;">
+                                    <h4 class="mb-3">Similar Fish Species:</h4>
+                                    <ul id="similar-fish-list"></ul>
+                                </div>
+                                <div id="predicted-answer-section" style="display: none;">
+                                    <h4 class="mb-3">Predicted Answer:</h4>
+                                    <p id="predicted-answer-label"></p>
+                                </div>
+                                <!-- Add a container for image predicted answer -->
+                                <div id="image-predicted-answer-section" style="display: none;">
+                                    <h4 class="mb-3">Image Predicted Answer:</h4>
+                                    <!-- Add the necessary HTML to display the image predicted answer -->
+                                </div>
+                                <div id="no-similarity-message" style="display: none;">No similarity found</div>
+                            </div>
+                            
+
+                        </div>
+                        <div id="response-container">
+                            <div id="loading-message" style="display: none;">Loading...</div>
+                            <div id="similar-fish-section" style="display: none;">
+                                <h4 class="mb-3">Similar Fish Species:</h4>
+                                <ul id="similar-fish-list"></ul>
+                            </div>
+                            <div id="predicted-answer-section" style="display: none;">
+                                <h4 class="mb-3">Predicted Answer:</h4>
+                                <p id="predicted-answer-label"></p>
+                            </div>
+                            <div id="no-similarity-message" style="display: none;">No similarity found</div>
                         </div>
                     </div>
 
-
-
                     <script>
+                        $(document).ready(function () {
+                            $("#question-form").submit(function (event) {
+            event.preventDefault();  // Prevent the form from submitting in the traditional way
+
+            var form = $(this);
+            var formData = new FormData(form[0]);  // Use FormData to handle file uploads
+
+            // Display loading message
+            $("#loading-message").show();
+            $("#similar-fish-section, #predicted-answer-section, #image-predicted-answer-section, #no-similarity-message").hide();
+
+            $.ajax({
+                type: form.attr("method"),
+                url: form.attr("action"),
+                data: formData,  // Use formData for the data
+                contentType: false,  // Don't set content type to prevent jQuery from automatically processing it
+                processData: false,  // Don't process the data
+                dataType: 'json',
+                success: function (data) {
+                    // Handle the AJAX response and update the UI
+                    $("#loading-message").hide();
+
+                    if (data.similar_fish) {
+                        // Display similar fish
+                        $("#similar-fish-list").empty();
+                        $.each(data.similar_fish, function (index, fish) {
+                            $("#similar-fish-list").append("<li>" + fish + "</li>");
+                        });
+                        $("#similar-fish-section").show();
+                    } else if (data.image_predicted_answer) {
+                        // Display image predicted answer
+                        $("#image-predicted-answer-section").html("<p>" + data.image_predicted_answer + "</p>");
+                        $("#image-predicted-answer-section").show();
+                    } else if (data.predicted_answer) {
+                        // Display predicted answer
+                        $("#predicted-answer-label").text(data.predicted_answer);
+                        $("#predicted-answer-section").show();
+                    } else {
+                        // Display no similarity message
+                        $("#no-similarity-message").show();
+                    }
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                    $("#loading-message").hide();
+                    $("#no-similarity-message").show();
+                }
+            });
+        });
+
+
+
+
+
+
+                            $("#voice-button").click(function () {
+        $("#loading-message, #similar-fish-section, #predicted-answer-section, #no-similarity-message").hide();
+        $("#message").val(""); // Clear the text area
+
+        // Trigger speech recognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        var recognition = new SpeechRecognition();
+        // recognition.lang = 'en-US';
+
+        recognition.onresult = function (event) {
+            var transcript = event.results[0][0].transcript;
+            $("#message").val(transcript);
+
+            // Manually submit the form after setting the transcript
+            submitFormWithVoice();
+        };
+
+        // Update textarea during speech recognition
+        recognition.onaudiostart = function (event) {
+            $("#message").attr("placeholder", "Listening...");
+        };
+
+        recognition.onaudioend = function (event) {
+            $("#message").attr("placeholder", ""); // Clear placeholder
+        };
+
+        recognition.onerror = function (event) {
+            $("#message").attr("placeholder", "Error during recognition. Please try again.");
+        };
+
+        recognition.start();
+    });
+
+    // Function to submit the form after voice input
+    function submitFormWithVoice() {
+        var form = $("#question-form");
+
+        // Display loading message
+        $("#loading-message").show();
+        $("#similar-fish-section, #predicted-answer-section, #no-similarity-message").hide();
+
+        // Use AJAX to submit the form
+        $.ajax({
+            type: form.attr("method"),
+            url: form.attr("action"),
+            data: form.serialize(),
+            dataType: 'json',
+            success: function (data) {
+                // Handle the AJAX response and update the UI
+                $("#loading-message").hide();
+
+                if (data.similar_fish) {
+                    // Display similar fish
+                    $("#similar-fish-list").empty();
+                    $.each(data.similar_fish, function (index, fish) {
+                        $("#similar-fish-list").append("<li>" + fish + "</li>");
+                    });
+                    $("#similar-fish-section").show();
+                } else if (data.predicted_answer) {
+                    // Display predicted answer
+                    $("#predicted-answer-label").text(data.predicted_answer);
+                    $("#predicted-answer-section").show();
+                } else {
+                    // Display no similarity message
+                    $("#no-similarity-message").show();
+                }
+            },
+            error: function (error) {
+                console.log('Error:', error);
+                $("#loading-message").hide();
+                $("#no-similarity-message").show();
+            }
+        });
+    }
+
+                        });
+                    </script>
+
+
+                    <!-- <script>
                         // Use JavaScript to handle form submission and update the result
                         document.addEventListener('DOMContentLoaded', function () {
                             const form = document.querySelector('form');
@@ -377,7 +534,7 @@
                                     .catch(error => console.error('Error:', error));
                             });
                         });
-                    </script>
+                    </script> -->
 
 
 
@@ -395,7 +552,45 @@
                             <div class="media mb-4">
                                 <!-- <img src="img/user.jpg" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;"> -->
                                 <div class="media-body">
-                                    <h6>{{ review.user.username }}<small> - <i>{{ review.created_at|date:"d M Y" }}</i></small></h6>
+                                    <h6>{{ review.user.username }}<small> - <i>{{ review.created_at|date:"d M Y"}}</i></small></h6>
+                                    <div class="d-flex mb-3">
+                                        <div class="d-flex align-items-center justify-content-center mb-1">
+                                            {% if review.rating == 5 %}
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            {% elif review.rating == 4 %}
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                            {% elif review.rating == 3 %}
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                            {% elif review.rating == 2 %}
+                                            <small class="fa fa-star text-danger mr-1"></small>
+                                            <small class="fa fa-star text-danger mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                            <small class="fa fa-star text-secondary mr-1"></small>
+                                            {% elif review.rating <= 1 %} <small class="fa fa-star text-danger mr-1"></small>
+                                                <small class="fa fa-star text-secondary mr-1"></small>
+                                                <small class="fa fa-star text-secondary mr-1"></small>
+                                                <small class="fa fa-star text-secondary mr-1"></small>
+                                                <small class="fa fa-star text-secondary mr-1"></small>
+                                                {% endif %}
+                                                <!-- <small>({{ avg_rating }})</small> -->
+                                        </div>
+                
+                                        <!-- <small class="pt-1">(99 Reviews)</small> -->
+                
+                                    </div>
                                     <div class="text-primary mb-2">
 
                                     </div>

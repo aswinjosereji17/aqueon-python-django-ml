@@ -64,12 +64,12 @@
                 {% if not seller_request.user.is_staff %}
                 <form method="post" action="{% url 'approve_seller' seller_request.user.id %}">
                     {% csrf_token %}
-                    <button type="submit" style="background-color: green; color: white; width: 120px; margin: auto;" class="btn btn-primary">Approve</button>
+                    <button type="submit" style="background-color: green; color: white; width: 120px; margin: auto; padding: 5px; border-radius: 6px; border: none;" class="">Approve</button>
                 </form>
                 {% else %}
                 <form method="post" action="{% url 'dis_approve_seller' seller_request.user.id %}">
                     {% csrf_token %}
-                    <button type="submit" style="background-color: red; color: white; width: 120px; margin: auto;" class="btn btn-primary">Disapprove</button>
+                    <button type="submit" style="background-color: red; color: white; width: 120px; margin: auto; padding: 5px; border-radius: 6px; border: none;" class="">Disapprove</button>
                 </form>
                 {% endif %}
             </td>

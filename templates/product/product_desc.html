@@ -1,6 +1,6 @@
 {% extends 'index.html' %}
 
-
+{% load static %}
 {% block content_mainn %}
 
 <head>
@@ -298,8 +298,8 @@
         <div class="bg-light p-30">
             <div class="nav nav-tabs mb-4">
                 <a class="nav-item nav-link text-dark active" data-toggle="tab" href="#tab-pane-1">Description</a>
-                <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-2">Instructions</a>
-                <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-3">Reviews (0)</a>
+                <!-- <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-2">Instructions</a> -->
+                <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-3">Reviews</a>
             </div>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="tab-pane-1">
@@ -316,23 +316,128 @@
                                 </div>
                             </div>
                         </div>
+<style>
+    .custom-file-upload {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    padding-left: 6px;
+    /* padding: 10px; */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.custom-file-upload input {
+    display: none;
+}
+
+.custom-file-upload i {
+    margin-right: 5px;
+}
+
+</style>
+<style>
+    #suggestions {
+        display: none;
+        position: absolute;
+        border: 1px solid #ccc;
+        max-height: 100px;
+        overflow-y: auto;
+        background-color: #fff;
+    }
+
+    #suggestions ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #suggestions li {
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    #suggestions li:hover {
+        background-color: #f0f0f0;
+    }
+    #suggestions {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#suggestions::-webkit-scrollbar {
+    display: none;
+}
+
+</style>
 
                         <div class="col-md-6">
-                            <h4 class="mb-4">Ask Question:</h4>
+                            <h4 class="mb-4">About the fish:</h4>
                             <div class="d-flex my-3">
                                 <form id="question-form" method="POST" enctype="multipart/form-data" action="{% url 'homeee' products.prod_id %}">
                                     {% csrf_token %}
-                                    <div class="form-group">
-                                        <label for="message">Question :</label>
-                                        <textarea id="message" name="description" cols="30" rows="5"
-                                            class="form-control" required></textarea>
-                                        <input type="file" name="upload-image" accept="image/*">
+                                    <div style="display: flex; flex-direction: row; gap: 18px;" class="form-group">
+                                        <!-- <label for="message">Question :</label> -->
+                                        <textarea style="height: 45px;" id="message" name="description" cols="30" rows="5" class="form-control" required></textarea>
+
+    <div style="margin-top: 44px; width: 283px;" id="suggestions">
+        <ul id="suggestion-list"></ul>
+    </div>
+    <script>
+        const textarea = document.getElementById('message');
+        const suggestionsContainer = document.getElementById('suggestions');
+        const suggestionList = document.getElementById('suggestion-list');
+
+        const suggestions = ['ph level of this fish?', 'identify the fish from photo', 'how often clean the tank',];
+
+        textarea.addEventListener('input', function () {
+            const inputValue = textarea.value.toLowerCase();
+            const filteredSuggestions = suggestions.filter(suggestion =>
+                suggestion.toLowerCase().includes(inputValue)
+            );
+
+            displaySuggestions(filteredSuggestions);
+        });
+
+        function displaySuggestions(suggestionArray) {
+            suggestionList.innerHTML = '';
+
+            if (suggestionArray.length === 0) {
+                suggestionsContainer.style.display = 'none';
+                return;
+            }
+
+            suggestionArray.forEach(suggestion => {
+                const listItem = document.createElement('li');
+                listItem.textContent = suggestion;
+
+                listItem.addEventListener('click', function () {
+                    textarea.value = suggestion;
+                    suggestionsContainer.style.display = 'none';
+                });
+
+                suggestionList.appendChild(listItem);
+            });
+
+            suggestionsContainer.style.display = 'block';
+        }
+
+        document.addEventListener('click', function (event) {
+            if (event.target !== textarea) {
+                suggestionsContainer.style.display = 'none';
+            }
+        });
+    </script>
+                                            <label for="upload-image" class="custom-file-upload">
+                                                <input type="file" id="upload-image" name="upload-image" accept="image/*">
+                                                <i style="font-size:30px;" class="bi bi-upload"></i> 
+                                            </label>
                                     </div>
                                     <div class="form-group mb-0">
                                         <input type="submit" value="Ask Question" class="btn btn-primary px-3">
                                     </div>
                                 </form>
-                                <button style="margin-left: 20px; background-color: white; border: none; height: 20px; width: 20px; margin-top: 40px;" id="voice-button" class=""><i style="font-size:48px;" class="bi bi-mic"></i></button>
+                                <button style="margin-left: 20px; background-color: white; border: none; height: 40px; width: 40px; margin-top: 0px;" id="voice-button" class=""><i style="font-size:30px;" class="bi bi-mic"></i></button>
                                 <!-- <form action="/ml" method="post" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     <input type="file" name="upload-image" accept="image/*">
@@ -343,21 +448,23 @@
                             </div>
 
                             <div id="response-container">
-                                <div id="loading-message" style="display: none;">Loading...</div>
+                                <div id="loading-message" style="display: none;"><div class="lds-hourglass"></div></div>
                                 <div id="similar-fish-section" style="display: none;">
                                     <h4 class="mb-3">Similar Fish Species:</h4>
                                     <ul id="similar-fish-list"></ul>
                                 </div>
                                 <div id="predicted-answer-section" style="display: none;">
-                                    <h4 class="mb-3">Predicted Answer:</h4>
+                                    <h4 class="mb-3">Solution :</h4>
                                     <p id="predicted-answer-label"></p>
                                 </div>
                                 <!-- Add a container for image predicted answer -->
                                 <div id="image-predicted-answer-section" style="display: none;">
-                                    <h4 class="mb-3">Image Predicted Answer:</h4>
+                                    <h4 class="mb-3">Identified fishes :</h4>
+                                    <p id="img_predicted-answer-label"></p>
+                                    <img style="width: 500px; height: 500px;" id="predicted-image"  alt="Predicted Image">
                                     <!-- Add the necessary HTML to display the image predicted answer -->
                                 </div>
-                                <div id="no-similarity-message" style="display: none;">No similarity found</div>
+                                <div id="no-similarity-message" style="display: none;">No image found</div>
                             </div>
                             
 
@@ -408,7 +515,10 @@
                         $("#similar-fish-section").show();
                     } else if (data.image_predicted_answer) {
                         // Display image predicted answer
-                        $("#image-predicted-answer-section").html("<p>" + data.image_predicted_answer + "</p>");
+                        // $("#image-predicted-answer-section").html("<p>" + data.image_predicted_answer + "</p>");
+                        $("#img_predicted-answer-label").text(data.image_predicted_answer);
+                        console.log("Image Path:", data.temp_image_path);
+                        $("#predicted-image").attr("src", data.static_path + 'ml/temp_image.png');
                         $("#image-predicted-answer-section").show();
                     } else if (data.predicted_answer) {
                         // Display predicted answer

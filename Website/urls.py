@@ -85,7 +85,12 @@ urlpatterns = [
 
     path('requested_products/', views.requested_products, name='requested_products'),
     path('homeee/<int:prod_id>/', views.homeee, name='homeee'),
-    path('ml', views.imagee,name='ml')
+    path('ml', views.imagee,name='ml'),
+    path('edit_category/<int:categ_id>/', views.edit_category, name='edit_category'),
+    path('delete_category/<int:category_id>/', views.delete_category_view, name='delete_category'),
+    path('edit_subcategory/<int:subcat_id>/', views.edit_subcategory_view, name='edit_subcategory'),
+    path('delete_subcategory/<int:subcat_id>/', views.delete_subcategory, name='delete_subcategory'),
+
 
     # path('product_requests_view/', views.product_requests_view, name='product_requests_view'),
 

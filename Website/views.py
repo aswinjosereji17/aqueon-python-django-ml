@@ -17,14 +17,9 @@ from .models import Product, Review
 # Create your views here.
 @never_cache
 def index(request):
-
-
-    
-    homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
-    # prod_cat = ProductCategory.objects.all()
-    # prod_subcat = ProductSubcategory.objects.all()
-
-    recent_products = Product.objects.all().order_by('-created_at')[:8]
+    homeimg = HomeSpecialOffer.objects.all()  
+  
+    recent_products = Product.objects.all().order_by('-created_at')[:12]
     product_ratings = []
     for product in recent_products:
         avg_rating = Review.objects.filter(prod=product).aggregate(Avg('rating'))['rating__avg'] or 0
@@ -34,41 +29,17 @@ def index(request):
     
     if request.user.is_authenticated:
         user=request.user
-        # homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
-        # prod_cat = ProductCategory.objects.all()
-        # return redirect('index')
-        # try:
-        #     cart = AddCart.objects.get(user=user)
-        #     cart_items = CartItems.objects.filter(cart=cart)
-        #     cart_item_count = cart_items.count()
-        #     user_id = request.user.id  # Use the user's ID if they are logged in
-        #     # wish_count = Wishlist.objects.filter(user_id=user_id).count()
-        # except AddCart.DoesNotExist:
-        #     cart = None
-        #     cart_items = []
-        #     cart_item_count = 0
-        #     wish_count = 0 
-
+      
         context = {
-        # 'cart' : cart,
-        # 'cart_items' : cart_items,
         'homeimg': homeimg,
-        # 'prod_cat':prod_cat,
-        # 'cart_item_count': cart_item_count,
         'recent_products': recent_products,
         'product_ratings': product_ratings
-        # 'wish_count' : wish_count,
-        # 'prod_subcat':prod_subcat,
         }
         
         return render(request,'index.html', context)
     else:
-        # homeimg = HomeSpecialOffer.objects.all()  # Get all events from the database
-        # prod_cat = ProductCategory.objects.all()
         context = {
         'homeimg': homeimg,
-        # 'prod_cat':prod_cat,
-        # 'prod_subcat':prod_subcat,
         'recent_products': recent_products,
         'product_ratings': product_ratings
         }
@@ -82,10 +53,7 @@ def login_user(request):
 
     if request.method == "POST":
         username_or_email = request.POST['username']
-        password = request.POST['password']
-        # print("Received username or email:", username_or_email)
-        # print("Received password:", password)
-        
+        password = request.POST['password'] 
         if "@" in username_or_email:
             try:
                 user = User.objects.get(email=username_or_email)
@@ -96,7 +64,16 @@ def login_user(request):
             
         if user is not None:
             login(request, user)
-            return redirect('index')
+            if user.is_staff :
+                return redirect('user_profile_view')
+            elif not user.is_staff and not user.is_superuser:
+                return redirect('index')
+            # if user.is_staff:
+            #     return redirect('user_profile_view')
+           
+            # else:
+            #     return redirect('index')
+            # return redirect('user_profile_view')
         else:
             messages.info(request, "Invalid Login")
             error_message = "Invalid Login "
@@ -105,12 +82,6 @@ def login_user(request):
         return render(request, 'login.html')
 
 
-# def save_google_email(user, backend, response, *args, **kwargs):
-#     if backend.name == 'google-oauth2':
-#         email = response.get('email')
-#         if email and not user.email:
-#             user.email = email
-#             user.save()
 
 
 @never_cache  
@@ -208,6 +179,7 @@ def user_profile_view(request):
     user_count = User.objects.filter(is_staff=False).count()
     seller_count = User.objects.filter(Q(is_staff=True) & Q(is_superuser=False)).count()
     prod_count = Product.objects.count()
+    user_products_count = Product.objects.filter(user_id=request.user).count()
     s_req= SellerRequest.objects.all()
 
 
@@ -239,6 +211,7 @@ def user_profile_view(request):
         'seller_count' : seller_count,
         'prod_count' : prod_count,
         's_req' : s_req,
+        'user_products_count': user_products_count
         # 'product' :product
     }
     
@@ -606,23 +579,81 @@ def modify_product(request, prod_id):
         return redirect('product_list')
 
     subcategories = ProductSubcategory.objects.all()
-    # try:
-    #     seller_request = SellerRequest.objects.get(user=request.user)
-    # except SellerRequest.DoesNotExist:
-    #     seller_request = None
-
-    # try:
-    #     user_profile = UserProfile.objects.get(user=request.user)
-    # except UserProfile.DoesNotExist:
-    #     user_profile = None
-
-    # try:
-    #     user_addr = UserAddress.objects.get(user=request.user)
-    # except UserAddress.DoesNotExist:
-    #     user_addr = None
-    
   
     return render(request, 'product/modify_product.html', {'product': product, 'description': description, 'subcategories': subcategories, 'user_profile': user_profile, 'seller_request': seller_request,'user_addr' : user_addr})
+
+
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
+def edit_category(request, categ_id):
+    # print(categ_id)
+    category = get_object_or_404(ProductCategory, categ_id=categ_id)
+    print(category)
+
+    if request.method == 'POST':
+        # Process the form data
+        category.categ_name = request.POST['edited_categ_name']
+        
+        # Handle image upload
+        if 'edited_categ_image' in request.FILES:
+            image = request.FILES['edited_categ_image']
+            file_path = f'category_images/{image.name}'
+            # Save the image using Django's default storage
+            default_storage.save(file_path, ContentFile(image.read()))
+            category.categ_image = file_path
+
+        category.save()
+        return redirect('list_product_categories')
+
+    return render(request, 'admin/display_cat.html', {'category': category})
+
+
+
+# views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import ProductSubcategory, ProductCategory
+
+def edit_subcategory_view(request, subcat_id):
+    subcategory = get_object_or_404(ProductSubcategory, sub_cat_id=subcat_id)
+
+    if request.method == 'POST':
+        # Perform the update
+        subcategory.sub_cat_name = request.POST.get('edited_sub_cat_name')
+        subcategory.categ_id = ProductCategory.objects.get(categ_id=request.POST.get('edited_categ_id'))
+        # subcategory.subcat_image = request.FILES.get('edited_subcat_image')
+        if 'edited_subcat_image' in request.FILES:
+            image = request.FILES['edited_subcat_image']
+            file_path = f'category_images/{image.name}'
+            default_storage.save(file_path, ContentFile(image.read()))
+            subcategory.subcat_image = file_path
+        subcategory.save()
+        return redirect('list_product_subcat')  # Replace with the actual URL for your subcategory list view
+
+    # categories = ProductCategory.objects.all()
+    # return render(request, '', {'subcategory': subcategory, 'categories': categories})
+
+
+
+def delete_category_view(request, category_id):
+    category = get_object_or_404(ProductCategory, categ_id=category_id)
+
+    if request.method == 'POST':
+        # Perform the deletion
+        category.delete()
+        return redirect('list_product_categories')  # Replace with the actual URL for your category list view
+
+    return render(request, 'delete_category.html', {'category': category})
+
+def delete_subcategory(request, subcat_id):
+    subcategory = get_object_or_404(ProductSubcategory, sub_cat_id=subcat_id)
+    
+    if request.method == 'POST':
+        # Delete the subcategory
+        subcategory.delete()
+        return redirect('list_product_subcat')
+
+    return render(request, 'delete_subcategory.html', {'subcategory': subcategory})
 
 @login_required
 @never_cache
@@ -736,13 +767,11 @@ from django.contrib import messages
 
 def add_to_cart(request):
     if not request.user.is_authenticated:
-        # You can implement your own logic for handling unauthenticated users
-        # For example, you can redirect them to a login page
         return redirect('login_user') 
 
     if request.method == 'POST':
         prod_id = request.POST.get('prod_id')
-        quantity = int(request.POST.get('quantity', 1))  # Default to 1 if not provided
+        quantity = int(request.POST.get('quantity', 1)) 
 
         if prod_id:
             try:
@@ -753,45 +782,20 @@ def add_to_cart(request):
             user = request.user
             cart, created = AddCart.objects.get_or_create(user=user)
 
-            # Check if the product is already in the cart, if so, update the quantity
             existing_item = CartItems.objects.filter(cart=cart, prod=prod).first()
             if existing_item:
-                # existing_item.quantity += quantity
-                # existing_item.save()
                 messages.info(request, f'Already added to Cart')
             else:
-                # Create a new cart item
                 CartItems.objects.create(cart=cart, prod=prod, quantity=quantity)
                 messages.info(request, f'Added to Cart')
 
-            return redirect(request.META.get('HTTP_REFERER', 'index'))  # Redirect to the cart page or wherever you want
+            return redirect(request.META.get('HTTP_REFERER', 'index'))  
         else:
             return HttpResponseBadRequest("Invalid product ID")
 
-    # Handle GET requests (e.g., rendering the page with a form)
     return render(request, 'add_to_cart.html')
 
 
-# from .models import AddCart, CartItems
-# from django.db.models import Sum 
-# from decimal import Decimal
-
-# def cart_details(request):
-#     user = request.user
-#     try:
-#         cart = AddCart.objects.get(user=user)
-#         cart_items = CartItems.objects.filter(cart=cart)
-#         total_cart_value = cart_items.aggregate(Sum('total_price'))['total_price__sum']
-#         shipping_cost = Decimal('50.00')  # Assuming a fixed shipping cost of $50.00
-#         multiplied_value = total_cart_value + shipping_cost
-#     except AddCart.DoesNotExist:
-#         # cart = None
-#         # cart_items = []
-#         # total_cart_value = 0.0
-#         # return redirect('index')
-#         return redirect('index') 
-
-#     return render(request, 'product/cart.html', {'cart': cart, 'cart_items': cart_items, 'total_cart_value': total_cart_value, 'multiplied_value': multiplied_value})
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
@@ -1023,34 +1027,25 @@ from django.contrib import messages
 
 
 def add_to_wishlist(request, prod_id):
-    # Check if the user is authenticated
     if not request.user.is_authenticated:
-        # You can implement your own logic for handling unauthenticated users
-        # For example, you can redirect them to a login page
-        return redirect('login_user')  # Redirect to your login URL
+      
+        return redirect('login_user')  
 
-    # Get the product based on prod_id
     product = get_object_or_404(Product, pk=prod_id)
 
-    # Check if the product is not already in the user's wishlist
     if Wishlist.objects.filter(user_id=request.user, prod_id=product).exists():
-        # Product is already in the wishlist, display a message
         messages.info(request, f'Already in your wishlist')
     else:
-        # Product is not in the wishlist, add it
         Wishlist.objects.create(user_id=request.user, prod_id=product)
-        
-        # Add a success message for displaying the toast
         messages.success(request, f'Added to wishlist')
 
-    # Redirect to the previous page or back to the product detail page
     return redirect(request.META.get('HTTP_REFERER', 'index'))
 
 
 
 
 from django.shortcuts import render
-from .models import Wishlist
+from .models import Wishlist,ProductCategory
 
 @login_required
 @never_cache
@@ -1130,12 +1125,14 @@ def list_product_subcat(request):
         user_addr = None
     
     subcategories = ProductSubcategory.objects.all()
+    categories = ProductCategory.objects.all()
     context = {
         'users': users,
         'user_profile': user_profile,
         'seller_request': seller_request,
         'user_addr' : user_addr,
-        'subcategories': subcategories
+        'subcategories': subcategories,
+        'categories' :categories
     }
     
     return render(request, 'admin/display_subcat.html', context)
@@ -1310,30 +1307,24 @@ razorpay_client = razorpay.Client(
 
 #updated payment
 
-from .models import AddCart, CartItems, Order, OrderItem
+from .models import AddCart, CartItems, Order, OrderItem, UserAddress
 
 def homepage(request):
-    # Assuming the user can have only one AddCart instance
     add_cart = get_object_or_404(AddCart, user=request.user)
-
-    # Get all cart items associated with the AddCart
     cart_items = CartItems.objects.filter(cart=add_cart)
+    user_add11= UserAddress.objects.get(user=request.user)
+
 
     total_price = Decimal(sum(cart_item.total_price for cart_item in cart_items))
-    
+    shipping_cost = Decimal('50.00')   
     currency = 'INR'
-
-    # Set the 'amount' variable to 'total_price'
-    amount = int(total_price * 100)
-
-    # Create a Razorpay Order
+    amount = int((total_price+shipping_cost) * 100)
     razorpay_order = razorpay_client.order.create(dict(
         amount=amount,
         currency=currency,
         payment_capture='0'
     ))
 
-    # Order id of the newly created order
     razorpay_order_id = razorpay_order['id']
     callback_url = '/paymenthandler/'
 
@@ -1344,14 +1335,12 @@ def homepage(request):
         payment_status=Order.PaymentStatusChoices.PENDING,
     )
 
-    # Add the products to the order
     for cart_item in cart_items:
         product = cart_item.prod
         price = product.price
         quantity = cart_item.quantity
         total_item_price = cart_item.total_price
 
-        # Create an OrderItem for this product
         order_item = OrderItem.objects.create(
             order=order,
             product=product,
@@ -1360,10 +1349,9 @@ def homepage(request):
             total_price=total_item_price,
         )
 
-    # Save the order to generate an order ID
     order.save()
+    
 
-    # Create a context dictionary with all the variables you want to pass to the template
     context = {
         'cart_items': cart_items,
         'total_price': total_price,
@@ -1372,6 +1360,7 @@ def homepage(request):
         'razorpay_amount': amount,  # Set to 'total_price'
         'currency': currency,
         'callback_url': callback_url,
+        'user_add' :user_add11
     }
 
     return render(request, 'index1.html', context=context)
@@ -1382,8 +1371,8 @@ def paymenthandler(request):
         payment_id = request.POST.get('razorpay_payment_id', '')
         razorpay_order_id = request.POST.get('razorpay_order_id', '')
         signature = request.POST.get('razorpay_signature', '')
+        shipping_cost = Decimal('50.00')
 
-        # Verify the payment signature.
         params_dict = {
             'razorpay_order_id': razorpay_order_id,
             'razorpay_payment_id': payment_id,
@@ -1392,30 +1381,28 @@ def paymenthandler(request):
         result = razorpay_client.utility.verify_payment_signature(params_dict)
 
         if not result:
-            # Signature verification failed.
             return render(request, 'paymentfail.html')
 
-        # Signature verification succeeded.
-        # Retrieve the order from the database
         try:
             order = Order.objects.get(razorpay_order_id=razorpay_order_id)
         except Order.DoesNotExist:
             return HttpResponseBadRequest("Order not found")
 
         if order.payment_status == Order.PaymentStatusChoices.SUCCESSFUL:
-            # Payment is already marked as successful, ignore this request.
             
             return HttpResponse("Payment is already successful")
 
         if order.payment_status != Order.PaymentStatusChoices.PENDING:
-            # Order is not in a pending state, do not proceed with stock update.
             return HttpResponseBadRequest("Invalid order status")
 
-        # Capture the payment amount
-        amount = int(order.total_price * 100)  # Convert Decimal to paise
+        amount = int((order.total_price +shipping_cost)* 100)  
         razorpay_client.payment.capture(payment_id, amount)
 
-        # Update the order with payment ID and change status to "Successful"
+        for order_item in order.orderitem_set.all():
+            product = order_item.product
+            product.stock_quantity -= order_item.quantity
+            product.save()
+
         order.payment_id = payment_id
         order.payment_status = Order.PaymentStatusChoices.SUCCESSFUL
         order.save()
@@ -1423,12 +1410,9 @@ def paymenthandler(request):
         cart_items = CartItems.objects.filter(cart=add_cart)
         cart_items.delete()
 
-        # Assuming the user can have only one AddCart instance
         add_cart = get_object_or_404(AddCart, user=request.user)
 
-        # Get all cart items associated with the AddCart
         cart_items = CartItems.objects.filter(cart=add_cart)
-        # Redirect to a payment success page
         return redirect('index')
 
     return HttpResponseBadRequest("Invalid request method")
@@ -1489,7 +1473,7 @@ from .models import Product
 def live_search(request):
     if request.method == 'GET':
         search_query = request.GET.get('query', '')
-        results = Product.objects.filter(prod_name__icontains=search_query)
+        results = Product.objects.filter(prod_name__startswith=search_query)
         product_data = []
 
         for product in results:
@@ -1691,39 +1675,42 @@ def deactivate_user(request, user_id):
 
 
 
-
-
 # qa/views.py
 from django.shortcuts import render
-from django.http import JsonResponse
-from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
-import speech_recognition as sr
+import torchvision
+from torch import nn, optim
+from torch.utils.data import DataLoader, sampler, random_split, Dataset
+from torchvision.transforms import functional as FT
 import pyttsx3
+import math
+import copy
+from django.http import JsonResponse
+import speech_recognition as sr
+
+
+
+
+
+from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
 import torch.nn.functional as F
 from torch import Tensor
 from transformers import AutoTokenizer, AutoModel
 import os
 
 import torch
-import torchvision
 from torchvision import datasets, models
-from torchvision.transforms import functional as FT
 from torchvision import transforms as T
-from torch import nn, optim
 from torch.nn import functional as F
-from torch.utils.data import DataLoader, sampler, random_split, Dataset
-import copy
-import math
 from PIL import Image
 import cv2
-import albumentations as A  # our data augmentation library
+import albumentations as A  
 
 import matplotlib.pyplot as plt
 from pycocotools.coco import COCO
 from albumentations.pytorch import ToTensorV2
 from torchvision.utils import draw_bounding_boxes
 import torchvision.transforms as transforms
-import os
+
 class AquariumDetection(datasets.VisionDataset):
     def __init__(self, root, split='train', transform=None, target_transform=None, transforms=None):
         # the 3 transform parameters are reuqired for datasets.VisionDataset
@@ -1830,10 +1817,8 @@ def homeee(request, prod_id):
 
         input_texts = [
         "similar fish",
-        "fish akin",
-        "fish not similar",
-        "how many fishes kept in a fish tank,tank prediction",
-        "identify the fishes" 
+        "recommend fishes similar to this fish",
+        "identify the fishes from image" 
         ]
 
         # Get another word from the user
@@ -1862,7 +1847,7 @@ def homeee(request, prod_id):
         # Calculate similarity scores
         max_similarity = -1
         max_similarity_index = -1
-        threshold = 94
+        threshold = 90
 
         for i, text in enumerate(input_texts[:-1]):
             scores = (embeddings[i] @ embeddings[-1].T) * 100
@@ -1888,15 +1873,15 @@ def homeee(request, prod_id):
             print(f"Fish similar to {input_fish_name} ")
             print(similar_fish[['Species']])
 
-            similar_fish_text = ", ".join(similar_fish_json)
-            engine = pyttsx3.init()
-            engine.say(f"Fish similar to {input_fish_name} are: {similar_fish_text}")
-            engine.runAndWait()
+            # similar_fish_text = ", ".join(similar_fish_json)
+            # engine = pyttsx3.init()
+            # engine.say(f"Fish similar to {input_fish_name} are: {similar_fish_text}")
+            # engine.runAndWait()
 
             return JsonResponse({'similar_fish': similar_fish_json, 'input_fish_name': input_fish_name})
+    
         elif max_similarity_index == 2:
-            print("he")
-        elif max_similarity_index == 4:
+            
             if 'upload-image' in request.FILES:
                 image = request.FILES['upload-image']
                 print(image)
@@ -1917,22 +1902,36 @@ def homeee(request, prod_id):
 
                 img_int = (img_tensor * 255).to(torch.uint8)
 
-                fig = plt.figure(figsize=(14, 10)) 
+                fig, ax = plt.subplots(figsize=(14, 10))
+
                 with torch.no_grad():
                     prediction = model([img_tensor])
                     pred = prediction[0]
                     print(pred)
-                    plt.imshow(draw_bounding_boxes(img_int,
-                                                    pred['boxes'][pred['scores'] > 0.8],
-                                                    [classes[i] for i in pred['labels'][pred['scores'] > 0.8].tolist()],
-                                                    width=4
-                                                    ).permute(1, 2, 0))
-                    temp_file_path = "static/ml/temp_image9.png"
-                    fig.savefig(temp_file_path)
 
-                return JsonResponse({'image_predicted_answer': 'doe'})
+                    # Assuming draw_bounding_boxes returns an image
+                    img_with_boxes = draw_bounding_boxes(
+                        img_int,
+                        pred['boxes'][pred['scores'] > 0.8],
+                        [classes[i] for i in pred['labels'][pred['scores'] > 0.8].tolist()],
+                        width=4
+                    ).permute(1, 2, 0)
+
+                    # Set the extent to match the image size
+                    extent = [0, img_int.shape[2], img_int.shape[1], 0]
+
+                    ax.imshow(img_with_boxes, extent=extent)
+                    ax.axis('off')  # Turn off axis if not needed
+
+                    temp_file_path = "static/ml/temp_image.png"
+                    fig.savefig(temp_file_path, bbox_inches='tight', pad_inches=0)
+                    labels = [classes[i] for i in pred['labels'][pred['scores'] > 0.8].tolist()]
+                    print(labels)
+
+                print(temp_file_path)
+                return JsonResponse({'image_predicted_answer': labels, 'temp_image_path': temp_file_path, 'static_path': '/static/'})
             else:
-                return JsonResponse({'error': 'No image file provided'})
+                return JsonResponse({'image_predicted_answer': 'No image file provided'})
         elif max_similarity_index == -1:
             model_name = "deepset/roberta-base-squad2"
             model = AutoModelForQuestionAnswering.from_pretrained(model_name)
@@ -1940,10 +1939,17 @@ def homeee(request, prod_id):
             nlp = pipeline('question-answering', model=model, tokenizer=tokenizer)
 
             res = nlp({'question': user_question, 'context': context})
-            predicted_answer = res['answer']
-            engine = pyttsx3.init()
-            engine.say("The predicted answer is: " + predicted_answer)
-            engine.runAndWait()
+            score = res['score']
+            # predicted_answer = res['answer']
+            if score > 0.03:
+                predicted_answer = res['answer']
+            else:
+                predicted_answer = "OOPS! Can't find the answer"
+
+            # engine = pyttsx3.init()
+            # engine.say("The predicted answer is: " + predicted_answer)
+            # engine.runAndWait()
+            
 
             return JsonResponse({'predicted_answer': predicted_answer})
         else:

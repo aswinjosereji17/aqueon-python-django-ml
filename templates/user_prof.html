@@ -93,6 +93,12 @@
     <ul class="sidebar-nav" id="sidebar-nav">
       {% if user.is_superuser %}
       <li class="nav-item">
+        <a class="nav-link ">
+          <i style="color: rgb(13, 231, 13)" class="bi bi-file-person-fill"></i>
+          <span style="color: rgb(13, 231, 13);">Hi, Admin</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link " href="{% url 'user_profile_view' %}">
           <i class="bi bi-grid "></i>
           <span>Dashboard</span>
@@ -100,6 +106,11 @@
 
       </li>
       {% elif user.is_staff and not user.is_superuser %}
+      <li class="nav-item">
+        <a class="nav-link ">
+          <i style="color: rgb(13, 231, 13)" class="bi bi-file-person-fill"></i>
+          <span style="color: rgb(13, 231, 13);">Hi, {{ request.user.username }}</span>
+        </a>
       <li class="nav-item">
         <a class="nav-link " href="{% url 'user_profile_view' %}">
           <i class="bi bi-grid"></i>
@@ -244,21 +255,27 @@
         <!-- <li class="nav-heading">Pages</li> -->
         <!-- <i style=" color: #090505; cursor: pointer;" class="bi bi-list toggle-sidebar-btn"></i> -->
       </div>
-
-
+      {% if not user.is_superuser and not user.is_staff %}
       <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'user_profile' %}">
+        <a class="nav-link ">
+          <i style="color: rgb(13, 231, 13)" class="bi bi-file-person-fill"></i>
+          <span style="color: rgb(13, 231, 13);">Hi, {{ request.user.username }}</span>
+        </a>
+      {% endif %}
+      <li id="prof_ile" class="nav-item">
+        <a id="prof_ile" class="nav-link collapsed" href="{% url 'user_profile' %}">
           <i class="bi bi-person"></i>
-          <span>Profile</span>
+          <span>View Profile</span>
         </a>
       </li><!-- End Profile Page Nav -->
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'index' %}">
           <i style="" class="ri-home-2-fill"></i>
-          <span>Home</span>
+          <span>View Home Page</span>
         </a>
       </li>
       {% if not user.is_superuser and not user.is_staff %}
+      
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'wishlist' %}">
           <i style="color:red" class="bx bxs-heart"></i>
@@ -286,15 +303,16 @@
       {% endif %}
 
 
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a class="nav-link collapsed" href="#">
           <i class="bi bi-envelope"></i>
           <span>Contact</span>
         </a>
-      </li><!-- End Contact Page Nav -->
+      </li> -->
+      <!-- End Contact Page Nav -->
 
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'loggout' %}">
+      <li id="logt" class="nav-item">
+        <a  id="logt" class="nav-link collapsed" href="{% url 'loggout' %}">
           <i style="color:red" class="ri-logout-circle-line"></i>
           <span>Logout</span>
         </a>
@@ -352,7 +370,12 @@
                         <i class="bi bi-box"></i>
                       </div>
                       <div class="ps-3">
-                        <h6>{{prod_count}}</h6>
+
+                        {% if user.is_superuser %}
+    <h6>{{ prod_count }}</h6>
+{% else %}
+    <h6>{{ user_products_count }}</h6>
+{% endif %}
                         <!-- <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
 
                       </div>
@@ -361,7 +384,7 @@
 
                 </div>
               </div><!-- End Sales Card -->
-
+              {% if user.is_superuser %}
               <!-- Revenue Card -->
               <div class="col-xxl-4 col-md-6">
                 <div class="card info-card revenue-card">
@@ -433,6 +456,7 @@
                 </div>
 
               </div><!-- End Customers Card -->
+              {% endif %}
 
               <!-- Reports -->
               <!-- <div class="col-12">
@@ -1041,10 +1065,10 @@
               <div class="tab-content pt-2">
 
                 <div class="tab-pane fade show active profile-overview" id="profile-overview">
-                  <h5 class="card-title">About</h5>
+                  <!-- <h5 class="card-title">About</h5>
                   <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores cumque
                     temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem
-                    eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</p>
+                    eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</p> -->
 
                   <h5 class="card-title">Profile Details</h5>
 
@@ -1407,7 +1431,7 @@
                 <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping
                   Cart</a>
                 <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
-                <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                <!-- <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a> -->
               </div>
             </div>
             <div class="col-md-4 mb-5">

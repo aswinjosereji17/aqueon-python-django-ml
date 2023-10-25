@@ -274,7 +274,7 @@
 
                 <div class="col-lg-4 col-6 text-right">
                     <p class="m-0">Customer Service</p>
-                    <h5 class="m-0">+012 345 6789</h5>
+                    <h5 class="m-0">8639794330</h5>
                 </div>
             </div>
         </div>
@@ -337,7 +337,20 @@
                         </button>
                         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                             <div class="navbar-nav mr-auto py-0">
-                                <a href="{% url 'index' %}" class="nav-item nav-link active">Home</a>
+                                {% if user.is_authenticated %}
+    {% if user.is_superuser %}
+    <a id="nav_home" href="{% url 'user_profile_view' %}" class="nav-item nav-link active">Home</a>
+
+    {% elif not user.is_superuser and user.is_staff %}
+    <a id="nav_home" href="{% url 'user_profile_view' %}" class="nav-item nav-link active">Home</a>
+    {% elif not user.is_staff %}
+    <a id="nav_home" href="{% url 'index' %}" class="nav-item nav-link active">Home</a>
+
+    {% endif %}
+{% endif %}
+{% if not user.is_authenticated %}
+                                <a id="nav_home" href="{% url 'login_user' %}" class="nav-item nav-link active">Home</a>
+                                {% endif %}
                                 <!-- <a href="shop.html" class="nav-item nav-link">Shop</a>
                             <a href="detail.html" class="nav-item nav-link">Shop Detail</a>
                             <div class="nav-item dropdown">
@@ -348,7 +361,7 @@
                                         srcset=""></a>
                                 </div>
                             </div> -->
-                                <a href="#contactus" class="nav-item nav-link">Contact</a>
+                                <!-- <a href="#contactus" class="nav-item nav-link">Contact</a> -->
                             </div>
                             <div style="display: flex; flex-direction: row;" class="">
                                 {% if user.is_authenticated %}
@@ -358,7 +371,8 @@
                                     <button class="custom-btn" onclick="toggleCustomDropdown()">Hi, {{ request.user.username }}&nbsp;<i class="fa fa-angle-down text-dark"></i></button>
                                     <div class="custom-dropdown-content" id="myCustomDropdown">
                                         <a href="{% url 'user_profile_view' %}">Profile</a>
-                                        <a href="#">Settings</a>
+                                        
+                                        <!-- <a href="#">Settings</a> -->
                                         <a href="{% url 'loggout' %}">Logout</a>
                                     </div>
                                 </div>
@@ -371,7 +385,7 @@
                                     <button class="custom-btn" onclick="toggleCustomDropdown()">Hi, {{ request.user.username }}&nbsp;<i class="fa fa-angle-down text-dark"></i></button>
                                     <div class="custom-dropdown-content" id="myCustomDropdown">
                                         <a href="{% url 'user_profile_view' %}">Profile</a>
-                                        <a href="#">Settings</a>
+                                        <!-- <a href="#">Settings</a> -->
                                         <a href="{% url 'loggout' %}">Logout</a>
                                     </div>
                                 </div>
@@ -384,7 +398,9 @@
                                     <button class="custom-btn" onclick="toggleCustomDropdown()">Hi, {{ request.user.username }}&nbsp;<i class="fa fa-angle-down text-dark"></i></button>
                                     <div class="custom-dropdown-content" id="myCustomDropdown">
                                         <a href="{% url 'user_profile' %}">Profile</a>
-                                        <a href="#">Settings</a>
+                                        <!-- <a href="#">Settings</a> -->
+                                        <a href="{% url 'wishlist' %}">Wishlist</a>
+                                        <a href="{% url 'cart_details' %}">Shopping Cart</a>
                                         <a href="{% url 'loggout' %}">Logout</a>
                                     </div>
                                 </div>
@@ -491,8 +507,8 @@
                         if (results.length === 0) {
                             // If there are no results, insert a default image
                             // resultsHtml += '<div class="product-inf" style="height:600px; width:600px; margin:auto; align-items:center; text-align:center;">';
-                            resultsHtml += '<img style="height:450px; width:450px;" src="{% static 'img/not-found.svg' %}" alt="Default Image">';
-                    resultsHtml += '<h3>No products found</h3>';
+                            resultsHtml += '<img style="height:450px; width:450px; margin-left:560px; margin-top:60px" src="{% static 'img/not-found.svg' %}" alt="Default Image">';
+                    resultsHtml += '<h3 style="margin-left:670px">No products found</h3>';
                     // resultsHtml += '</div>';
                 } else {
                     for(var i = 0; i<results.length; i++) {
@@ -694,7 +710,7 @@ resultsHtml += '</div>';
 
         <!-- Featured Start -->
         <div class="container-fluid pt-5">
-            <div class="row px-xl-5 pb-3">
+            <div class="row px-xl-5 pb-3" style="gap: 133px;">
                 <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                     <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
                         <h1 class="fa fa-check text-primary m-0 mr-3"></h1>
@@ -1032,7 +1048,7 @@ resultsHtml += '</div>';
                     class="bg-secondary pr-3">Recent Products</span></h2>
             <div style="border-radius:10px;" class="row px-xl-5">
                 {% for product_rating in product_ratings %}
-                <div style="border-radius:10px; max-width: 284px; border-radius: 14px;" class=" col-md-4 col-sm-6 pb-1"
+                <div style="border-radius:10px; max-width: 300px; border-radius: 14px;" class=" col-md-4 col-sm-6 pb-1"
                     onclick="navigateToSubcategoryProducts({{product_rating.product.prod_id }})">
                     <div class="product-item bg-light mb-4">
                         <div class="product-img position-relative overflow-hidden">

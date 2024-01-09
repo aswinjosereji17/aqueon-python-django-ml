@@ -79,7 +79,7 @@
 
         <div class="cart-items">
             <!-- Repeat this block for each item in the cart -->
-            <div class="cart-item">
+            <div class="cart-item" onclick="navigateToSubcategories('{{ item.prod.prod_id }}')">
 
                 <div style="display: flex; gap: 40px; flex-direction: column;">
                     <div>
@@ -133,9 +133,15 @@
                     </form>
                 </div>
             </div>
+            <script>
+                function navigateToSubcategories(prodId) {
+                 window.location.href = `/prod_desc/${prodId}/`;
+                         }
+             </script>
 
             <!-- End of cart item block -->
-        </div> {% endfor %}
+        </div> 
+        {% endfor %}
         {% endif %}
 
 

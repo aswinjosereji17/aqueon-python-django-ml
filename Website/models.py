@@ -180,6 +180,7 @@ class Review(models.Model):
     rating = models.IntegerField()
     outof_rating = models.IntegerField(default=5, editable=False)
     description = models.TextField()
+    sentiment_score = models.FloatField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -229,3 +230,33 @@ class OrderItem(models.Model):
         order = self.order
         order.total_order_price = sum(order_item.total_price for order_item in order.orderitem_set.all())
         order.save()
+
+class Event(models.Model):
+    MODE_CHOICES = (
+        ('offline', 'Offline'),
+        ('online', 'Online'),
+    )
+    event_id=models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255)
+    event_img = models.ImageField(upload_to='events/', null=False)
+    date = models.DateField()
+    description = models.TextField()
+    mode = models.CharField(max_length=10, choices=MODE_CHOICES)
+    duration = models.DurationField()
+    booking_link = models.URLField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+    
+
+class Payment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    order_id = models.CharField(max_length=255,default=None)
+    payment_id = models.CharField(max_length=255)
+    signature = models.CharField(max_length=255,default=None)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return f"Payment by {self.user.username}"

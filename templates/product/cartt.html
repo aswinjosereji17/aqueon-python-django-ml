@@ -79,11 +79,11 @@
 
         <div class="cart-items">
             <!-- Repeat this block for each item in the cart -->
-            <div class="cart-item" onclick="navigateToSubcategories('{{ item.prod.prod_id }}')">
+            <div class="cart-item">
 
                 <div style="display: flex; gap: 40px; flex-direction: column;">
                     <div>
-                        <img src="{{ item.prod.productdescription.img1.url }}" alt="Product Image">
+                        <img onclick="navigateToSubcategories('{{ item.prod.prod_id }}')" src="{{ item.prod.productdescription.img1.url }}" alt="Product Image">
                     </div>
                     <div style="display: flex; gap: 10px; flex-direction: row;">
                         <div style="height: 25px; width: 25px; border-radius: 5px; color: black; background-color: #FFD333; text-align: center;"

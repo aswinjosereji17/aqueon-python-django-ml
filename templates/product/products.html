@@ -3,7 +3,6 @@
 
 {% block content_mainn %}
 
-
     <!-- Shop Start -->
     <div class="container-fluid">
         <div class="row px-xl-5">
@@ -11,14 +10,8 @@
             <div class="col-lg-3 col-md-4">
                 <!-- Price Start -->
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by price</span></h5>
-                <div class="bg-light p-4 mb-30">
-                    <form>
-                    
-                        {% comment %} <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" checked id="price-all">
-                            <label class="custom-control-label" for="price-all">All Price</label>
-                            <span class="badge border font-weight-normal">1000</span>
-                        </div>
+                <!-- <div class="bg-light p-4 mb-30">
+                    <form>                 
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="price-1">
                             <label class="custom-control-label" for="price-1">$0 - $100</label>
@@ -43,47 +36,55 @@
                             <input type="checkbox" class="custom-control-input" id="price-5">
                             <label class="custom-control-label" for="price-5">$400 - $500</label>
                             <span class="badge border font-weight-normal">168</span>
-                        </div> {% endcomment %}
+                        </div> 
                     </form>
-                </div>
+                </div> -->
                 <!-- Price End -->
+
+                <!-- Price Range -->
+<input type="checkbox" id="price_0_100" value="0-100"> $0 - $100
+<input type="checkbox" id="price_101_200" value="101-200"> $101 - $200
+<input type="checkbox" id="price_201_500" value="201-500"> $201 - $500
+
+<!-- Rating -->
+<input type="checkbox" id="rating_5" value="5"> 5
+<input type="checkbox" id="rating_4" value="4"> 4
+<input type="checkbox" id="rating_3" value="3"> 3
+<input type="checkbox" id="rating_2" value="2"> 2
+<input type="checkbox" id="rating_1" value="1"> 1
+
                 
                 <!-- Color Start -->
-                {% comment %} <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by color</span></h5>
-                <div class="bg-light p-4 mb-30">
+               <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by reviews</span></h5>
+                <!-- <div class="bg-light p-4 mb-30">
                     <form>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" checked id="color-all">
-                            <label class="custom-control-label" for="price-all">All Color</label>
-                            <span class="badge border font-weight-normal">1000</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="color-1">
-                            <label class="custom-control-label" for="color-1">Black</label>
-                            <span class="badge border font-weight-normal">150</span>
+                            <label class="custom-control-label" for="color-1">5 star</label>
+                            <span class="badge border font-weight-normal">5</span>
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="color-2">
-                            <label class="custom-control-label" for="color-2">White</label>
-                            <span class="badge border font-weight-normal">295</span>
+                            <label class="custom-control-label" for="color-2">4 star</label>
+                            <span class="badge border font-weight-normal">4</span>
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="color-3">
-                            <label class="custom-control-label" for="color-3">Red</label>
-                            <span class="badge border font-weight-normal">246</span>
+                            <label class="custom-control-label" for="color-3">3 star</label>
+                            <span class="badge border font-weight-normal">3</span>
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="color-4">
-                            <label class="custom-control-label" for="color-4">Blue</label>
-                            <span class="badge border font-weight-normal">145</span>
+                            <label class="custom-control-label" for="color-4">2 star</label>
+                            <span class="badge border font-weight-normal">2</span>
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
                             <input type="checkbox" class="custom-control-input" id="color-5">
-                            <label class="custom-control-label" for="color-5">Green</label>
-                            <span class="badge border font-weight-normal">168</span>
+                            <label class="custom-control-label" for="color-5">1 star</label>
+                            <span class="badge border font-weight-normal">1</span>
                         </div>
                     </form>
-                </div> {% endcomment %}
+                </div>  -->
                 <!-- Color End -->
 
                 <!-- Size Start -->
@@ -128,7 +129,7 @@
 
 
             <!-- Shop Product Start -->
-            <div class="col-lg-9 col-md-8">
+            <div id="hello" class="col-lg-9 col-md-8">
                 <div class="row pb-3">
                     <div class="col-12 pb-1">
                         <div class="d-flex align-items-center justify-content-between mb-4">
@@ -156,6 +157,54 @@
                             </div>
                         </div>
                     </div>
+
+                    <div id="filtered-products" class="col-lg-9 col-md-8">
+                       
+                    </div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('input[type="checkbox"]').change(function () {
+            updateFilteredProducts();
+        });
+
+        function updateFilteredProducts() {
+    var priceFilters = $('input[name="price"]:checked').map(function () {
+        return this.value;
+    }).get();
+
+    var ratingFilters = $('input[name="rating"]:checked').map(function () {
+        return this.value;
+    }).get();
+
+    $.ajax({
+        url: '/filter-products/',
+        data: {price: JSON.stringify(priceFilters), rating: ratingFilters},
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $('#hello').hide();
+            displayFilteredProducts(data.filtered_products);
+        }
+    });
+}
+
+
+        function displayFilteredProducts(products) {
+            var $filteredProductsDiv = $('#filtered-products');
+            $filteredProductsDiv.empty();
+
+            $.each(products, function (index, product) {
+                var productHtml = '<div><h3>' + product.prod_name + '</h3><p>Price: $' + product.price + '</p></div>';
+                $filteredProductsDiv.append(productHtml);
+            });
+        }
+    });
+</script>
+
+                    
                     {% for product in products %}
                     <div style="cursor: pointer;" class="col-lg-4 col-md-6 col-sm-6 pb-1" onclick="navigateToSubcategoryProducts({{ product.prod_id }})">
                         <div class="product-item bg-light mb-4">

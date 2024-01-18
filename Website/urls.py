@@ -71,6 +71,8 @@ urlpatterns = [
 
     path('live_search/', views.live_search, name='live_search'),
 
+    path('filter-products/', views.filter_products, name='filter_products'),
+
     # path('product_request_form/', views.product_request_form, name='product_request_form'),
     path('submit_request_view/', views.submit_request_view, name='submit_request_view'),
     path('product_requests_view/', views.product_requests_view, name='product_requests_view'),
@@ -93,6 +95,20 @@ urlpatterns = [
 
 
     # path('product_requests_view/', views.product_requests_view, name='product_requests_view'),
+
+
+    path('events/', views.events, name='events'),
+    path('add_event/', views.add_event, name='add_event'),
+    path('all_events/', views.all_events, name='all_events'),
+    path('edit_event/<int:event_id>/', views.edit_event, name='edit_event'),
+    path('delete_event/<int:event_id>/', views.delete_event, name='delete_event'),
+
+    # path('display_top_products/', views.display_top_products, name='display_top_products'),
+
+    path('top-products/', views.top_products, name='top_products'),
+
+    path('subscription/',views.subscription, name='subscription')
+
 
     ]
 

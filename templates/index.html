@@ -342,14 +342,27 @@
                             <div class="navbar-nav mr-auto py-0">
                                 {% if user.is_authenticated %}
                                 {% if user.is_superuser %}
-                                <a id="nav_home" href="{% url 'user_profile_view' %}"
-                                    class="nav-item nav-link active">Home</a>
+                                <a id="nav_home" href="{% url 'user_profile_view' %}" class="nav-item nav-link active">Home</a>
+                                <a id="nav_home" href="{% url 'events' %}" class="nav-item nav-link active">Events</a>
+                                <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">subscrip</a>
+
+                                <a id="nav_home" href="{% url 'index' %}" class="nav-item nav-link active">Blog</a>
+                                    
 
                                 {% elif not user.is_superuser and user.is_staff %}
-                                <a id="nav_home" href="{% url 'user_profile_view' %}"
-                                    class="nav-item nav-link active">Home</a>
+                                <a id="nav_home" href="{% url 'user_profile_view' %}" class="nav-item nav-link active">Home</a>
+                                <a id="nav_home" href="{% url 'events' %}" class="nav-item nav-link active">Events</a>
+                                <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">subscrip</a>
+
+                                <a id="nav_home" href="{% url 'index' %}" class="nav-item nav-link active">Blog</a>
+                                
                                 {% elif not user.is_staff %}
                                 <a id="nav_home" href="{% url 'index' %}" class="nav-item nav-link active">Home</a>
+                                <a id="nav_home" href="{% url 'events' %}" class="nav-item nav-link active">Events</a>
+                                <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">subscrip</a>
+
+                                <a id="nav_home" href="{% url 'index' %}" class="nav-item nav-link active">Blog</a>
+
 
                                 {% endif %}
                                 {% endif %}
@@ -518,7 +531,7 @@
                         if (results.length === 0) {
                             // If there are no results, insert a default image
                             // resultsHtml += '<div class="product-inf" style="height:600px; width:600px; margin:auto; align-items:center; text-align:center;">';
-                            resultsHtml += '<img style="height:450px; width:650px; margin-left:476px; margin-top:60px" src="{% static 'img/funny_not-found.gif' %}" alt="Default Image">';
+                            resultsHtml += '<img style="height:450px; width:650px; margin-left:476px; margin-top:60px" src="{% static 'img/not-found.svg' %}" alt="Default Image">';
                             resultsHtml += '<h3 style="margin-left:670px">No products found</h3>';
                             // resultsHtml += '</div>';
                         } else {
@@ -1330,6 +1343,86 @@
                 </div>
             </div>
             <!-- Products End -->
+
+
+
+
+
+
+            <div class="container-fluid pt-5 pb-3">
+                <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span
+                        class="bg-secondary pr-3">Reviewed Products</span></h2>
+                <div style="border-radius:10px;" class="row px-xl-5">
+                    {% for productss in products_with_sentiment_sum %}
+                        <div style="border-radius:10px; max-width: 300px; border-radius: 14px;"
+                        class=" col-md-4 col-sm-6 pb-1"
+                        onclick="navigateToSubcategoryProducts({{productss.prod_id }})">
+                        <div class="product-item bg-light mb-4">
+                            <div class="product-img position-relative overflow-hidden">
+                                <img style="height: 225px; align-self: unset;" class="img-fluid w-100"
+                                    src="{{ productss.productdescription.img1.url }}" alt="">
+
+                                <div class="product-action">
+                                    {% comment %} <a class="btn btn-outline-dark btn-square" href=""><i
+                                            class="fa fa-shopping-cart"></i></a> {% endcomment %}
+                                            <a class="btn btn-outline-dark btn-square"
+                                        href="{% url 'add_to_wishlist' productss.prod_id %}"><i
+                                            class="far fa-heart"></i></a>
+                                    
+                                    {% comment %} <a class="btn btn-outline-dark btn-square" href=""><i
+                                            class="fa fa-sync-alt"></i></a> {% endcomment %}
+                                    {% comment %} <a class="btn btn-outline-dark btn-square" href=""><i
+                                            class="fa fa-search"></i></a> {% endcomment %}
+                                </div>
+                            </div>
+                            <div class="text-center py-4">
+                                <a class="h6 text-decoration-none" href="">
+                                    <span class="text-truncate">{{ productss.prod_name|truncatechars:21}}</span>
+                                </a>
+
+                                <div class="d-flex align-items-center justify-content-center mt-2">
+                                    <h5>Rs. {{ productss.price }}</h5>
+                                    <h6 class="text-muted ml-2"><del>Rs.{{ productss.price }}</del></h6>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-center mb-1">
+                                    {% if productss.avg_rating <= 5 and productss.avg_rating >= 4.1 %}
+                                        <small class="fa fa-star text-success mr-1"></small>
+                                        <small class="fa fa-star text-success mr-1"></small>
+                                        <small class="fa fa-star text-success mr-1"></small>
+                                        <small class="fa fa-star text-success mr-1"></small>
+                                        <small class="fa fa-star text-success mr-1"></small>
+                                        {% elif productss.avg_rating <= 4 and productss.avg_rating >= 3.1 %}
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+                                            <small class="fa fa-star text-success mr-1"></small>
+
+                                            {% elif productss.avg_rating <= 3 and productss.avg_rating >= 2.1 %}
+                                                <small class="fa fa-star text-success mr-1"></small>
+                                                <small class="fa fa-star text-success mr-1"></small>
+                                                <small class="fa fa-star text-success mr-1"></small>
+
+                                                {% elif productss.avg_rating <= 2 and productss.avg_rating >= 1.1 %}
+                                                    <small class="fa fa-star text-danger mr-1"></small>
+                                                    <small class="fa fa-star text-danger mr-1"></small>
+
+                                                    {% elif productss.avg_rating <= 1 %} <small
+                                                        class="fa fa-star text-danger mr-1"></small>
+
+                                                        {% endif %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+
+
 
 
             <!-- Vendor Start -->

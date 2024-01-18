@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from .models import UserProfile,SellerRequest,HomeSpecialOffer,ProductCategory, ProductSubcategory, Product, ProductDescription, UserAddress, AddCart, CartItems, Wishlist
 #  ProductCategory, ProductSubcategory, Product
-from .models import Review, ProductRequest,Fish
+from .models import Review, ProductRequest,Fish,Event
 # class UserProfileAdmin(admin.ModelAdmin):
 #     list_display = ('user', 'street_address', 'city', 'state', 'postal_code', 'country')
     # Other customization options
@@ -61,7 +61,7 @@ admin.site.register(Wishlist, WishlistAdmin)
 
 
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('review_id','user','prod','rating','outof_rating','description','created_at') 
+    list_display = ('review_id','user','prod','rating','outof_rating','description','sentiment_score','created_at') 
 
 
 
@@ -86,3 +86,8 @@ admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderItem, OrderItemAdmin)
 
 admin.site.register(Fish)
+
+class EventAdmin(admin.ModelAdmin):
+    list_display = ['event_id','name','event_img', 'date','description', 'mode', 'duration', 'booking_link','created_at']
+
+admin.site.register(Event, EventAdmin)

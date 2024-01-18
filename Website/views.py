@@ -11,6 +11,8 @@ from django.db.models import Q
 from django.views.decorators.cache import never_cache
 from django.db.models import Avg
 from .models import Product, Review
+from django.db.models import Sum
+
 
 
 
@@ -21,6 +23,9 @@ def index(request):
   
     recent_products = Product.objects.all().order_by('-created_at')[:12]
     product_ratings = []
+
+    products_with_sentiment_sum = Product.objects.annotate(sentiment_sum=Sum('review__sentiment_score')).order_by('-sentiment_sum')[:6]
+
     for product in recent_products:
         avg_rating = Review.objects.filter(prod=product).aggregate(Avg('rating'))['rating__avg'] or 0
         print(avg_rating)
@@ -33,7 +38,8 @@ def index(request):
         context = {
         'homeimg': homeimg,
         'recent_products': recent_products,
-        'product_ratings': product_ratings
+        'product_ratings': product_ratings,
+        'products_with_sentiment_sum': products_with_sentiment_sum
         }
         
         return render(request,'index.html', context)
@@ -41,7 +47,8 @@ def index(request):
         context = {
         'homeimg': homeimg,
         'recent_products': recent_products,
-        'product_ratings': product_ratings
+        'product_ratings': product_ratings,
+        'products_with_sentiment_sum': products_with_sentiment_sum
         }
         
         return render(request,'index.html', context)
@@ -1430,6 +1437,9 @@ def paymenthandler(request):
 
 
 from .models import Review  # Import your Review model
+import nltk
+nltk.download('vader_lexicon')
+from nltk.sentiment import SentimentIntensityAnalyzer
 
 @login_required  # Ensure the user is authenticated to access this view
 @never_cache
@@ -1439,6 +1449,9 @@ def submit_review(request):
         prod = request.POST.get('prod_id')
         prod = Product.objects.get(prod_id=prod)
         description = request.POST.get('description')
+        sentiment_analyzer = SentimentIntensityAnalyzer()
+        sentiment_score = sentiment_analyzer.polarity_scores(description)['compound']
+        print("Sentiment Score:", sentiment_score)
         
         # Calculate the rating based on the number of stars selected
         rating = int(request.POST.get('rating', 0))
@@ -1448,6 +1461,7 @@ def submit_review(request):
             user=request.user,
             rating=rating,
             description=description,
+            sentiment_score=sentiment_score,
             prod=prod
         )
         
@@ -2054,3 +2068,174 @@ def imagee(request):
             fig.savefig(temp_file_path)
     return redirect('index')
  
+
+
+
+# def filter_products(request):
+#     price_range = request.GET.getlist('price')
+#     ratings = request.GET.getlist('rating')
+
+#     # Filter products based on selected price range and ratings
+#     filtered_products = Product.objects.filter(
+#         sub_categ_id=subcat_id,
+#         price__range=price_range,
+#         review__rating__in=ratings
+#     ).distinct()
+
+#     return render(request, 'product/filtered_products.html', {'filtered_products': filtered_products})
+from django.http import JsonResponse
+
+import json
+
+def filter_products(request):
+    price_range = json.loads(request.GET.get('price', '[]'))
+    ratings = request.GET.getlist('rating')
+
+    # Filter products based on selected price range and ratings
+    filtered_products = Product.objects.filter(
+        price__range=price_range,
+        review__rating__in=ratings
+    ).distinct()
+
+    # Convert filtered products to a list of dictionaries
+    products_list = [
+        {'prod_name': product.prod_name, 'price': product.price}
+        for product in filtered_products
+    ]
+
+    return JsonResponse({'filtered_products': products_list})
+
+    
+    
+    
+    
+    return render(request, '')
+
+
+from .models import Event
+@login_required
+@never_cache
+def events(request):
+    events = Event.objects.all()
+    return render(request, 'events/events.html', {'events': events})
+
+@login_required
+@never_cache
+def all_events(request):
+    events = Event.objects.all()
+    return render(request, 'events/all_events.html', {'events': events})
+
+
+
+# views.py
+# views.py
+# views.py
+
+from django.shortcuts import render, redirect
+from django.utils.datetime_safe import datetime
+from django.utils.dateparse import parse_date
+from django.utils import timezone  # Import timezone
+from .models import Event
+
+def add_event(request):
+    if request.method == 'POST':
+        # Process the form submission
+        name = request.POST.get('name')
+        event_img = request.FILES.get('event_img')
+        date_str = request.POST.get('date')
+        description = request.POST.get('description')
+        mode = request.POST.get('mode')
+        duration_str = request.POST.get('duration')  # Get duration as a string
+        booking_link = request.POST.get('booking_link')
+
+        # Convert date string to datetime object
+        try:
+            date = parse_date(date_str)
+        except ValueError:
+            # Handle invalid date format
+            # You can add your own error handling logic here
+            return render(request, 'events/add_event.html', {'error_message': 'Invalid date format'})
+
+        # Convert duration string to timedelta object
+        try:
+            duration = timezone.timedelta(seconds=int(duration_str))
+        except ValueError:
+            # Handle invalid duration format
+            # You can add your own error handling logic here
+            return render(request, 'events/add_event.html', {'error_message': 'Invalid duration format'})
+
+        Event.objects.create(
+            name=name,
+            event_img=event_img,
+            date=date,
+            description=description,
+            mode=mode,
+            duration=duration,
+            booking_link=booking_link,
+        )
+
+        # return redirect('list_product_subcat')  # Redirect to the desired URL after adding the event
+
+    return render(request, 'events/add_event.html')
+
+from datetime import timedelta
+
+def edit_event(request, event_id):
+    event = get_object_or_404(Event, event_id=event_id)
+
+    if request.method == 'POST':
+        # Perform the update
+        event.name = request.POST.get('edited_event_name')
+        event.date = request.POST.get('date')
+        event.description = request.POST.get('description')
+        event.mode=request.POST.get('edited_event_mode')
+        duration_seconds = int(request.POST.get('edited_event_duration'))
+        event.duration = timedelta(seconds=duration_seconds)
+        event.mode=request.POST.get('edited_booking_link')
+        event.booking_link=request.POST.get('edited_booking_link')
+
+        # subcategory.categ_id = ProductCategory.objects.get(categ_id=request.POST.get('edited_categ_id'))
+        # # subcategory.subcat_image = request.FILES.get('edited_subcat_image')
+        if 'edited_event_image' in request.FILES:
+            image = request.FILES['edited_event_image']
+            file_path = f'events/{image.name}'
+            default_storage.save(file_path, ContentFile(image.read()))
+            event.event_img = file_path
+        event.save()
+        return redirect('all_events') 
+
+
+def delete_event(request, event_id):
+    event=get_object_or_404(Event, event_id=event_id)
+    print(event)
+    event.delete()
+    return redirect('all_events')
+
+
+
+from django.db.models import Sum
+
+
+
+# def calculate_product_sentiment_score():
+#     # Use annotate to add a new field to each product with the sum of sentiment scores for its reviews
+#     products_with_sentiment_sum = Product.objects.annotate(sentiment_sum=Sum('review__sentiment_score'))
+
+#     for product in products_with_sentiment_sum:
+#         print(f"Product {product.prod_name} Sentiment Sum: {product.sentiment_sum}")
+
+# # Call the function to calculate and print the sum of sentiment scores for each product
+# calculate_product_sentiment_score()
+
+
+def top_products(request):
+    # Use annotate to add a new field to each product with the sum of sentiment scores for its reviews
+    products_with_sentiment_sum = Product.objects.annotate(sentiment_sum=Sum('review__sentiment_score')).order_by('-sentiment_sum')[:5]
+
+    context = {'products_with_sentiment_sum': products_with_sentiment_sum}
+    return render(request, 'Review/top_products.html', context)
+
+
+
+def subscription(request):
+    return render(request,'subscription/sub.html')

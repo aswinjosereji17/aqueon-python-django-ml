@@ -250,13 +250,29 @@ class Event(models.Model):
         return self.name
     
 
-class Payment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    order_id = models.CharField(max_length=255,default=None)
-    payment_id = models.CharField(max_length=255)
-    signature = models.CharField(max_length=255,default=None)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    timestamp = models.DateTimeField(auto_now_add=True)
 
-    def _str_(self):
-        return f"Payment by {self.user.username}"
+class Subscription(models.Model):
+    class PaymentStatusChoices(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        SUCCESSFUL = 'successful', 'Successful'
+        FAILED = 'failed', 'Failed'
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # products = models.ManyToManyField(Product)  # Assuming you have a Product model
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    order_date = models.DateTimeField(auto_now_add=True)
+    razorpay_order_id = models.CharField(max_length=255, default=None)
+    payment_status = models.CharField(max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
+    def str(self):
+        return self.user.username
+
+class Subscription_details(models.Model):
+    sub_name = models.CharField(max_length=255)
+    sub_image = models.CharField(max_length=255)
+    sub_amount = models.FloatField()
+    sub_offer1 = models.CharField(max_length=255)
+    sub_offer2 = models.CharField(max_length=255)
+    sub_offer3 = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.sub_name

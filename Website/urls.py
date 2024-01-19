@@ -107,7 +107,13 @@ urlpatterns = [
 
     path('top-products/', views.top_products, name='top_products'),
 
-    path('subscription/',views.subscription, name='subscription')
+    path('subscription/',views.subscription, name='subscription'),
+
+
+
+
+    path('sub_pay', views.sub_pay, name='sub_pay'),
+    path('paymenthandlerr/', views.paymenthandlerr, name='paymenthandlerr'),
 
 
     ]

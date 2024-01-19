@@ -2236,6 +2236,89 @@ def top_products(request):
     return render(request, 'Review/top_products.html', context)
 
 
-
+from .models import Subscription_details
 def subscription(request):
-    return render(request,'subscription/sub.html')
+    subscription=Subscription_details.objects.all()
+    return render(request,'subscription/sub.html', {'subscription' : subscription})
+
+
+
+
+from .models import Subscription
+
+def sub_pay(request):
+    user_add11= UserAddress.objects.get(user=request.user)
+
+
+    total_price = float(request.GET.get("amount")) 
+    currency = 'INR'
+    amount = int((total_price) * 100)
+    razorpay_order = razorpay_client.order.create(dict(
+        amount=amount,
+        currency=currency,
+        payment_capture='0'
+    ))
+
+    razorpay_order_id = razorpay_order['id']
+    callback_url = '/paymenthandlerr/'
+
+    subscription = Subscription.objects.create(
+        user=request.user,
+        total_price=total_price,
+        razorpay_order_id=razorpay_order_id,
+        payment_status=Subscription.PaymentStatusChoices.PENDING,
+    )
+
+  
+    subscription.save()
+    
+
+    context = {
+        'total_price': total_price,
+        'razorpay_order_id': razorpay_order_id,
+        'razorpay_merchant_key': settings.RAZOR_KEY_ID,
+        'razorpay_amount': amount,  # Set to 'total_price'
+        'currency': currency,
+        'callback_url': callback_url,
+        'user_add' :user_add11
+    }
+
+    return render(request, 'index1.html', context=context)
+
+@csrf_exempt
+def paymenthandlerr(request):
+    if request.method == "POST":
+        payment_id = request.POST.get('razorpay_payment_id', '')
+        razorpay_order_id = request.POST.get('razorpay_order_id', '')
+        signature = request.POST.get('razorpay_signature', '')
+
+        params_dict = {
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': payment_id,
+            'razorpay_signature': signature
+        }
+        result = razorpay_client.utility.verify_payment_signature(params_dict)
+
+        if not result:
+            return render(request, 'paymentfail.html')
+
+        try:
+            subscription = Subscription.objects.get(razorpay_order_id=razorpay_order_id)
+        except Subscription.DoesNotExist:
+            return HttpResponseBadRequest("Order not found")
+
+        if subscription.payment_status == Subscription.PaymentStatusChoices.SUCCESSFUL:
+            
+            return HttpResponse("Payment is already successful")
+
+        if subscription.payment_status != Subscription.PaymentStatusChoices.PENDING:
+            return HttpResponseBadRequest("Invalid order status")
+
+        amount = int((subscription.total_price)* 100)  
+        razorpay_client.payment.capture(payment_id, amount)
+        subscription.payment_id = payment_id
+        subscription.payment_status = Subscription.PaymentStatusChoices.SUCCESSFUL
+        subscription.save()
+        return redirect('index')
+
+    return HttpResponseBadRequest("Invalid request method")

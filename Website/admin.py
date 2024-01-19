@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from .models import UserProfile,SellerRequest,HomeSpecialOffer,ProductCategory, ProductSubcategory, Product, ProductDescription, UserAddress, AddCart, CartItems, Wishlist
 #  ProductCategory, ProductSubcategory, Product
-from .models import Review, ProductRequest,Fish,Event
+from .models import Review, ProductRequest,Fish,Event,Subscription,Subscription_details
 # class UserProfileAdmin(admin.ModelAdmin):
 #     list_display = ('user', 'street_address', 'city', 'state', 'postal_code', 'country')
     # Other customization options
@@ -11,6 +11,8 @@ from .models import Review, ProductRequest,Fish,Event
 # admin.site.register(UserProfile)
 # admin.site.register(SellerRequest)
 admin.site.register(HomeSpecialOffer)
+admin.site.register(Subscription_details)
+
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'mobile', 'profile_image')  
@@ -67,6 +69,8 @@ class ReviewAdmin(admin.ModelAdmin):
 
 admin.site.register(Review,ReviewAdmin)
 admin.site.register(ProductRequest)
+admin.site.register(Subscription)
+
 
 from .models import Order, OrderItem
 

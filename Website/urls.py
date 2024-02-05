@@ -114,6 +114,12 @@ urlpatterns = [
 
     path('sub_pay', views.sub_pay, name='sub_pay'),
     path('paymenthandlerr/', views.paymenthandlerr, name='paymenthandlerr'),
+    path('blog', views.blog, name='blog'),
+    path('add/', views.add_community_post, name='add_community_post'),
+    path('user_posts/', views.user_posts, name='user_posts'),
+    path('like_post/<int:post_id>/', views.like_post, name='like_post'),
+    path('get_post/<int:post_id>/', views.get_post, name='get_post'),
+
 
 
     ]

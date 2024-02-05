@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from .models import UserProfile,SellerRequest,HomeSpecialOffer,ProductCategory, ProductSubcategory, Product, ProductDescription, UserAddress, AddCart, CartItems, Wishlist
 #  ProductCategory, ProductSubcategory, Product
-from .models import Review, ProductRequest,Fish,Event,Subscription,Subscription_details
+from .models import Review, ProductRequest,Fish,Event,Subscription,Subscription_details,CommunityPost,PostLikes
 # class UserProfileAdmin(admin.ModelAdmin):
 #     list_display = ('user', 'street_address', 'city', 'state', 'postal_code', 'country')
     # Other customization options
@@ -12,6 +12,10 @@ from .models import Review, ProductRequest,Fish,Event,Subscription,Subscription_
 # admin.site.register(SellerRequest)
 admin.site.register(HomeSpecialOffer)
 admin.site.register(Subscription_details)
+
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'total_price','order_date','payment_date','expiration_date','razorpay_order_id','payment_status') 
+admin.site.register(Subscription,SubscriptionAdmin)
 
 
 class UserProfileAdmin(admin.ModelAdmin):
@@ -69,7 +73,6 @@ class ReviewAdmin(admin.ModelAdmin):
 
 admin.site.register(Review,ReviewAdmin)
 admin.site.register(ProductRequest)
-admin.site.register(Subscription)
 
 
 from .models import Order, OrderItem
@@ -95,3 +98,15 @@ class EventAdmin(admin.ModelAdmin):
     list_display = ['event_id','name','event_img', 'date','description', 'mode', 'duration', 'booking_link','created_at']
 
 admin.site.register(Event, EventAdmin)
+
+class CommunityPostAdmin(admin.ModelAdmin):
+    list_display = ['post_id','user','heading','description','likes','date_created']
+
+admin.site.register(CommunityPost, CommunityPostAdmin)
+
+
+class PostLikesAdmin(admin.ModelAdmin):
+    list_display = ['like_id','post_id','liked_user','date_created']
+
+admin.site.register(PostLikes, PostLikesAdmin)
+

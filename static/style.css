@@ -10760,7 +10760,7 @@ h6 {
   z-index: 1;
 }
 
-.section-title::after {
+/* .section-title::after {
   position: absolute;
   content: "";
   width: 100%;
@@ -10769,7 +10769,7 @@ h6 {
   left: 0;
   border-top: 1px dashed #bec5cb;
   z-index: -1;
-}
+} */
 
 .product-offer {
   position: relative;

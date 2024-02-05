@@ -24,7 +24,7 @@ def index(request):
     recent_products = Product.objects.all().order_by('-created_at')[:12]
     product_ratings = []
 
-    products_with_sentiment_sum = Product.objects.annotate(sentiment_sum=Sum('review__sentiment_score')).order_by('-sentiment_sum')[:6]
+    products_with_sentiment_sum = Product.objects.annotate(sentiment_sum=Avg('review__sentiment_score')).order_by('-sentiment_sum')[:6]
 
     for product in recent_products:
         avg_rating = Review.objects.filter(prod=product).aggregate(Avg('rating'))['rating__avg'] or 0
@@ -2191,7 +2191,7 @@ def edit_event(request, event_id):
         event.mode=request.POST.get('edited_event_mode')
         duration_seconds = int(request.POST.get('edited_event_duration'))
         event.duration = timedelta(seconds=duration_seconds)
-        event.mode=request.POST.get('edited_booking_link')
+        # event.mode=request.POST.get('edited_booking_link')
         event.booking_link=request.POST.get('edited_booking_link')
 
         # subcategory.categ_id = ProductCategory.objects.get(categ_id=request.POST.get('edited_categ_id'))
@@ -2283,7 +2283,7 @@ def sub_pay(request):
         'user_add' :user_add11
     }
 
-    return render(request, 'index1.html', context=context)
+    return render(request, 'pay_sub.html', context=context)
 
 @csrf_exempt
 def paymenthandlerr(request):
@@ -2322,3 +2322,82 @@ def paymenthandlerr(request):
         return redirect('index')
 
     return HttpResponseBadRequest("Invalid request method")
+
+
+from .models import CommunityPost
+
+
+from datetime import datetime, timedelta
+from django.db.models import Count
+
+def blog(request):
+    # Calculate the date 30 days ago from today
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+
+    # Filter posts created within the last 30 days
+    recent_posts = CommunityPost.objects.filter(date_created__gte=thirty_days_ago)
+    for i in recent_posts:
+        print({i.heading},{i.likes})
+
+    # Annotate each post with the number of likes and order by likes descending
+    # recent_posts = recent_posts.annotate(num_likes=Count('likes')).order_by('-num_likes')[:6]
+    recent_posts = CommunityPost.objects.filter(date_created__gte=thirty_days_ago).order_by('-likes')[:6]
+    for post in recent_posts:
+        print(f"Post: {post.heading}, Likes: {post.likes}")
+
+
+    context = {
+        'latest_popular_posts': recent_posts
+    }
+    return render(request, 'blog/index.html', context)
+
+
+
+from django.shortcuts import render, redirect
+
+def add_community_post(request):
+    if request.method == 'POST':
+        heading = request.POST.get('heading')
+        description = request.POST.get('description')
+        image = request.FILES.get('image')
+        if heading and description:  # Basic validation, you might want to add more
+            if request.user.is_authenticated:  # Check if user is logged in
+                CommunityPost.objects.create(user=request.user, heading=heading, description=description, image=image)
+                return redirect('home')  # Redirect to home page after successful submission
+            else:
+                return redirect('login')  # Redirect to login page if user is not logged in
+    return render(request, 'blog/add_community_post.html')
+
+
+from .models import CommunityPost
+
+def user_posts(request):
+    if request.user.is_authenticated:
+        user_posts = CommunityPost.objects.filter(user=request.user)
+        return render(request, 'blog/user_posts.html', {'user_posts': user_posts})
+    else:
+        # Redirect to login page if user is not authenticated
+        return redirect('login')
+
+
+
+from .models import CommunityPost, PostLikes
+
+from django.http import JsonResponse
+
+def like_post(request, post_id):
+    print(post_id)
+    post = CommunityPost.objects.get(pk=post_id)
+    liked_user = request.user
+    if not PostLikes.objects.filter(post_id=post, liked_user=liked_user).exists():
+        post_like = PostLikes(post_id=post, liked_user=liked_user)
+        post_like.save()
+        post.likes += 1
+        post.save()
+    return JsonResponse({'likes': post.likes})
+
+
+
+def get_post(request, post_id):
+    post_si = get_object_or_404(CommunityPost, post_id=post_id)
+    return render(request, 'post_detail.html', {'post': post})

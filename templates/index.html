@@ -43,7 +43,7 @@
         }
     </script>
 
-
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
 
 
@@ -106,13 +106,15 @@
 
     /* Style the custom dropdown button */
     .custom-btn {
-        background-color: #4CAF50;
+        background-color: black;
         border-radius: 8px;
         color: white;
         padding: 10px;
         font-size: 16px;
         border: none;
         cursor: pointer;
+        border: 1px solid white;
+        border-radius: 12px;
     }
 
     /* Style the custom dropdown content (hidden by default) */
@@ -192,7 +194,20 @@
     <!-- modal login -->
 
 
-
+    <div class="alan-btn"></div>
+    <script type="text/javascript"
+ src="https://studio.alan.app/web/lib/alan_lib.min.js"></script>
+<script>
+  var alanBtnInstance = alanBtn({
+    key: "f6abdf3f523f01aa6287fde52437fc762e956eca572e1d8b807a3e2338fdd0dc/stage",
+    onCommand: function (commandData) {
+      if (commandData.command === "go:back") {
+        //call client code that will react on the received command
+      }
+    },
+    rootEl: document.getElementById("alan-btn"),
+  });
+</script>
 
 
     <!-- Topbar Start -->
@@ -280,10 +295,14 @@
         </div>
         <!-- Topbar End -->
 
-
+<style>
+    .bg-darkk{
+        background-color: black !important;
+    }
+</style>
         <!-- Navbar Start -->
-        <div class="container-fluid bg-dark mb-30">
-            <div class="row px-xl-5">
+        <div  class="container-fluid bg-darkk mb-30">
+            <div style="background-color: black !important;" class="row px-xl-5">
                 <div class="col-lg-3 d-none d-lg-block" onmouseenter="openDropdown(this)"
                     onmouseleave="closeDropdown(this)">
                     <a class="btn d-flex align-items-center justify-content-between w-100" data-toggle="collapse"
@@ -338,7 +357,7 @@
                             data-target="#navbarCollapse">
                             <span class="navbar-toggler-icon"></span>
                         </button>
-                        <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div style="background-color: black !important;" class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                             <div class="navbar-nav mr-auto py-0">
                                 {% if user.is_authenticated %}
                                 {% if user.is_superuser %}
@@ -346,7 +365,7 @@
                                 <a id="nav_home" href="{% url 'events' %}" class="nav-item nav-link active">Events</a>
                                 <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">subscrip</a>
 
-                                <a id="nav_home" href="{% url 'index' %}" class="nav-item nav-link active">Blog</a>
+                                <a id="nav_home" href="{% url 'blog' %}" class="nav-item nav-link active">Blog</a>
                                     
 
                                 {% elif not user.is_superuser and user.is_staff %}
@@ -354,14 +373,15 @@
                                 <a id="nav_home" href="{% url 'events' %}" class="nav-item nav-link active">Events</a>
                                 <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">subscrip</a>
 
-                                <a id="nav_home" href="{% url 'index' %}" class="nav-item nav-link active">Blog</a>
+                                <a id="nav_home" href="{% url 'blog' %}" class="nav-item nav-link active">Blog</a>
                                 
                                 {% elif not user.is_staff %}
                                 <a id="nav_home" href="{% url 'index' %}" class="nav-item nav-link active">Home</a>
                                 <a id="nav_home" href="{% url 'events' %}" class="nav-item nav-link active">Events</a>
                                 <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">subscrip</a>
 
-                                <a id="nav_home" href="{% url 'index' %}" class="nav-item nav-link active">Blog</a>
+                                <a id="nav_home" href="{% url 'blog' %}" class="nav-item nav-link active">Blog</a>
+                                
 
 
                                 {% endif %}
@@ -1351,7 +1371,7 @@
 
             <div class="container-fluid pt-5 pb-3">
                 <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span
-                        class="bg-secondary pr-3">Reviewed Products</span></h2>
+                        class="bg-secondary pr-3">Top Reviewed Products</span></h2>
                 <div style="border-radius:10px;" class="row px-xl-5">
                     {% for productss in products_with_sentiment_sum %}
                         <div style="border-radius:10px; max-width: 300px; border-radius: 14px;"

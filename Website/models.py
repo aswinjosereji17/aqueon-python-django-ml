@@ -250,6 +250,8 @@ class Event(models.Model):
         return self.name
     
 
+from datetime import timedelta
+from datetime import datetime, timedelta
 
 class Subscription(models.Model):
     class PaymentStatusChoices(models.TextChoices):
@@ -258,13 +260,25 @@ class Subscription(models.Model):
         FAILED = 'failed', 'Failed'
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # products = models.ManyToManyField(Product)  # Assuming you have a Product model
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     order_date = models.DateTimeField(auto_now_add=True)
+    payment_date = models.DateTimeField(auto_now_add=True)
+    expiration_date = models.DateTimeField(null=True, blank=True)
     razorpay_order_id = models.CharField(max_length=255, default=None)
     payment_status = models.CharField(max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
-    def str(self):
+
+    def save(self, *args, **kwargs):
+        if self.payment_status == self.PaymentStatusChoices.SUCCESSFUL and self.payment_date:
+            self.payment_date = self.order_date
+            # Set expiration date to 28 days from the payment date
+            self.expiration_date = self.payment_date + timedelta(days=1)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
         return self.user.username
+
+
+
 
 class Subscription_details(models.Model):
     sub_name = models.CharField(max_length=255)
@@ -276,3 +290,30 @@ class Subscription_details(models.Model):
 
     def __str__(self):
         return self.sub_name
+
+
+class CommunityPost(models.Model):
+    post_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    heading = models.CharField(max_length=100)
+    description = models.TextField()
+    image = models.ImageField(upload_to='post_images/', null=True, blank=True)
+    likes = models.IntegerField(default=0)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.heading
+
+
+class PostLikes(models.Model):
+    like_id = models.AutoField(primary_key=True)
+    post_id = models.ForeignKey(CommunityPost, on_delete=models.CASCADE)
+    liked_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # likes = models.IntegerField(default=0)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('post_id', 'liked_user')  # Ensures each user can like a post only once
+
+    def __str__(self):
+        return f"Like: {self.like_id} - Post: {self.post_id} - Liked by: {self.liked_user}"

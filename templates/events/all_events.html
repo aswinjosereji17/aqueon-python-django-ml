@@ -18,7 +18,7 @@
                 <th scope="col">Date</th>
                 <th scope="col">Description</th>
                 <th scope="col">Mode</th>
-                <th scope="col">Duration</th>
+                <!-- <th scope="col">Duration</th> -->
                 <th scope="col">Booking Link</th>
                 <th scope="col">Created At</th>
                 <th scope="col">Actions</th>
@@ -39,7 +39,7 @@
                             <i ></i> Offline
                         {% endif %}
                     </td>
-                    <td>{{ event.duration }}</td>
+                    <!-- <td>{{ event.duration }}</td> -->
                     <td><a href="{{ event.booking_link }}" target="_blank">{{ event.booking_link }}</a></td>
                     <td>{{ event.created_at }}</td>
                     <td>
@@ -70,24 +70,28 @@
                                 <form method="post" enctype="multipart/form-data" action="{% url 'edit_event' event.event_id %}">
                                 {% csrf_token %}
 
-                                <input type="text" name="edited_event_name" value="{{ event.name }}">
-                                <input type="date" name="date" value="{{ event.date|date:'Y-m-d' }}">
-                                <textarea class="form-control" name="description">{{ event.description }}</textarea>
+                                <label for="">Event Name:</label><input type="text" name="edited_event_name" value="{{ event.name }}"><br>
+                                <label for="event_img">Event Image:</label><input type="file" name="edited_event_image"><br>
 
+                                <label for="date">Date:</label><input type="date" name="date" value="{{ event.date|date:'Y-m-d' }}"><br>
+                                <label for="description">Description:</label><textarea class="form-control" name="description">{{ event.description }}</textarea><br>
 
-                                <input type="file" name="edited_event_image">
+                                <!-- <input type="text" value="{{ event.duration }}" name="edited_event_duration"> -->
+                                <!-- <input type="file" name="edited_event_image"> -->
+                                <label for="mode">Mode:</label>
                                 <select name="edited_event_mode">
                                     {% for mode, mode_display in event.MODE_CHOICES %}
                                         <option value="{{ mode }}" {% if event.mode == mode %}selected{% endif %}>
                                             {{ mode_display }}
                                         </option>
                                     {% endfor %}
-                                </select>
-                                <input type="text" value="{{ event.duration }}" name="edited_event_duration">
+                                </select><br>
+                                <!-- <label for="duration">Duration:</label>
+                                <input type="text" value="{{ event.duration }}" name="edited_event_duration"><br> -->
+                                <label for="booking_link">Booking Link:</label>
+                                <input type="url" value="{{ event.booking_link }}"  name="edited_booking_link" required><br>
 
-                                <input type="url" value="{{ event.booking_link }}"  name="edited_booking_link" required>
-
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <button style="background-color: yellow; color: black; border: none;" type="submit" class="btn btn-primary">Save Changes</button>
                                 </form>
                             </div>
                         </div>

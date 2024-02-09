@@ -57,14 +57,14 @@
 		<div class="card">
 			<div><div class="row">
 				<div class="col-md-5 wrapthumbnail">
-					<a href="post.html">
+					<!-- <a href="post.html"> -->
 						<div class="thumbnail" style="background-image:url({{ post.image.url }});">
 						</div>
 					</a>
 				</div>
 				<div class="col-md-7">
 					<div class="card-block">
-						<h2 class="card-title"><a href="post.html">{{ post.heading }}</a></h2>
+						<h2 class="card-title">{{ post.heading }}</h2>
 						<!-- <h4 class="card-text">{{ post.description }}</h4> -->
 						<div class="description">
 							<h4 class="card-text">
@@ -101,10 +101,10 @@
 						<div style="margin-top: 20px;" class="metafooter">
 							<div style="display: flex; flex-direction: row;" class="wrapfooter">
 								<span class="meta-footer-thumb">
-								<a href="author.html"><img class="author-thumb" src="https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x" alt="Sal"></a>
+								<img class="author-thumb" src="https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x" alt="Sal">
 								</span>
 								<span class="author-meta">
-								<span class="post-name"><a href="author.html">{{ post.user }}</a></span><br/>
+								<span class="post-name">{{ post.user }}</span><br/>
 								<span class="post-date">{{ post.date_created }}</span><span class="dot"></span><span class="post-read"></span>
 								</span>
 								<span class="post-read-more">

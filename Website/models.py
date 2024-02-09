@@ -242,7 +242,7 @@ class Event(models.Model):
     date = models.DateField()
     description = models.TextField()
     mode = models.CharField(max_length=10, choices=MODE_CHOICES)
-    duration = models.DurationField()
+    duration = models.CharField(max_length=255, null=True)
     booking_link = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)
 

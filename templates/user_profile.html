@@ -159,15 +159,114 @@
 
 
               <!-- Profile Edit Form -->
-              <form method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data" onsubmit="return validatePhoneNumber()">
+              <script>
+                function validateImage(event) {
+                  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                  const file = event.target.files[0];
+                  const errorElement = document.getElementById('imageError');
+              
+                  if (file && allowedTypes.includes(file.type)) {
+                    errorElement.classList.add('d-none');
+                    document.getElementById('submitBtn').removeAttribute('disabled');
+                  } else {
+                    errorElement.classList.remove('d-none');
+                    document.getElementById('submitBtn').setAttribute('disabled', 'true');
+                  }
+                }
+              
+                function validateFirstName() {
+    const firstNameInput = document.getElementById('fullName');
+    const firstName = firstNameInput.value.trim();
+    const errorElement = document.getElementById('firstNameError');
+
+    // Regular expression to check if the first name starts with a letter and does not contain special characters
+    const regex = /^[A-Za-z][A-Za-z\s]*$/;
+
+    if (regex.test(firstName)) {
+      errorElement.classList.add('d-none');
+      document.getElementById('submitBtn').removeAttribute('disabled');
+
+    } else {
+      errorElement.classList.remove('d-none');
+      document.getElementById('submitBtn').setAttribute('disabled', 'true');
+
+    }
+  }
+
+
+
+  function validateLastName() {
+    const lastNameInput = document.getElementById('lastName');
+    const lastName = lastNameInput.value.trim();
+    const errorElement = document.getElementById('lastNameError');
+
+    // Regular expression to check if the last name starts with a letter and does not contain special characters
+    const regex = /^[A-Za-z][A-Za-z\s]*$/;
+
+    if (regex.test(lastName)) {
+      errorElement.classList.add('d-none');
+      document.getElementById('submitBtn').removeAttribute('disabled');
+
+    } else {
+      errorElement.classList.remove('d-none');
+      document.getElementById('submitBtn').setAttribute('disabled', 'true');
+
+    }
+  }
+
+  function validateAddresss() {
+    const addressInput = document.getElementById('address1');
+    const address = addressInput.value.trim();
+    const errorElement = document.getElementById('addressError');
+
+    // Regular expression to check if the address does not start with a special character
+    const regex = /^[^~`!@#$%^&*()_+={}[\]|\\:;"'<,>.?/]*[A-Za-z][^~`!@#$%^&*()_+={}[\]|\\:;"'<,>.?/]*$/;
+
+    if (regex.test(address)) {
+      errorElement.classList.add('d-none');
+    } else {
+      errorElement.classList.remove('d-none');
+    }
+  }
+  function validateAddress() {
+    const addressInput = document.getElementById('address2');
+    const address = addressInput.value.trim();
+    const errorElement = document.getElementById('addressError2');
+
+    // Regular expression to check if the address does not start with a special character
+    const regex = /^[^~`!@#$%^&*()_+={}[\]|\\:;"'<,>.?/]*[A-Za-z][^~`!@#$%^&*()_+={}[\]|\\:;"'<,>.?/]*$/;
+
+    if (regex.test(address)) {
+      errorElement.classList.add('d-none');
+    } else {
+      errorElement.classList.remove('d-none');
+    }
+  }
+
+
+
+
+                function validateForm() {
+                  const fileInput = document.getElementById('img1');
+                  if (fileInput.files.length === 0) {
+                    alert('Please select an image file.');
+                    return false;
+                  }
+                  return true;
+                }
+              </script>
+
+
+
+              <form method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data" onsubmit="return validateForm()">
                 {% csrf_token %}
 
                 <div class="row mb-3">
 
                   <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
                   <div class="col-md-8 col-lg-9">
-                    <input type="file" id="img1" name="img1" onchange="viewImage1(event)" accept="image/*"
-                      class="form-control-file">
+                    <input type="file" id="img1" name="img1" onchange="validateImage(event)" accept="image/*" class="form-control-file">
+                    <small id="imageError" class="text-danger d-none">Please select a valid image file (JPEG, PNG, GIF).</small>
                   </div>
                 </div>
                 <div class="row mb-3">
@@ -188,16 +287,19 @@
                 <div class="row mb-3">
                   <label for="fullName" class="col-md-4 col-lg-3 col-form-label">First Name</label>
                   <div class="col-md-8 col-lg-9">
-                    <input name="first_name" type="text" class="form-control" id="fullName"
-                      value="{{ user_profile.user.first_name }}">
+                    <input name="first_name" type="text" class="form-control" id="fullName" value="{{ user_profile.user.first_name }}"
+                      oninput="validateFirstName()">
+                    <small id="firstNameError" class="text-danger d-none">First name must start with a letter and not contain special characters.</small>
                   </div>
                 </div>
                 <div class="row mb-3">
                   <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Last Name</label>
                   <div class="col-md-8 col-lg-9">
-                    <input name="last_name" type="text" class="form-control" id="fullName"
-                      value="{{ user_profile.user.last_name }}">
+                    <input name="last_name" type="text" class="form-control" id="lastName" value="{{ user_profile.user.last_name }}"
+                      oninput="validateLastName()">
+                    <small id="lastNameError" class="text-danger d-none">Last name must start with a letter and not contain special characters.</small>
                   </div>
+                
                 </div>
 
                 {% if user.is_staff and not user.is_superuser %}
@@ -210,48 +312,31 @@
                 </div>
                 {% endif %}
 
-                {% comment %} <div class="row mb-3">
-                  <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Mobile</label>
-                  <div class="col-md-8 col-lg-9">
-                    <input
-        name="mobile"
-        type="tel"
-        class="form-control"
-        id="Phone"
-        onchange="validatePhoneNumber(this.value)"
-        value="{{ user_profile.mobile }}"
-    >
-                  </div> {% endcomment %}
-                  {% comment %} <div id="error-message" style="color: red;"></div> {% endcomment %}
-                 
-                {% comment %} </div> {% endcomment %}
+                
 
 
-                <!-- <div class="row mb-3">
-                      <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
-                      <div class="col-md-8 col-lg-9">
-                        <input name="email" type="email" class="form-control" id="Email" value="{{ user_profile.user.email }}">
-                      </div>
-                    </div> -->
 
-                <div class="row mb-3">
-                  <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Address1</label>
-                  <div class="col-md-8 col-lg-9">
-                    <input name="address1" type="text" class="form-control" id="address1"
-                      value="{{ user_addr.address1 }}">
+                  <div class="row mb-3">
+                    <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Address1</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input name="address1" type="text" class="form-control" id="address1" value="{{ user_addr.address1 }}"
+                        oninput="validateAddresss()">
+                      <small id="addressError" class="text-danger d-none">Address must start with a letter and not contain special characters.</small>
+                    </div>
                   </div>
-                </div>
 
                 <div class="row mb-3">
                   <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Address2</label>
                   <div class="col-md-8 col-lg-9">
                     <input name="address2" type="text" class="form-control" id="address2"
-                      value="{{ user_addr.address2 }}">
+                      value="{{ user_addr.address2 }}" oninput="validateAddress()">
+                      <small id="addressError2" class="text-danger d-none">Address must start with a letter and not contain special characters.</small>
+
                   </div>
                 </div>
 
                 <div class="text-center">
-                  <button id="edit_s" type="submit" class="btn btn-primary">Save Changes</button>
+                  <button id="submitBtn" type="submit" class="btn btn-primary" disabled>Save Changes</button>
                 </div>
               </form>
               
@@ -303,7 +388,7 @@
                 </div>
 
                 <div class="text-center">
-                  <button type="submit" class="btn btn-primary">Save Changes</button>
+                  <button id="ssub" type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
               </form><!-- End settings Form -->
 

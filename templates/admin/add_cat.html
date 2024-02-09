@@ -43,6 +43,23 @@
     });
 });
 
+
+function validateImage(event) {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const file = event.target.files[0];
+    const errorElement = document.getElementById('catImageError'); // Fixing typo here
+
+    if (file) {
+        if (allowedTypes.includes(file.type)) {
+            errorElement.textContent = ''; // Clear any previous error message
+            document.getElementById('save_cat').removeAttribute('disabled');
+        } else {
+            errorElement.textContent = 'Only JPEG, PNG, and GIF images are allowed.'; // Display error message
+            document.getElementById('save_cat').setAttribute('disabled', 'true');
+        }
+    }
+}
+
     </script>
     
     
@@ -59,7 +76,9 @@
         </div></br>
         <div>
             <label for="categ_image">Category Image:</label>
-            <input type="file" name="categ_image" id="categ_image" accept="image/*" required>
+            <input type="file" name="categ_image" id="categ_image" accept="image/*" onchange="validateImage(event)" required><br>
+            <span style="color:red" id="catImageError"></span></br>
+
         </div>
         <button id ="save_cat" type="submit">Save</button>
     </form>

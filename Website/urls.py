@@ -120,6 +120,11 @@ urlpatterns = [
     path('like_post/<int:post_id>/', views.like_post, name='like_post'),
     path('get_post/<int:post_id>/', views.get_post, name='get_post'),
 
+    path('admin_show_products/', views.admin_show_products, name='admin_show_products'),
+    path('my_orders/', views.my_orders, name='my_orders'),
+
+
+
 
 
     ]

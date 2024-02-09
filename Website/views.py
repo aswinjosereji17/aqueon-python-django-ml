@@ -510,21 +510,19 @@ def prod_desc(request, prod_id):
 
 
     # user_has_purchased_product = False
+    user_has_reviewed_product = False
     if request.user.is_authenticated:
         user_has_purchased_product = Order.objects.filter(
             user=request.user,
             orderitem__product=product,
             payment_status=Order.PaymentStatusChoices.SUCCESSFUL
         ).exists()
+        user_has_reviewed_product = Review.objects.filter(
+            user=request.user,
+            prod=product
+        ).exists()
 
-
-    
-
-
-
-   
-
-    
+    print(user_has_reviewed_product)
     
     if request.user.is_authenticated:
         context = {
@@ -533,6 +531,7 @@ def prod_desc(request, prod_id):
             'reviews': reviews,
             'avg_rating': avg_rating,
             'user_has_purchased_product': user_has_purchased_product,
+            'user_has_reviewed_product': user_has_reviewed_product,
 
         }
     else:
@@ -2137,6 +2136,8 @@ from django.utils.dateparse import parse_date
 from django.utils import timezone  # Import timezone
 from .models import Event
 
+@login_required
+@never_cache
 def add_event(request):
     if request.method == 'POST':
         # Process the form submission
@@ -2145,7 +2146,7 @@ def add_event(request):
         date_str = request.POST.get('date')
         description = request.POST.get('description')
         mode = request.POST.get('mode')
-        duration_str = request.POST.get('duration')  # Get duration as a string
+        # duration = request.POST.get('duration')  # Get duration as a string
         booking_link = request.POST.get('booking_link')
 
         # Convert date string to datetime object
@@ -2157,12 +2158,12 @@ def add_event(request):
             return render(request, 'events/add_event.html', {'error_message': 'Invalid date format'})
 
         # Convert duration string to timedelta object
-        try:
-            duration = timezone.timedelta(seconds=int(duration_str))
-        except ValueError:
-            # Handle invalid duration format
-            # You can add your own error handling logic here
-            return render(request, 'events/add_event.html', {'error_message': 'Invalid duration format'})
+        # try:
+        #     duration = timezone.timedelta(seconds=int(duration_str))
+        # except ValueError:
+        #     # Handle invalid duration format
+        #     # You can add your own error handling logic here
+        #     return render(request, 'events/add_event.html', {'error_message': 'Invalid duration format'})
 
         Event.objects.create(
             name=name,
@@ -2170,7 +2171,7 @@ def add_event(request):
             date=date,
             description=description,
             mode=mode,
-            duration=duration,
+            # duration=duration,
             booking_link=booking_link,
         )
 
@@ -2180,6 +2181,8 @@ def add_event(request):
 
 from datetime import timedelta
 
+@login_required
+@never_cache
 def edit_event(request, event_id):
     event = get_object_or_404(Event, event_id=event_id)
 
@@ -2189,8 +2192,8 @@ def edit_event(request, event_id):
         event.date = request.POST.get('date')
         event.description = request.POST.get('description')
         event.mode=request.POST.get('edited_event_mode')
-        duration_seconds = int(request.POST.get('edited_event_duration'))
-        event.duration = timedelta(seconds=duration_seconds)
+        # duration_seconds = int(request.POST.get('edited_event_duration'))
+        event.duration = request.POST.get('edited_event_duration')
         # event.mode=request.POST.get('edited_booking_link')
         event.booking_link=request.POST.get('edited_booking_link')
 
@@ -2204,7 +2207,8 @@ def edit_event(request, event_id):
         event.save()
         return redirect('all_events') 
 
-
+@login_required
+@never_cache
 def delete_event(request, event_id):
     event=get_object_or_404(Event, event_id=event_id)
     print(event)
@@ -2237,6 +2241,8 @@ def top_products(request):
 
 
 from .models import Subscription_details
+@login_required
+@never_cache
 def subscription(request):
     subscription=Subscription_details.objects.all()
     return render(request,'subscription/sub.html', {'subscription' : subscription})
@@ -2245,7 +2251,8 @@ def subscription(request):
 
 
 from .models import Subscription
-
+@login_required
+@never_cache
 def sub_pay(request):
     user_add11= UserAddress.objects.get(user=request.user)
 
@@ -2286,6 +2293,8 @@ def sub_pay(request):
     return render(request, 'pay_sub.html', context=context)
 
 @csrf_exempt
+@login_required
+@never_cache
 def paymenthandlerr(request):
     if request.method == "POST":
         payment_id = request.POST.get('razorpay_payment_id', '')
@@ -2355,6 +2364,8 @@ def blog(request):
 
 from django.shortcuts import render, redirect
 
+@login_required
+@never_cache
 def add_community_post(request):
     if request.method == 'POST':
         heading = request.POST.get('heading')
@@ -2363,14 +2374,15 @@ def add_community_post(request):
         if heading and description:  # Basic validation, you might want to add more
             if request.user.is_authenticated:  # Check if user is logged in
                 CommunityPost.objects.create(user=request.user, heading=heading, description=description, image=image)
-                return redirect('home')  # Redirect to home page after successful submission
+                return redirect('user_posts')  # Redirect to home page after successful submission
             else:
                 return redirect('login')  # Redirect to login page if user is not logged in
     return render(request, 'blog/add_community_post.html')
 
 
 from .models import CommunityPost
-
+@login_required
+@never_cache
 def user_posts(request):
     if request.user.is_authenticated:
         user_posts = CommunityPost.objects.filter(user=request.user)
@@ -2384,7 +2396,8 @@ def user_posts(request):
 from .models import CommunityPost, PostLikes
 
 from django.http import JsonResponse
-
+@login_required
+@never_cache
 def like_post(request, post_id):
     print(post_id)
     post = CommunityPost.objects.get(pk=post_id)
@@ -2397,7 +2410,27 @@ def like_post(request, post_id):
     return JsonResponse({'likes': post.likes})
 
 
-
+@login_required
+@never_cache
 def get_post(request, post_id):
     post_si = get_object_or_404(CommunityPost, post_id=post_id)
     return render(request, 'post_detail.html', {'post': post})
+
+
+@login_required
+@never_cache
+def admin_show_products(request):
+    show_pdts=Product.objects.all()
+    return render(request, 'admin/show_products.html',{'show_pdts': show_pdts})
+
+
+from .models import Order
+@login_required
+@never_cache
+def my_orders(request):
+    
+    show_orders=Order.objects.filter(user=request.user)
+    for i in show_orders:
+        print(i)
+    return render(request, 'Orders/show_orders.html',{'show_orders': show_orders})
+

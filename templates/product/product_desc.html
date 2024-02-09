@@ -716,7 +716,7 @@
                             <div class="d-flex my-3">
 
 
-                                {% if user_has_purchased_product %}
+                                {% if user_has_purchased_product and not user_has_reviewed_product %}
                                 <form method="POST" action="{% url 'submit_review' %}">
                                     {% csrf_token %}
                                     <input type="hidden" id="prod_id" name="prod_id" value="{{ products.prod_id }}"
@@ -745,7 +745,7 @@
                                 </form>
 
                                 {% else %}
-                                <p>You can only leave a review if you have purchased this product.</p>
+                                <p>You can only leave a review if you have purchased this product  or you already made a response</p>
                                 {% endif %}
                             </div>
 

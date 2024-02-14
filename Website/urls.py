@@ -122,6 +122,9 @@ urlpatterns = [
 
     path('admin_show_products/', views.admin_show_products, name='admin_show_products'),
     path('my_orders/', views.my_orders, name='my_orders'),
+    path('community/', views.community, name='community'),
+    path('send_message/', views.send_message, name='send_message'),
+    path('filter_products/', views.filter_products, name='filter_products'),
 
 
 

@@ -317,3 +317,15 @@ class PostLikes(models.Model):
 
     def __str__(self):
         return f"Like: {self.like_id} - Post: {self.post_id} - Liked by: {self.liked_user}"
+
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class ChatMessage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return f'{self.user.username} - {self.message}'

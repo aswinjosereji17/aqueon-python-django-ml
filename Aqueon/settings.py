@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Website',
+    'channels',
 
     'django.contrib.sites', # must
     'allauth', # must

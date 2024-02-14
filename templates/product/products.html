@@ -42,16 +42,23 @@
                 <!-- Price End -->
 
                 <!-- Price Range -->
-<input type="checkbox" id="price_0_100" value="0-100"> $0 - $100
-<input type="checkbox" id="price_101_200" value="101-200"> $101 - $200
-<input type="checkbox" id="price_201_500" value="201-500"> $201 - $500
-
-<!-- Rating -->
-<input type="checkbox" id="rating_5" value="5"> 5
-<input type="checkbox" id="rating_4" value="4"> 4
-<input type="checkbox" id="rating_3" value="3"> 3
-<input type="checkbox" id="rating_2" value="2"> 2
-<input type="checkbox" id="rating_1" value="1"> 1
+                <form id="filterForm" method="post" action="{% url 'filter_products' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="subcat_id" id="subcat_id" value="{{s_id}}">   
+                    <input type="checkbox" name="price_range" id="price_0_100" value="0-100"> Rs.0 - $100
+    <input type="checkbox" name="price_range" id="price_101_200" value="101-200"> Rs.101 - $200
+    <input type="checkbox" name="price_range" id="price_201_500" value="201-500"> Rs.201 - $500
+    <br><br>
+    <!-- Rating -->
+    <input type="checkbox" name="rating" id="rating_5" value="5"> 5
+    <input type="checkbox" name="rating" id="rating_4" value="4"> 4
+    <input type="checkbox" name="rating" id="rating_3" value="3"> 3
+    <input type="checkbox" name="rating" id="rating_2" value="2"> 2
+    <input type="checkbox" name="rating" id="rating_1" value="1"> 1
+    <br><br>
+                    <button type="submit">Apply</button>
+                </form>
+                
 
                 
                 <!-- Color Start -->
@@ -163,46 +170,6 @@
                     </div>
 
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('input[type="checkbox"]').change(function () {
-            updateFilteredProducts();
-        });
-
-        function updateFilteredProducts() {
-    var priceFilters = $('input[name="price"]:checked').map(function () {
-        return this.value;
-    }).get();
-
-    var ratingFilters = $('input[name="rating"]:checked').map(function () {
-        return this.value;
-    }).get();
-
-    $.ajax({
-        url: '/filter-products/',
-        data: {price: JSON.stringify(priceFilters), rating: ratingFilters},
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            $('#hello').hide();
-            displayFilteredProducts(data.filtered_products);
-        }
-    });
-}
-
-
-        function displayFilteredProducts(products) {
-            var $filteredProductsDiv = $('#filtered-products');
-            $filteredProductsDiv.empty();
-
-            $.each(products, function (index, product) {
-                var productHtml = '<div><h3>' + product.prod_name + '</h3><p>Price: $' + product.price + '</p></div>';
-                $filteredProductsDiv.append(productHtml);
-            });
-        }
-    });
-</script>
 
                     
                     {% for product in products %}

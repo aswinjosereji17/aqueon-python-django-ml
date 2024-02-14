@@ -462,6 +462,8 @@ from .models import Product,ProductDescription
 
 def subcategory_products_view(request, subcat_id):
     products = Product.objects.filter(sub_categ_id=subcat_id)
+    print("sssss",subcat_id)
+    s_id= subcat_id
 
     for product in products:
             # Retrieve all reviews for the product
@@ -481,7 +483,7 @@ def subcategory_products_view(request, subcat_id):
         user_id = request.user.id 
         wish_count = Wishlist.objects.filter(user_id=user_id).count()
     
-        return render(request, 'product/products.html', {'products': products,'cart_item_count': cart_item_count,
+        return render(request, 'product/products.html', {'s_id':s_id,'products': products,'cart_item_count': cart_item_count,
         'wish_count': wish_count})
     
     else:
@@ -2434,3 +2436,110 @@ def my_orders(request):
         print(i)
     return render(request, 'Orders/show_orders.html',{'show_orders': show_orders})
 
+
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import ChatMessage
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from django.shortcuts import render
+from .models import UserProfile
+
+def community(request):
+    chat_messages = ChatMessage.objects.select_related('user__userprofile').all()
+    # users_with_avatars = User.objects.filter(userprofile_profile_image_isnull=False)
+    return render(request, 'Community/community.html', {'chat_messages': chat_messages})
+
+
+@login_required
+def send_message(request):
+    if request.method == 'POST':
+        user = request.user
+        message = request.POST.get('message', '')
+        if message:
+            chat_message = ChatMessage.objects.create(user=user, message=message)
+            channel_layer = get_channel_layer()
+            try:
+                async_to_sync(channel_layer.group_send)(
+                    'chat_group',
+                    {
+                        'type': 'chat.message',
+                        'message': chat_message.message,
+                        'username': user.username,
+                    }
+                )
+            except Exception as e:
+                print(f"Error sending message: {e}")
+            messages.success(request, 'Message sent successfully!')
+            return redirect('community')
+        else:
+            messages.error(request, 'Invalid message. Please enter a non-empty message.')
+            
+    return redirect('community')
+
+
+
+from django.shortcuts import render
+from .models import Product
+
+from django.shortcuts import render
+from .models import Product
+
+from django.shortcuts import render
+from .models import Product
+
+def filter_products(request):
+    if request.method == 'POST':
+        price_ranges = {
+            '0-100': (0, 100),
+            '101-200': (101, 200),
+            '201-500': (201, 500)
+        }
+        
+        selected_price_ranges = request.POST.getlist('price_range')
+        print(selected_price_ranges)
+
+        selected_ratings = request.POST.getlist('rating')
+        subcat_id = request.POST.get('subcat_id')
+        
+        # Prepare price range filters
+        price_filters = []
+        for price_range in selected_price_ranges:
+            price_range_tuple = price_ranges.get(price_range)
+            if price_range_tuple:
+                price_filters.append(price_range_tuple)
+        
+        # Combine price range filters if multiple are selected
+        combined_price_filter = None
+        for price_filter in price_filters:
+            if combined_price_filter is None:
+                combined_price_filter = price_filter
+            else:
+                combined_price_filter = (
+                    min(combined_price_filter[0], price_filter[0]),
+                    max(combined_price_filter[1], price_filter[1])
+                )
+        
+        # Query products based on selected filters
+        filtered_products = Product.objects.filter(
+            sub_categ_id=subcat_id,
+            # rating__in=selected_ratings
+        )
+        
+        # Apply combined price range filter
+        if combined_price_filter:
+            filtered_products = filtered_products.filter(price__range=combined_price_filter)
+        
+
+        for i in filtered_products:
+            print(i)
+        # Render the filtered products in your template
+        return redirect('index')
+        # return render(request, 'filtered_products.html', {'products': filtered_products})
+    else:
+        # Handle GET request or render initial form
+        pass

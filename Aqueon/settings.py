@@ -28,7 +28,7 @@ DEBUG = True
 
 TIME_ZONE = 'Asia/Kolkata'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10.0.2.2','127.0.0.1']
 
 
 RAZOR_KEY_ID = 'rzp_test_ziRKUSJFdkxNCh'
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Website',
+    'Aqueon_App',
     'channels',
 
     'django.contrib.sites', # must
@@ -51,6 +52,8 @@ INSTALLED_APPS = [
     'allauth.account', # must
     'allauth.socialaccount', # must
     'allauth.socialaccount.providers.google', # new
+    'rest_framework',
+    'corsheaders',
 ]
 
 
@@ -65,6 +68,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'Website.middleware.CommonDataMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'Aqueon.urls'

@@ -3,6 +3,7 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from .views import GeneratePDF
 
 
 
@@ -128,6 +129,11 @@ urlpatterns = [
 
 
 
+    # path('user_loginnn/', views.user_loginnn, name='user_loginnn'),
+    # path('show_user/', views.show_user, name='show_user'),
+
+    path('generate-pdf/<int:order_id>/', GeneratePDF.as_view(), name='generate_pdf'),
+    path('requested_orders/', views.requested_orders, name='requested_orders'),
 
 
     ]

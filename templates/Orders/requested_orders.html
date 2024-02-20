@@ -1,0 +1,50 @@
+
+{% extends 'user_prof.html' %}
+
+
+{% block content %}
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+
+<div class="container mt-5">
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Product Name</th>
+                <!-- <th scope="col">Product Image</th> -->
+                <th scope="col">Quantity</th>
+                <th scope="col">Shipped</th>
+                <th scope="col">Created At</th>
+            </tr>
+        </thead>
+        <tbody>{% for a in orders %}
+                <tr>
+                    <th scope="row"></th>
+                    <td>{{ a.prod_name }}</td>
+                    <!-- <td><img src="" alt=""></td> -->
+                    <td>{{ a.quantity }}</td>
+                    <td>{{ a.shipped }}</td>
+                    <td>{{ a.noti_date }}</td>
+                </tr>
+                {% endfor %}
+
+           
+               
+
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Bootstrap JS and Popper.js scripts (required for Bootstrap features) -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<!-- Optional: Add Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.18.0/font/bootstrap-icons.css">
+
+
+{% endblock%}

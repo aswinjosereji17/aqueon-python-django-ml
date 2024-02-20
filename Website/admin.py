@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from .models import UserProfile,SellerRequest,HomeSpecialOffer,ProductCategory, ProductSubcategory, Product, ProductDescription, UserAddress, AddCart, CartItems, Wishlist
 #  ProductCategory, ProductSubcategory, Product
-from .models import Review, ProductRequest,Fish,Event,Subscription,Subscription_details,CommunityPost,PostLikes,ChatMessage
+from .models import Review, ProductRequest,Fish,Event,Subscription,Subscription_details,CommunityPost,PostLikes,ChatMessage,OrderNotification_Seller
 # class UserProfileAdmin(admin.ModelAdmin):
 #     list_display = ('user', 'street_address', 'city', 'state', 'postal_code', 'country')
     # Other customization options
@@ -12,6 +12,7 @@ from .models import Review, ProductRequest,Fish,Event,Subscription,Subscription_
 # admin.site.register(SellerRequest)
 admin.site.register(HomeSpecialOffer)
 admin.site.register(Subscription_details)
+admin.site.register(OrderNotification_Seller)
 
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('user', 'total_price','order_date','payment_date','expiration_date','razorpay_order_id','payment_status') 
@@ -40,7 +41,7 @@ admin.site.register(ProductCategory, ProductCategoryAdmin)
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('prod_name','fish_name','sub_categ_id','price','user_id','stock_quantity','created_at')  # Add other fields here
+    list_display = ('prod_name','sub_categ_id','price','user_id','stock_quantity','created_at')  # Add other fields here
 
 admin.site.register(Product, ProductAdmin)
 

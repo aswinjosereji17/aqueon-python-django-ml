@@ -387,12 +387,12 @@ def add_product(request):
 
     if request.method == 'POST':
         product_name = request.POST['product_name']
-        fish = request.POST['fish']
+        # fish = request.POST['fish']
         subcategory_id = request.POST['subcategory']
         price = request.POST['price']
         quantity=request.POST['quantity']
         description = request.POST['description']
-        instruction = request.POST['instruction']
+        # instruction = request.POST['instruction']
         img1 = request.FILES['img1']
         img2 = request.FILES['img2']
         img3 = request.FILES['img3']
@@ -403,12 +403,12 @@ def add_product(request):
             return HttpResponse("Product with this name already exists.")
 
         subcategory = ProductSubcategory.objects.get(pk=subcategory_id)
-        fish1=Fish.objects.get(pk=fish)
+        # fish1=Fish.objects.get(pk=fish)
         
         # Create and save the product using the provided data
         product = Product(
             prod_name=product_name,
-            fish_name=fish1,
+            # fish_name=fish1,
             sub_categ_id=subcategory,
             price=price,
             stock_quantity=quantity,
@@ -423,7 +423,7 @@ def add_product(request):
             img1=img1,
             img2=img2,
             img3=img3,
-            instructions=instruction
+            # instructions=instruction
         )
         product_description.save()
 
@@ -1372,6 +1372,7 @@ def homepage(request):
     }
 
     return render(request, 'index1.html', context=context)
+from. models import OrderNotification_Seller
 
 @csrf_exempt
 def paymenthandler(request):
@@ -1414,6 +1415,18 @@ def paymenthandler(request):
         order.payment_id = payment_id
         order.payment_status = Order.PaymentStatusChoices.SUCCESSFUL
         order.save()
+
+
+        for order_item in order.orderitem_set.all():
+            notification = OrderNotification_Seller.objects.create(
+                prod_name=order_item.product.prod_name,
+                quantity=order_item.quantity,
+                seller_name=order_item.product.user_id,
+                noti_date=timezone.now(),  # Assuming you're using timezone from django.utils
+                shipped=False
+            )
+
+
         add_cart = get_object_or_404(AddCart, user=request.user)
         cart_items = CartItems.objects.filter(cart=add_cart)
         cart_items.delete()
@@ -2492,54 +2505,189 @@ from .models import Product
 from django.shortcuts import render
 from .models import Product
 
+# def filter_products(request):
+#     if request.method == 'POST':
+#         price_ranges = {
+#             '0-100': (0, 100),
+#             '101-200': (101, 200),
+#             '201-500': (201, 500)
+#         }
+#         min_value = request.POST.get('min-value')
+#         max_value = request.POST.get('max-value')
+
+
+#         # Do something with the min and max values
+#         print("Minimum Value:", min_value)
+#         print("Maximum Value:", max_value)
+
+#         selected_price_ranges = request.POST.getlist('price_range')
+#         print(selected_price_ranges)
+
+#         selected_ratings = request.POST.getlist('rating')
+#         subcat_id = request.POST.get('subcat_id')
+        
+#         # Prepare price range filters
+#         price_filters = []
+#         for price_range in selected_price_ranges:
+#             price_range_tuple = price_ranges.get(price_range)
+#             if price_range_tuple:
+#                 price_filters.append(price_range_tuple)
+        
+#         # Combine price range filters if multiple are selected
+#         combined_price_filter = None
+#         for price_filter in price_filters:
+#             if combined_price_filter is None:
+#                 combined_price_filter = price_filter
+#             else:
+#                 combined_price_filter = (
+#                     min(combined_price_filter[0], price_filter[0]),
+#                     max(combined_price_filter[1], price_filter[1])
+#                 )
+        
+#         # Query products based on selected filters
+#         filtered_products = Product.objects.filter(
+#             sub_categ_id=subcat_id,
+#             # rating__in=selected_ratings
+#         )
+        
+#         # Apply combined price range filter
+#         if combined_price_filter:
+#             filtered_products = filtered_products.filter(price__range=combined_price_filter)
+        
+
+#         for i in filtered_products:
+#             print(i)
+#         # Render the filtered products in your template
+#         return redirect('index')
+#         # return render(request, 'filtered_products.html', {'products': filtered_products})
+#     else:
+#         # Handle GET request or render initial form
+#         pass
+
 def filter_products(request):
     if request.method == 'POST':
-        price_ranges = {
-            '0-100': (0, 100),
-            '101-200': (101, 200),
-            '201-500': (201, 500)
-        }
-        
-        selected_price_ranges = request.POST.getlist('price_range')
-        print(selected_price_ranges)
-
+        min_value = request.POST.get('min-value')
+        max_value = request.POST.get('max-value')
         selected_ratings = request.POST.getlist('rating')
+
+        print("Minimum Value:", min_value)
+        print("Maximum Value:", max_value)
+
         subcat_id = request.POST.get('subcat_id')
+        matching_products = []
         
-        # Prepare price range filters
-        price_filters = []
-        for price_range in selected_price_ranges:
-            price_range_tuple = price_ranges.get(price_range)
-            if price_range_tuple:
-                price_filters.append(price_range_tuple)
-        
-        # Combine price range filters if multiple are selected
-        combined_price_filter = None
-        for price_filter in price_filters:
-            if combined_price_filter is None:
-                combined_price_filter = price_filter
-            else:
-                combined_price_filter = (
-                    min(combined_price_filter[0], price_filter[0]),
-                    max(combined_price_filter[1], price_filter[1])
-                )
-        
-        # Query products based on selected filters
         filtered_products = Product.objects.filter(
             sub_categ_id=subcat_id,
-            # rating__in=selected_ratings
+            price__gte=min_value,  
+            price__lte=max_value   
         )
+        for product in filtered_products:
+            avg_rating = Review.objects.filter(prod=product).aggregate(Avg('rating'))['rating__avg'] or 0
+            print("avggg:", product.prod_name, avg_rating)
+            
+# Filter products based on selected ratings
         
-        # Apply combined price range filter
-        if combined_price_filter:
-            filtered_products = filtered_products.filter(price__range=combined_price_filter)
+        # else:
+        #     products = filtered_products.annotate(avg_rating=Avg('review__rating'))
         
+        for product in matching_products:
+            if product.avg_rating is None:
+                product.avg_rating = 0
 
-        for i in filtered_products:
-            print(i)
-        # Render the filtered products in your template
-        return redirect('index')
-        # return render(request, 'filtered_products.html', {'products': filtered_products})
+        print(product.prod_name,product.avg_rating)
+        
+        product_data = []
+        for product in matching_products:
+            product_info = {
+                'name': product.prod_name,
+                
+                'avg_rating': product.avg_rating, 
+            }
+            product_data.append(product_info)
+
+            print(product.prod_name,product.avg_rating)
+
+        
+        return JsonResponse({'products': product_data})
     else:
-        # Handle GET request or render initial form
         pass
+
+
+
+
+# # react
+# from django.contrib.auth import authenticate, login
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# import json
+
+# @csrf_exempt 
+# def user_loginnn(request):
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         email = data.get('email')
+#         password = data.get('password')
+#         user = authenticate(request, username=email, password=password)
+#         if user is not None:
+#             login(request, user)
+#             return JsonResponse({'success': True})
+#         else:
+#             return JsonResponse({'success': False, 'error': 'Invalid credentials'}, status=400)
+#     else:
+#         return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+# from .models import ProductCategory
+# def show_user(request):
+#     # Retrieve all user profiles from the database
+#     user_profiles = ProductCategory.objects.all()
+    
+#     # Convert user profiles to JSON format
+#     user_profiles_json = [
+#         {
+#             'id': profile.categ_id,
+#             'name': profile.categ_name,
+#             'image': request.build_absolute_uri(profile.categ_image.url) if profile.categ_image else None,
+#             'craeted_at': profile.created_at,
+
+#         }
+#         for profile in user_profiles
+#     ]
+    
+#     # Return the user profiles as a JSON response
+#     return JsonResponse(user_profiles_json, safe=False)
+
+
+from django.http import HttpResponse
+from django.template.loader import get_template
+from django.views import View
+from xhtml2pdf import pisa
+
+class GeneratePDF(View):
+    template_name = 'invoice_template.html'
+
+    def get(self, request, *args, **kwargs):
+        # Fetch order details from the database based on the order_id
+        order_id = kwargs['order_id']
+        order = Order.objects.get(id=order_id)
+
+        # Render the template
+        template = get_template(self.template_name)
+        context = {'order': order}
+        html = template.render(context)
+
+        # Create a PDF response
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'filename=invoice_{order_id}.pdf'
+
+        # Generate PDF using ReportLab
+        pisa_status = pisa.CreatePDF(html, dest=response)
+
+        if pisa_status.err:
+            return HttpResponse('We had some errors <pre>' + html + '</pre>')
+
+        return response
+
+from .models import OrderNotification_Seller
+def requested_orders(request):
+    orders=OrderNotification_Seller.objects.filter(seller_name=request.user)
+    return render(request,'Orders/requested_orders.html',{'orders':orders})

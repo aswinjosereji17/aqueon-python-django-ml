@@ -114,7 +114,7 @@ from django.db import models
 class Product(models.Model):
     prod_id = models.AutoField(primary_key=True)
     prod_name = models.CharField(max_length=255, null=False, unique=True)
-    fish_name = models.ForeignKey(Fish, on_delete=models.CASCADE)
+    # fish_name = models.ForeignKey(Fish, on_delete=models.CASCADE)
     sub_categ_id = models.ForeignKey(ProductSubcategory, on_delete=models.CASCADE)
     price = models.FloatField(null=False)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)  # Use Django's default user model
@@ -230,6 +230,14 @@ class OrderItem(models.Model):
         order = self.order
         order.total_order_price = sum(order_item.total_price for order_item in order.orderitem_set.all())
         order.save()
+
+class OrderNotification_Seller(models.Model):
+    notif_id = models.AutoField(primary_key=True)
+    prod_name = models.CharField(max_length=100)
+    quantity = models.PositiveIntegerField()
+    seller_name = models.ForeignKey(User, on_delete=models.CASCADE)
+    noti_date = models.DateField(auto_now_add=True)
+    shipped = models.BooleanField(default=False)
 
 class Event(models.Model):
     MODE_CHOICES = (

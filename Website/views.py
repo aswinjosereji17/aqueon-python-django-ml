@@ -1416,14 +1416,17 @@ def paymenthandler(request):
         order.payment_status = Order.PaymentStatusChoices.SUCCESSFUL
         order.save()
 
+        user_address = UserAddress.objects.get(user=request.user)
 
         for order_item in order.orderitem_set.all():
             notification = OrderNotification_Seller.objects.create(
                 prod_name=order_item.product.prod_name,
                 quantity=order_item.quantity,
+                order=order_item,
                 seller_name=order_item.product.user_id,
                 noti_date=timezone.now(),  # Assuming you're using timezone from django.utils
-                shipped=False
+                shipped='OR',
+                district=user_address.district
             )
 
 
@@ -2691,3 +2694,20 @@ from .models import OrderNotification_Seller
 def requested_orders(request):
     orders=OrderNotification_Seller.objects.filter(seller_name=request.user)
     return render(request,'Orders/requested_orders.html',{'orders':orders})
+
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .models import OrderNotification_Seller
+
+@require_POST
+def update_shipped(request, notification_id):
+    notification = OrderNotification_Seller.objects.get(pk=notification_id)
+    
+    if request.method == 'POST':
+        # Perform the deletion
+        notification.shipped = 'DL' 
+        notification.save()
+        return redirect('requested_orders')  # Replace with the actual URL for your category list view
+
+    

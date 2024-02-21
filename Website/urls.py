@@ -134,6 +134,7 @@ urlpatterns = [
 
     path('generate-pdf/<int:order_id>/', GeneratePDF.as_view(), name='generate_pdf'),
     path('requested_orders/', views.requested_orders, name='requested_orders'),
+    path('update_shipped/<int:notification_id>/', views.update_shipped, name='update_shipped'),
 
 
     ]

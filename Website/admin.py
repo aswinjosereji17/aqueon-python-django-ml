@@ -25,7 +25,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 admin.site.register(UserProfile, UserProfileAdmin)
 
 class UserAddressAdmin(admin.ModelAdmin):
-    list_display = ('user', 'address1', 'address2')
+    list_display = ('user', 'address1', 'address2','mobile_number','pincode','district','city','house_name')
 
 admin.site.register(UserAddress, UserAddressAdmin)
 

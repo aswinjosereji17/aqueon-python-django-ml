@@ -22,9 +22,14 @@ class UserProfile(models.Model):
 
 class UserAddress(models.Model):
     user_addr_id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE,unique=True)  # Assuming RegisterUser is another model
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     address1 = models.CharField(max_length=255)
     address2 = models.CharField(max_length=255)
+    mobile_number = models.CharField(max_length=15, null=True)  # Allow null values for mobile number
+    pincode = models.CharField(max_length=10, null=True)  # Allow null values for pincode
+    district = models.CharField(max_length=100, null=True)  # Allow null values for district
+    city = models.CharField(max_length=100, null=True)  # Allow null values for city
+    house_name = models.CharField(max_length=255, null=True)  # Allow null values for house name
 
     def __str__(self):
         return f'User Address for {self.user.email}'
@@ -232,12 +237,55 @@ class OrderItem(models.Model):
         order.save()
 
 class OrderNotification_Seller(models.Model):
+    ORDER_REQUESTED = 'OR'
+    DELIVERED = 'DL'
+    SUCCESSFUL = 'SU'
+    
+    SHIPPED_CHOICES = [
+        (ORDER_REQUESTED, 'Order Requested'),
+        (DELIVERED, 'Delivered'),
+        (SUCCESSFUL, 'Successful'),
+    ]
+
+    KERALA_DISTRICTS = {
+        'Thiruvananthapuram', 'Kollam', 'Pathanamthitta', 'Alappuzha', 'Kottayam', 'Idukki',
+        'Thrissur', 'Palakkad', 'Malappuram', 'Kozhikode',
+        'Kasaragod', 'Kannur', 'Wayanad'
+    }
+
+    HUB_MAP = {
+        'Pathanamthitta': 'Pathanamthitta',
+        'Alappuzha': 'Pathanamthitta',
+        'Kollam': 'Pathanamthitta',
+        'Thiruvananthapuram': 'Pathanamthitta',
+        'Kottayam': 'Pathanamthitta',
+        'Idukki': 'Pathanamthitta',
+        'Thrissur': 'Malappuram',
+        'Palakkad': 'Malappuram',
+        'Malappuram': 'Malappuram',
+        'Kozhikode': 'Malappuram',
+        'Kasaragod': 'Kannur',
+        'Kannur': 'Kannur',
+        'Wayanad': 'Kannur'
+    }
+
     notif_id = models.AutoField(primary_key=True)
     prod_name = models.CharField(max_length=100)
     quantity = models.PositiveIntegerField()
+    order = models.ForeignKey(OrderItem, on_delete=models.CASCADE, default=None, null=True)
     seller_name = models.ForeignKey(User, on_delete=models.CASCADE)
     noti_date = models.DateField(auto_now_add=True)
-    shipped = models.BooleanField(default=False)
+    shipped = models.CharField(max_length=2, choices=SHIPPED_CHOICES, default=ORDER_REQUESTED)
+    district = models.CharField(max_length=100, null=True)
+    hub = models.CharField(max_length=100, null=True)
+
+    def __str__(self):
+        return f'{self.prod_name} - {self.get_shipped_display()}'
+
+    def save(self, *args, **kwargs):
+        if self.district in self.KERALA_DISTRICTS:
+            self.hub = self.HUB_MAP.get(self.district)
+        super().save(*args, **kwargs)
 
 class Event(models.Model):
     MODE_CHOICES = (

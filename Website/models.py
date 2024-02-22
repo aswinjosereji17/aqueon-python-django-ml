@@ -15,6 +15,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mobile = models.CharField(max_length=255)
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+    hub_status = models.BooleanField(default=False) 
     # Other fields for user profile
 
     def __str__(self):
@@ -217,8 +218,17 @@ class Order(models.Model):
     razorpay_order_id = models.CharField(max_length=255, default=None)
     payment_status = models.CharField(
         max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
+    all_received = models.BooleanField(default=False)  # New field
+
     def str(self):
         return self.user.username 
+
+    def update_all_received_status(self):
+        # Check if all OrderNotification_Seller objects associated with this order have 'SU' status
+        all_received = all(notification.shipped == 'SU' for notification in self.ordernotification_seller_set.all())
+        self.all_received = all_received
+        self.save()
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -273,6 +283,8 @@ class OrderNotification_Seller(models.Model):
     prod_name = models.CharField(max_length=100)
     quantity = models.PositiveIntegerField()
     order = models.ForeignKey(OrderItem, on_delete=models.CASCADE, default=None, null=True)
+    main_order = models.ForeignKey(Order, on_delete=models.CASCADE, default=None, null=True)
+
     seller_name = models.ForeignKey(User, on_delete=models.CASCADE)
     noti_date = models.DateField(auto_now_add=True)
     shipped = models.CharField(max_length=2, choices=SHIPPED_CHOICES, default=ORDER_REQUESTED)
@@ -286,6 +298,9 @@ class OrderNotification_Seller(models.Model):
         if self.district in self.KERALA_DISTRICTS:
             self.hub = self.HUB_MAP.get(self.district)
         super().save(*args, **kwargs)
+        
+        if self.shipped == 'SU' and self.main_order:
+            self.main_order.update_all_received_status()  
 
 class Event(models.Model):
     MODE_CHOICES = (

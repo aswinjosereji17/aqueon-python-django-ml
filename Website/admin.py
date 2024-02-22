@@ -12,7 +12,12 @@ from .models import Review, ProductRequest,Fish,Event,Subscription,Subscription_
 # admin.site.register(SellerRequest)
 admin.site.register(HomeSpecialOffer)
 admin.site.register(Subscription_details)
-admin.site.register(OrderNotification_Seller)
+
+class OrderNotification_SellerAdmin(admin.ModelAdmin):
+    list_display = ('notif_id','prod_name', 'quantity','order','main_order','seller_name','noti_date','shipped','district','hub') 
+admin.site.register(OrderNotification_Seller,OrderNotification_SellerAdmin)
+
+# admin.site.register(OrderNotification_Seller)
 
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('user', 'total_price','order_date','payment_date','expiration_date','razorpay_order_id','payment_status') 
@@ -83,7 +88,7 @@ class OrderItemInline(admin.TabularInline):
     extra = 1  # Number of empty forms to show for adding related OrderItems
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['user', 'total_price', 'order_date', 'razorpay_order_id', 'payment_status']
+    list_display = ['user', 'total_price', 'order_date', 'razorpay_order_id', 'payment_status','all_received']
     inlines = [OrderItemInline]
 
 class OrderItemAdmin(admin.ModelAdmin):

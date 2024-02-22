@@ -122,6 +122,11 @@
       {% endif %}
       <!-- End Dashboard Nav -->
 
+
+      
+
+
+
       {% if user.is_superuser and user.is_staff %}
       {% comment %} <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'list_product_categories' %}">
@@ -273,7 +278,7 @@
       
       {% endif %}
 
-      {% if not user.is_superuser and user.is_staff %}
+      {% if not user.is_superuser and user.is_staff and not user.userprofile.hub_status%}
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'product_list' %}?user_id={{ request.user.id }}">
@@ -320,6 +325,19 @@
           <span>View Home Page</span>
         </a>
       </li>
+
+
+
+      {% if user.is_staff and user.userprofile.hub_status  %}
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'order_status_hub' %}">
+          <i style="" class="ri-home-2-fill"></i>
+          <span>Order Status</span>
+        </a>
+      </li>
+      {% endif %}
+
+
       {% if not user.is_superuser and not user.is_staff %}
       
       <li class="nav-item">

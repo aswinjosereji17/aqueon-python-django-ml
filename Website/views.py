@@ -2573,6 +2573,8 @@ def filter_products(request):
         min_value = request.POST.get('min-value')
         max_value = request.POST.get('max-value')
         selected_ratings = request.POST.getlist('rating')
+        selected_ratings_as_int = [int(rating) for rating in selected_ratings]
+        print("selec",selected_ratings_as_int)
 
         print("Minimum Value:", min_value)
         print("Maximum Value:", max_value)
@@ -2585,34 +2587,47 @@ def filter_products(request):
             price__gte=min_value,  
             price__lte=max_value   
         )
+        matching_products = []
         for product in filtered_products:
             avg_rating = Review.objects.filter(prod=product).aggregate(Avg('rating'))['rating__avg'] or 0
             print("avggg:", product.prod_name, avg_rating)
-            
+            print("selec",selected_ratings)
+            a=int(avg_rating)
+            print(a)
+
+            # if a in selected_ratings_as_int :
+            #     print("hellosefff")
+            if avg_rating in selected_ratings_as_int:
+                matching_products.append(product)
+                print("avg_rating:", product.prod_name, avg_rating)
+        for i in matching_products:
+            print(i)  
 # Filter products based on selected ratings
         
         # else:
         #     products = filtered_products.annotate(avg_rating=Avg('review__rating'))
         
-        for product in matching_products:
-            if product.avg_rating is None:
-                product.avg_rating = 0
+        # for product in matching_products:
+        #     if product.avg_rating is None:
+        #         product.avg_rating = 0
 
-        print(product.prod_name,product.avg_rating)
+        # print(product.prod_name,product.avg_rating)
         
-        product_data = []
-        for product in matching_products:
-            product_info = {
-                'name': product.prod_name,
+        # product_data = []
+        # for product in matching_products:
+        #     product_info = {
+        #         'name': product.prod_name,
                 
-                'avg_rating': product.avg_rating, 
-            }
-            product_data.append(product_info)
+        #         'avg_rating': product.avg_rating, 
+        #     }
+        #     product_data.append(product_info)
 
-            print(product.prod_name,product.avg_rating)
+        # for i in product_info:
+        #     print(i.name,i.avg_rating)
+            # print(product.prod_name,product.avg_rating)
 
-        
-        return JsonResponse({'products': product_data})
+        return redirect('index')
+        # return JsonResponse({'products': product_data})
     else:
         pass
 

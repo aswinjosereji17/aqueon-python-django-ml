@@ -2179,7 +2179,10 @@ $(document).ready(function() {
                 <!-- Price Range -->
 
                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
+   
+   
+   
+   <!-- <script>
 
 
 
@@ -2212,7 +2215,7 @@ $(document).ready(function () {
 });
 
  
-     </script>
+     </script> -->
 
 
 
@@ -2235,7 +2238,7 @@ $(document).ready(function () {
 
 
 
-                <form id="filterForm" method="post" action="">
+                <form id="filterForm" method="post" action="{% url 'filter_products' %}">
                     {% csrf_token %}
                 
                     <div class="container">

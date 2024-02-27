@@ -2144,7 +2144,7 @@ $(document).ready(function() {
             <!-- Shop Sidebar Start -->
             <div class="col-lg-3 col-md-4">
                 <!-- Price Start -->
-                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by price</span></h5>
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3"><i class="bi bi-layout-sidebar"></i>   Filter by price</span></h5>
                 <!-- <div class="bg-light p-4 mb-30">
                     <form>                 
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
@@ -2182,7 +2182,7 @@ $(document).ready(function() {
    
    
    
-   <!-- <script>
+   <script>
 
 
 
@@ -2202,10 +2202,77 @@ $(document).ready(function () {
             url: '/filter_products/', // Change to your actual URL
             data: formData,
             success: function (data) {
-                // Handle success response
-                console.log(data);
-                // You may update the UI here as needed
-            },
+    // Handle success response
+    $('#hello').hide();
+    console.log(data); // Make sure this prints the data correctly
+
+    // Access the products array within the data object
+    var products = data.products;
+
+    // Build the HTML structure based on received data
+    var resultsHtml = '<div id="hello"  class="row pb-3">';
+    // Assuming products is an array of product objects
+    for (var i = 0; i < products.length; i++) {
+        resultsHtml += '<div style="cursor: pointer;" class="col-lg-4 col-md-6 col-sm-6 pb-1" >';
+          resultsHtml += '<div class="product-item bg-light mb-4">';
+            resultsHtml += '<div class="product-img position-relative overflow-hidden">';
+              resultsHtml += '<img  style="width:400px; height:250px;" src="' + products[i].img +'" alt="{{ product.prod_name }}">';
+              resultsHtml += '<div class="product-action">';
+                resultsHtml += '<a class="btn btn-outline-dark btn-square" href="/add_to_wishlist/' + products[i].prod_id + '"><i class="far fa-heart"></i></a>';
+              resultsHtml += '</div>';
+          resultsHtml += '<div class="text-center py-4">';
+            resultsHtml += '<a class="h6 text-decoration-none text-truncate" href="">'+ products[i].name + '</a>';
+            resultsHtml += '<div class="d-flex align-items-center justify-content-center mt-2">';
+              resultsHtml += '<h5>₹'+ products[i].price +'</h5><h6 class="text-muted ml-2"><del>₹'+ products[i].price +'</del></h6>';
+            resultsHtml += '</div>';
+            resultsHtml += ' <div class="d-flex align-items-center justify-content-center mb-1">';
+
+            resultsHtml += '<div class="d-flex align-items-center justify-content-center mb-1">';
+            if (Math.floor(products[i].avg_rating) >= 4.1 && Math.floor(products[i].avg_rating) <= 5) {
+                resultsHtml += '<small class="fa fa-star text-success mr-1"></small>';
+                resultsHtml += '<small class="fa fa-star text-success mr-1"></small>';
+                resultsHtml += '<small class="fa fa-star text-success mr-1"></small>';
+                resultsHtml += '<small class="fa fa-star text-success mr-1"></small>';
+                resultsHtml += '<small class="fa fa-star text-success mr-1"></small>';
+            } else if (Math.floor(products[i].avg_rating) >= 3.1 && Math.floor(products[i].avg_rating) <= 4) {
+                resultsHtml += '<small class="fa fa-star text-success mr-1"></small>';
+                resultsHtml += '<small class="fa fa-star text-success mr-1"></small>';
+                resultsHtml += '<small class="fa fa-star text-success mr-1"></small>';
+                resultsHtml += '<small class="fa fa-star text-success mr-1"></small>';
+            } else if (Math.floor(products[i].avg_rating) >= 2.1 && Math.floor(products[i].avg_rating) <= 3) {
+                resultsHtml += '<small class="fa fa-star text-success mr-1"></small>';
+                resultsHtml += '<small class="fa fa-star text-success mr-1"></small>';
+                resultsHtml += '<small class="fa fa-star text-success mr-1"></small>';
+            } else if (Math.floor(products[i].avg_rating) >= 1.1 && Math.floor(products[i].avg_rating) <= 2) {
+                resultsHtml += '<small class="fa fa-star text-danger mr-1"></small>';
+                resultsHtml += '<small class="fa fa-star text-danger mr-1"></small>';
+            } else if (Math.floor(products[i].avg_rating) <= 1) {
+                resultsHtml += '<small class="fa fa-star text-danger mr-1"></small>';
+            }
+            resultsHtml += '</div>';
+            resultsHtml += '</div>';
+
+          resultsHtml += '</div>';
+
+        resultsHtml += '';
+        resultsHtml += '';
+        resultsHtml += '';
+
+        //   resultsHtml += '<h3>' + products[i].name + '</h3>';
+        // resultsHtml += '<p>Price: Rs. ' + products[i].price + '</p>';
+        // Add more details as needed
+        resultsHtml += '</div>';
+        resultsHtml += '</div>';
+
+        resultsHtml += '</div>';
+    }
+    resultsHtml += '</div>';
+
+    // Update the inner HTML of a specific element with the built HTML
+    $('#matchingProductsContainer').html(resultsHtml);
+},
+
+
             error: function (xhr, errmsg, err) {
                 // Handle error response
                 console.log(xhr.status + ": " + xhr.responseText); // Log the error for debugging
@@ -2215,7 +2282,7 @@ $(document).ready(function () {
 });
 
  
-     </script> -->
+     </script>
 
 
 
@@ -2238,10 +2305,10 @@ $(document).ready(function () {
 
 
 
-                <form id="filterForm" method="post" action="{% url 'filter_products' %}">
+                <form id="filterForm" method="post" action="">
                     {% csrf_token %}
                 
-                    <div class="container">
+                    <div style="margin-top: 43px;" class="container">
                         <div class="row">
                             <div class="col-sm-12">
                                 <div id="slider-range"></div>
@@ -2250,10 +2317,10 @@ $(document).ready(function () {
                         <br>
                         <div class="row slider-labels">
                             <div class="col-xs-6 caption">
-                                <strong>Min:</strong> <span id="slider-range-value1"></span>
+                                <strong>PRICE: ₹</strong> <span id="slider-range-value1"></span>
                             </div>
                             <div class="col-xs-6 text-right caption">
-                                <strong>Max:</strong> <span id="slider-range-value2"></span>
+                                <strong> — ₹</strong> <span id="slider-range-value2"></span>
                             </div>
                         </div>
                         <br>
@@ -2270,22 +2337,68 @@ $(document).ready(function () {
                     <input type="checkbox" name="price_range" id="price_201_500" value="201-500"> Rs.201 - $500
                     <input type="text" id="slider-range-valuee1" name="mini"> -->
 
-                    <br><br>
-                    <!-- Rating -->
-                    <input type="checkbox" name="rating" id="rating_5" value="5"> 5
-                    <input type="checkbox" name="rating" id="rating_4" value="4"> 4
-                    <input type="checkbox" name="rating" id="rating_3" value="3"> 3
-                    <input type="checkbox" name="rating" id="rating_2" value="2"> 2
-                    <input type="checkbox" name="rating" id="rating_1" value="1"> 1
-                    <br><br>
-                    <button type="submit">Apply</button>
-                </form>
+                    
                 
+
                 
-                
-                
+                <br><br>
+
                 <!-- Color Start -->
-               <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by reviews</span></h5>
+               <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3"><i class="bi bi-layout-sidebar"></i> Filter by rating</span></h5>
+
+
+               <div class="col-sm-10">
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="rating" id="rating_5" value="5" >
+                  <label class="form-check-label" for="gridCheck1">
+                    5 <i style="color: green;" class="bi bi-star-fill"></i>
+                  </label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="rating" id="rating_4" value="4" >
+                  <label class="form-check-label" for="gridCheck2">
+                    4 <i style="color: yellowgreen;"  class="bi bi-star-fill"></i>
+                  </label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="rating" id="rating_3" value="3" >
+                  <label class="form-check-label" for="gridCheck2">
+                    3 <i style="color: yellow;"  class="bi bi-star-fill"></i>
+                  </label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="rating" id="rating_2" value="2" >
+                  <label class="form-check-label" for="gridCheck2">
+                    2 <i style="color: lightcoral;"  class="bi bi-star-fill"></i>
+                  </label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="rating" id="rating_1" value="1">
+                  <label class="form-check-label" for="gridCheck2">
+                    1 <i style="color: red;"  class="bi bi-star-fill"></i>
+                  </label>
+                </div>
+
+                
+
+              </div>
+
+               <!-- <input type="checkbox" name="rating" id="rating_5" value="5"> 5
+               <input type="checkbox" name="rating" id="rating_4" value="4"> 4
+               <input type="checkbox" name="rating" id="rating_3" value="3"> 3
+               <input type="checkbox" name="rating" id="rating_2" value="2"> 2
+               <input type="checkbox" name="rating" id="rating_1" value="1"> 1 -->
+               <br><br>
+                    <!-- Rating -->
+                    
+                    <button style="border-radius: 8px; background-color: #0d6efd; color: white; border: none;" type="submit">Apply</button>
+              </form>
+
                 <!-- <div class="bg-light p-4 mb-30">
                     <form>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
@@ -2318,7 +2431,7 @@ $(document).ready(function () {
                 <!-- Color End -->
 
                 <!-- Size Start -->
-                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by size</span></h5>
+                <!-- <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by size</span></h5>
                 <div class="bg-light p-4 mb-30">
                     <form>
                         {% comment %} <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
@@ -2352,16 +2465,20 @@ $(document).ready(function () {
                             <span class="badge border font-weight-normal">168</span>
                         </div> {% endcomment %}
                     </form>
-                </div>
+                </div> -->
                 <!-- Size End -->
             </div>
             <!-- Shop Sidebar End -->
 
 
             <!-- Shop Product Start -->
-            <div id="hello" class="col-lg-9 col-md-8">
-                <div class="row pb-3">
-                    <div class="col-12 pb-1">
+            <div class="col-lg-9 col-md-8">
+              <div id="matchingProductsContainer">
+                <!-- <h1>hello</h1> -->
+              </div>
+                <div id="hello"  class="row pb-3">
+                  
+                    <!-- <div class="col-12 pb-1">
                         <div class="d-flex align-items-center justify-content-between mb-4">
                             <div>
                                 <button class="btn btn-sm btn-light"><i class="fa fa-th-large"></i></button>
@@ -2386,7 +2503,7 @@ $(document).ready(function () {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div id="filtered-products" class="col-lg-9 col-md-8">
                        
@@ -2410,7 +2527,7 @@ $(document).ready(function () {
                             <div class="text-center py-4">
                                 <a class="h6 text-decoration-none text-truncate" href="">{{ product.prod_name }}</a>
                                 <div class="d-flex align-items-center justify-content-center mt-2">
-                                    <h5>Rs.{{ product.price }}</h5><h6 class="text-muted ml-2"><del>Rs.{{ product.price }}</del></h6>
+                                    <h5>₹{{ product.price }}</h5><h6 class="text-muted ml-2"><del>₹{{ product.price }}</del></h6>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-center mb-1">
                                     <div class="d-flex align-items-center justify-content-center mb-1">

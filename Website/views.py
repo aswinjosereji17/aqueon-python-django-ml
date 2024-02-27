@@ -2567,7 +2567,7 @@ from .models import Product
 #     else:
 #         # Handle GET request or render initial form
 #         pass
-
+import math
 def filter_products(request):
     if request.method == 'POST':
         min_value = request.POST.get('min-value')
@@ -2592,42 +2592,28 @@ def filter_products(request):
             avg_rating = Review.objects.filter(prod=product).aggregate(Avg('rating'))['rating__avg'] or 0
             print("avggg:", product.prod_name, avg_rating)
             print("selec",selected_ratings)
-            a=int(avg_rating)
-            print(a)
+            a=math.ceil(avg_rating)
+            print("ceil",a)
+            # print(a)
 
             # if a in selected_ratings_as_int :
             #     print("hellosefff")
-            if avg_rating in selected_ratings_as_int:
+            if a in selected_ratings_as_int:
                 matching_products.append(product)
                 print("avg_rating:", product.prod_name, avg_rating)
+                b=math.ceil(avg_rating)
+                print("b",b)
+            if not selected_ratings_as_int:
+                matching_products.append(product)
+                # print("avg_rating:", product.prod_name, avg_rating)
+
         for i in matching_products:
-            print(i)  
-# Filter products based on selected ratings
-        
-        # else:
-        #     products = filtered_products.annotate(avg_rating=Avg('review__rating'))
-        
-        # for product in matching_products:
-        #     if product.avg_rating is None:
-        #         product.avg_rating = 0
+            print(i,i.price,b)  
 
-        # print(product.prod_name,product.avg_rating)
-        
-        # product_data = []
-        # for product in matching_products:
-        #     product_info = {
-        #         'name': product.prod_name,
-                
-        #         'avg_rating': product.avg_rating, 
-        #     }
-        #     product_data.append(product_info)
+        serialized_products = [{'name': product.prod_name, 'price': product.price, 'img':product.productdescription.img1.url, 'avg_rating':b,'prod_id':product.prod_id} for product in matching_products]
 
-        # for i in product_info:
-        #     print(i.name,i.avg_rating)
-            # print(product.prod_name,product.avg_rating)
-
-        return redirect('index')
-        # return JsonResponse({'products': product_data})
+        # Return JSON response
+        return JsonResponse({'products': serialized_products})
     else:
         pass
 

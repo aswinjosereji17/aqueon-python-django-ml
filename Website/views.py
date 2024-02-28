@@ -2730,3 +2730,14 @@ def update_shipped1(request, notification_id):
         notification.shipped = 'SU' 
         notification.save()
         return redirect('order_status_hub')  # Replace with the actual URL for your category list view
+
+
+@require_POST
+def update_tank(request, notification_id):
+    notification = OrderNotification_Seller.objects.get(pk=notification_id)
+    
+    if request.method == 'POST':
+        # Perform the deletion
+        notification.stored_tank = request.POST.get('tank_id') 
+        notification.save()
+        return redirect('order_status_hub')  # Replace with the actual URL for your category list view

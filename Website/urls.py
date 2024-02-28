@@ -136,6 +136,8 @@ urlpatterns = [
     path('requested_orders/', views.requested_orders, name='requested_orders'),
     path('update_shipped/<int:notification_id>/', views.update_shipped, name='update_shipped'),
     path('update_shipped1/<int:notification_id>/', views.update_shipped1, name='update_shipped1'),
+    path('update_tank/<int:notification_id>/', views.update_tank, name='update_tank'),
+
 
     path('order_status_hub/', views.order_status_hub, name='order_status_hub'),
 

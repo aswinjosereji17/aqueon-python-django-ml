@@ -284,7 +284,8 @@ class OrderNotification_Seller(models.Model):
     quantity = models.PositiveIntegerField()
     order = models.ForeignKey(OrderItem, on_delete=models.CASCADE, default=None, null=True)
     main_order = models.ForeignKey(Order, on_delete=models.CASCADE, default=None, null=True)
-
+    stored_tank = models.CharField(max_length=100, default=None, blank=True, null=True)
+    
     seller_name = models.ForeignKey(User, on_delete=models.CASCADE)
     noti_date = models.DateField(auto_now_add=True)
     shipped = models.CharField(max_length=2, choices=SHIPPED_CHOICES, default=ORDER_REQUESTED)

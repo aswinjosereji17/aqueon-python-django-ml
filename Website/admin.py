@@ -20,7 +20,7 @@ admin.site.register(OrderNotification_Seller,OrderNotification_SellerAdmin)
 # admin.site.register(OrderNotification_Seller)
 
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'total_price','order_date','payment_date','expiration_date','razorpay_order_id','payment_status') 
+    list_display = ('user', 'total_price','order_date','payment_date','expiration_date','razorpay_order_id','payment_status','status') 
 admin.site.register(Subscription,SubscriptionAdmin)
 
 

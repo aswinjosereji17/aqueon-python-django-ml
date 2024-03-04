@@ -37,13 +37,17 @@
                     <td>
                         <!-- Button trigger modal -->
                         {% if a.get_shipped_display == 'Delivered'%}
-                        <button style="border: none; background-color: green; color: white;" type="button" class="btn btn" >
+                        <button style="border: none; background-color: yellow;" type="button" class="btn btn" >
                             Delivered
                         </button>
+                        {% elif a.get_shipped_display == 'Successful' %}
+                        <button style="border: none; background-color: green; color: white;" type="button" class="btn btn-primary" data-toggle="modal">
+                        Successful</button>
                         {% else %}
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal{{ a.notif_id }}">
                             Deliver Product
                         </button>
+
                         {% endif %}
                     </td>
                 </tr>

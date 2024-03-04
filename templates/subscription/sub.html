@@ -117,7 +117,16 @@
                     <li><span class="fa fa-check me-2"></span>{{sub.sub_offer2}}</li>
                     <li><span class="fa fa-check me-2"></span>{{sub.sub_offer3}} </li>
                 </ul>
+                {% for user_sub in subscriptionn %}
+
+                {% if user_sub.status %}
+                <div style="background-color: green; color: white;" class="btn btn"> <a> Subscribed</a> </div>
+                {% else %}
                 <div class="btn btn-primary"> <a href="{% url 'sub_pay' %}?amount={{sub.sub_amount}}">Subscribe Now</a> </div>
+                {% endif %}
+
+                {% endfor %}
+
             </div>
         </div>
         {% endfor %}

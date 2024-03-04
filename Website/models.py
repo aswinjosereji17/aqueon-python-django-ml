@@ -325,6 +325,11 @@ class Event(models.Model):
 from datetime import timedelta
 from datetime import datetime, timedelta
 
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
+
 class Subscription(models.Model):
     class PaymentStatusChoices(models.TextChoices):
         PENDING = 'pending', 'Pending'
@@ -334,20 +339,33 @@ class Subscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     order_date = models.DateTimeField(auto_now_add=True)
-    payment_date = models.DateTimeField(auto_now_add=True)
+    payment_date = models.DateTimeField(null=True, blank=True)
     expiration_date = models.DateTimeField(null=True, blank=True)
     razorpay_order_id = models.CharField(max_length=255, default=None)
     payment_status = models.CharField(max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
+    status = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        if self.payment_status == self.PaymentStatusChoices.SUCCESSFUL and self.payment_date:
-            self.payment_date = self.order_date
+        if self.payment_status == self.PaymentStatusChoices.SUCCESSFUL and not self.payment_date:
+            self.payment_date = timezone.now()
             # Set expiration date to 28 days from the payment date
-            self.expiration_date = self.payment_date + timedelta(days=1)
+            self.expiration_date = self.payment_date + timedelta(days=28)
+        elif self.payment_status == self.PaymentStatusChoices.FAILED:
+            # If payment failed, reset payment_date and expiration_date
+            self.payment_date = None
+            self.expiration_date = None
+            self.status = False
+
+        if self.expiration_date and timezone.now() > self.expiration_date:
+            self.status = False
+        else:
+            self.status = True
+
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.user.username
+
 
 
 

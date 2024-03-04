@@ -370,14 +370,14 @@
                                 {% elif not user.is_superuser and user.is_staff %}
                                 <a id="nav_home" href="{% url 'user_profile_view' %}" class="nav-item nav-link active">Home</a>
                                 <a id="nav_home" href="{% url 'events' %}" class="nav-item nav-link active">Events</a>
-                                <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">subscrip</a>
+                                <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">Subscription</a>
 
                                 <a id="nav_home" href="{% url 'blog' %}" class="nav-item nav-link active">Blog</a>
                                 
                                 {% elif not user.is_staff %}
                                 <a id="nav_home" href="{% url 'index' %}" class="nav-item nav-link active">Home</a>
                                 <a id="nav_home" href="{% url 'events' %}" class="nav-item nav-link active">Events</a>
-                                <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">subscrip</a>
+                                <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">Subscription</a>
 
                                 <a id="nav_home" href="{% url 'blog' %}" class="nav-item nav-link active">Blog</a>
                                 

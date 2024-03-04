@@ -2264,7 +2264,9 @@ from .models import Subscription_details
 @never_cache
 def subscription(request):
     subscription=Subscription_details.objects.all()
-    return render(request,'subscription/sub.html', {'subscription' : subscription})
+    subscriptionn=Subscription.objects.filter(user=request.user)
+
+    return render(request,'subscription/sub.html', {'subscription' : subscription,'subscriptionn' : subscriptionn})
 
 
 

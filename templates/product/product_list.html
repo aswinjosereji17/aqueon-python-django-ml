@@ -62,6 +62,9 @@ th{
 
               <th style="text-align: center;">Price</th>
               <th style="text-align: center;">Image</th>
+              <th style="text-align: center;">Stock quantity</th>
+              <!-- <th style="text-align: center;">Action</th> -->
+
           </tr>
       </thead>
       <tbody>
@@ -73,7 +76,7 @@ th{
                   <td>{{ prods.sub_categ_id.sub_cat_name }}</td>
                   <td>Rs.{{ prods.price }}</td>
                   <td><img style="width : 100px; height: 100px;" src="{{ prods.productdescription.img1.url }}" alt="{{ prods.prod_name }} - Image 1" ></td>
-
+                  <td>{{ prods.stock_quantity }}</td>
                   <td><button style="background-color: rgb(180, 217, 44);"><a style="color: rgb(2, 10, 18);" href="{% url 'modify_product' prods.prod_id  %}?user_id={{ request.user.id }}">modify</a></button></td>
                   <td><button style="background-color: red; color: #e0e0e0;"><a style="color: aliceblue;" href="{% url 'delete_product' prods.prod_id %}">Delete</a></button></td>
                 </tr>

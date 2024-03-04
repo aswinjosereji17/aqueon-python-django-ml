@@ -25,7 +25,7 @@ admin.site.register(Subscription,SubscriptionAdmin)
 
 
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'mobile', 'profile_image')  
+    list_display = ('user', 'mobile', 'profile_image','hub_status')  
 
 admin.site.register(UserProfile, UserProfileAdmin)
 

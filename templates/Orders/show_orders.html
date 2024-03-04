@@ -199,7 +199,7 @@ p {
 }
 </style>
 <div class="container">
-    {% for order in show_orders %}
+    {% for order in show_orders|dictsortreversed:"order_date" %}
 
     <article class="card">
         <header class="card-header"> </header>
@@ -210,7 +210,7 @@ p {
                     <div class="col"> <strong>Estimated Delivery time:</strong> <br>29 nov 2019 </div>
                     <div class="col"> <strong>Shipping BY:</strong> <br> BLUEDART, | <i class="fa fa-phone"></i> +1598675986 </div>
                     <div class="col"> <a href="{% url 'generate_pdf' order.id %}" target="_blank"><i class="bi bi-file-pdf" style="color: red; font-size: 25px; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-style: normal;">invoice</i> </a></div>
-                    <div class="col"> <strong>Tracking #:</strong> <br> {{ order.orderitem.price }} </div>
+                    <!-- <div class="col"> <strong>Tracking #:</strong> <br> {{ order.orderitem.price }} </div> -->
                 </div>
             </article>
             <div class="track">

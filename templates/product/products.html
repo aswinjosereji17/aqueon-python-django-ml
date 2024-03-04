@@ -2213,7 +2213,7 @@ $(document).ready(function () {
     var resultsHtml = '<div id="hello"  class="row pb-3">';
     // Assuming products is an array of product objects
     for (var i = 0; i < products.length; i++) {
-        resultsHtml += '<div style="cursor: pointer;" class="col-lg-4 col-md-6 col-sm-6 pb-1" >';
+        resultsHtml += '<div style="cursor: pointer;" class="col-lg-4 col-md-6 col-sm-6 pb-1" onclick="navigateToProductDesc(' + products[i].prod_id + ')">';
           resultsHtml += '<div class="product-item bg-light mb-4">';
             resultsHtml += '<div class="product-img position-relative overflow-hidden">';
               resultsHtml += '<img  style="width:400px; height:250px;" src="' + products[i].img +'" alt="{{ product.prod_name }}">';
@@ -2281,6 +2281,11 @@ $(document).ready(function () {
     });
 });
 
+
+function navigateToProductDesc(prodId) {
+            // Redirect to the respective product description page based on the prodId
+            window.location.href = '/prod_desc/' + prodId + '/';
+        }
  
      </script>
 

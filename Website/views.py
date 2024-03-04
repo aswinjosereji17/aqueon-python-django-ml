@@ -2448,7 +2448,7 @@ from .models import Order
 @never_cache
 def my_orders(request):
     
-    show_orders=Order.objects.filter(user=request.user)
+    show_orders = Order.objects.filter(user=request.user, payment_status=Order.PaymentStatusChoices.SUCCESSFUL)
     for i in show_orders:
         print(i)
     return render(request, 'Orders/show_orders.html',{'show_orders': show_orders})
@@ -2601,16 +2601,16 @@ def filter_products(request):
             if a in selected_ratings_as_int:
                 matching_products.append(product)
                 print("avg_rating:", product.prod_name, avg_rating)
-                b=math.ceil(avg_rating)
-                print("b",b)
+                # b=math.ceil(avg_rating)
+                # print("b",b)
             if not selected_ratings_as_int:
                 matching_products.append(product)
                 # print("avg_rating:", product.prod_name, avg_rating)
 
-        for i in matching_products:
-            print(i,i.price,b)  
+        # for i in matching_products:
+        #     print(i,i.price,b)  
 
-        serialized_products = [{'name': product.prod_name, 'price': product.price, 'img':product.productdescription.img1.url, 'avg_rating':b,'prod_id':product.prod_id} for product in matching_products]
+        serialized_products = [{'name': product.prod_name, 'price': product.price, 'img':product.productdescription.img1.url, 'avg_rating':avg_rating,'prod_id':product.prod_id} for product in matching_products]
 
         # Return JSON response
         return JsonResponse({'products': serialized_products})

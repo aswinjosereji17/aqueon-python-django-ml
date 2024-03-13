@@ -28,7 +28,7 @@ DEBUG = True
 
 TIME_ZONE = 'Asia/Kolkata'
 
-ALLOWED_HOSTS = ['10.0.2.2','127.0.0.1']
+ALLOWED_HOSTS = ['10.0.2.2','127.0.0.1','192.168.50.19']
 
 
 RAZOR_KEY_ID = 'rzp_test_ziRKUSJFdkxNCh'

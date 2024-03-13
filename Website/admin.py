@@ -14,7 +14,7 @@ admin.site.register(HomeSpecialOffer)
 admin.site.register(Subscription_details)
 
 class OrderNotification_SellerAdmin(admin.ModelAdmin):
-    list_display = ('notif_id','prod_name', 'quantity','order','main_order','seller_name','stored_tank','noti_date','shipped','district','hub') 
+    list_display = ('notif_id','prod_name', 'quantity','order','main_order','seller_name','stored_tank','noti_date','shipped','district','hub','prod_cat') 
 admin.site.register(OrderNotification_Seller,OrderNotification_SellerAdmin)
 
 # admin.site.register(OrderNotification_Seller)

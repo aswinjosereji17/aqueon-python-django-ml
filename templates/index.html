@@ -362,7 +362,7 @@
                                 {% if user.is_superuser %}
                                 <a id="nav_home" href="{% url 'user_profile_view' %}" class="nav-item nav-link active">Home</a>
                                 <a id="nav_home" href="{% url 'events' %}" class="nav-item nav-link active">Events</a>
-                                <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">subscrip</a>
+                                <!-- <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">subscrip</a> -->
 
                                 <a id="nav_home" href="{% url 'blog' %}" class="nav-item nav-link active">Blog</a>
                                     
@@ -378,6 +378,23 @@
                                 <a id="nav_home" href="{% url 'index' %}" class="nav-item nav-link active">Home</a>
                                 <a id="nav_home" href="{% url 'events' %}" class="nav-item nav-link active">Events</a>
                                 <a id="nav_home" href="{% url 'subscription' %}" class="nav-item nav-link active">Subscription</a>
+                                <div class="dropdown" onmouseover="showDropdown()" onmouseout="hideDropdown()">
+                                    <a id="nav_home" href="#" class="nav-item nav-link active dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">Guide</a>
+                                    <div id="dropdownMenu" class="dropdown-menu" aria-labelledby="nav_home">
+                                      <a class="dropdown-item" href="{% url 'artemia' %}">Artemia Culture</a>
+                                      <a class="dropdown-item" href="#">Instruction</a>
+                                    </div>
+                                  </div>
+                                  
+                                  <script>
+                                    function showDropdown() {
+                                      document.getElementById("dropdownMenu").classList.add("show");
+                                    }
+                                  
+                                    function hideDropdown() {
+                                      document.getElementById("dropdownMenu").classList.remove("show");
+                                    }
+                                  </script>
 
                                 <a id="nav_home" href="{% url 'blog' %}" class="nav-item nav-link active">Blog</a>
                                 

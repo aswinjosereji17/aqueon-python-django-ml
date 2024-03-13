@@ -685,7 +685,7 @@ pre code {
 .row {
   display: flex;
   flex-wrap: wrap;
-  margin-right: -15px;
+  margin-right: 0px;
   margin-left: -15px;
 }
 
@@ -10145,7 +10145,7 @@ padding-bottom: 2px;}
 
   .pl-xl-5,
   .px-xl-5 {
-    padding-left: 3rem !important;
+    padding-left: 2rem !important;
   }
 
   .m-xl-n1 {

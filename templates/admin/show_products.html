@@ -15,28 +15,44 @@
 
 
 
-<form id="product-search-form">
-      <!-- <label for="product-name" class="search-label">Search by Product Name:</label> -->
-<div class="input-group">
+<div style="display: flex; flex-direction: row; gap:20px">
+    <!-- <form id="product-search-form"> -->
+        <!-- <label for="product-name" class="search-label">Search by Product Name:</label> -->
+  <div class="input-group">
+      
+      <input style="width:400px; border-radius:5px; height: 40px;  border: 1px solid gray; margin-right:2px" type="text" id="product-name" name="product-name" class="" placeholder="Search by Product Name">
+      <div class="input-group-prepend">
+          <button style="height: 40px; " class="btn btn-outline-secondary" type="button">
+              <i class="ri-search-2-line"></i>
+          </button>
+      </div>
+  </div>
+  
+   <!-- </form></br></br> -->
+   <!-- <form id="seller-search-form"> -->
+      <!-- <label for="seller-name" class="search-label">Search by Product Name:</label> -->
+  <div class="input-group">
     
-    <input style="width:400px; border-radius:5px; border: 1px solid gray; margin-right:2px" type="text" id="product-name" name="product-name" class="" placeholder="Search by Product Name">
+    <input style="width:400px; height: 40px; border-radius:5px; border: 1px solid gray; margin-right:2px" type="text" id="seller-name" name="product-name" class="" placeholder="Search by Seller Name">
     <div class="input-group-prepend">
-        <button class="btn btn-outline-secondary" type="button">
+        <button style="height: 40px; " class="btn btn-outline-secondary" type="button">
             <i class="ri-search-2-line"></i>
         </button>
     </div>
-</div>
-
- </form></br></br>
- <form id="seller-search-form">
-    <!-- <label for="seller-name" class="search-label">Search by Product Name:</label> -->
-<div class="input-group">
-  
-  <input style="width:400px; border-radius:5px; border: 1px solid gray; margin-right:2px" type="text" id="seller-name" name="product-name" class="" placeholder="Search by Seller Name">
-  <div class="input-group-prepend">
-      <button class="btn btn-outline-secondary" type="button">
-          <i class="ri-search-2-line"></i>
-      </button>
+  </div>
+  <div class="input-group">
+    
+    <form>
+        <div>
+          <select style="height: 40px;" id="filterSelect">
+            <option value="">All Products</option>
+            <option value="noStock">No Stock</option>
+            <option value="lessThanFifteen">Stock less than 15</option>
+          </select>
+        </div>
+      </form><br>
+      <br>
+         
   </div>
 </div>
 
@@ -119,6 +135,29 @@
             }
         });
     });
+
+
+  document.getElementById('filterSelect').addEventListener('change', function() {
+    var selectedValue = this.value;
+    var rows = document.querySelectorAll('#product-table tbody tr');
+
+    rows.forEach(function(row) {
+      var stockQuantity = parseInt(row.querySelector('td:nth-child(4)').textContent);
+      if (selectedValue === 'noStock' && stockQuantity > 0) {
+        row.style.display = 'none';
+      } else if (selectedValue === 'lessThanFifteen' && stockQuantity >= 15) {
+        row.style.display = 'none';
+      } else {
+        row.style.display = '';
+      }
+    });
+  });
+
+  // Initialize to show all products by default
+  var rows = document.querySelectorAll('#product-table tbody tr');
+  rows.forEach(function(row) {
+    row.style.display = '';
+  });
 
    
 </script>

@@ -140,7 +140,7 @@ urlpatterns = [
 
 
     path('order_status_hub/', views.order_status_hub, name='order_status_hub'),
-
+    path('artemia/',views.artemia,name='artemia')
 
     ]
 

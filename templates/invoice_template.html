@@ -62,7 +62,7 @@
 
         .table thead th {
             border: none;
-            background-color: #9aa2a9; /* Change the primary color here */
+            background-color: #0f4370; /* Change the primary color here */
             color: #fff;
         }
 
@@ -77,7 +77,7 @@
         .total-price {
             font-size: 20px;
             font-weight: bold;
-            margin-top: 20px;
+            /* margin-top: 20px; */
         }
     </style>
 </head>
@@ -85,6 +85,9 @@
 <body>
     <div class="container invoice-container">
         <div class="row invoice-details">
+            <div class="col-md-6 text-right">
+                <h1  class="invoice-title" style="text-align: center; color: rgb(2, 2, 66);">AQUEON</h1>
+            </div>
             <div class="col-md-6 text-right">
                 <h1 class="invoice-title" style="text-align: center;"><u>Invoice for Order #{{ order.id }}</u></h1>
             </div>
@@ -99,7 +102,7 @@
         <div class="row mt-4">
             <div class="col-md-12">
                 <table class="table table-bordered table-hover">
-                    <thead class="thead-dark">
+                    <thead style="background-color: yellow;" class="thead-dark">
                         <tr>
                             <th scope="col" class="product-column" style="font-size: 14px;">Product Name</th>
                             <th scope="col" style="font-size: 14px;">Quantity</th> <!-- Add this column for quantity -->
@@ -128,6 +131,7 @@
         </div><hr>
         <div class="col-md-6">
             <div style="text-align: right;">
+                <!-- <p style="font-size: 16px; margin-bottom: -190px;"><b>Total Price: Rs.{{ order.total_price }}</b></p> -->
                 <p style="font-size: 16px;"><b>Total Price: Rs.{{ order.total_price }}</b></p>
             </div>
         </div>

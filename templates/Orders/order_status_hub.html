@@ -10,8 +10,28 @@
 
 
 <div class="container mt-5">
-
-    <table class="table table-bordered">
+    <div style="display: flex; flex-direction: row; gap: 20px;">
+        <div class="input-group">
+      
+            <input style="width:400px; border-radius:5px; height: 40px;  border: 1px solid gray; margin-right:2px" type="text" id="product-name" name="product-name" class="" placeholder="Search by Order ID">
+            <div class="input-group-prepend">
+                <button style="height: 40px; " class="btn btn-outline-secondary" type="button">
+                    <i class="ri-search-2-line"></i>
+                </button>
+            </div>
+        </div>
+<!-- 
+        <div class="input-group">
+    
+            <input style="width:400px; height: 40px; border-radius:5px; border: 1px solid gray; margin-right:2px" type="text" id="seller-name" name="product-name" class="" placeholder="Search by Seller Name">
+            <div class="input-group-prepend">
+                <button style="height: 40px; " class="btn btn-outline-secondary" type="button">
+                    <i class="ri-search-2-line"></i>
+                </button>
+            </div>
+          </div> -->
+    </div><br><br>
+    <table id="product-table" class="table table-bordered">
         <thead>
             <tr>
                 <th scope="col">order id</th>
@@ -28,37 +48,51 @@
         <tbody>{% for a in orders|dictsortreversed:"noti_date" %}
                 <tr>
                     <!-- <th scope="row"></th> -->
-                    <td>#{{ a.order.order.id }}</td>
+                    <td>{{ a.order.order.id }}</td>
                     <td>{{ a.prod_name }}</td>
                     <!-- <td><img src="" alt=""></td> -->
                     <td>{{ a.quantity }}</td>
                     <td>{{ a.get_shipped_display }}</td>
                     <td>{{ a.hub }}</td>
+                    {% if a.prod_cat == 'Fish'%}
                     <td>
-                        {% if a.stored_tank == None%}
-                        <button style="background-color: rgb(1, 15, 13); border: none;" type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal2{{ a.notif_id }}">
+                        {% if a.stored_tank == None and not a.get_shipped_display == 'Successful'%}
+                        <button style="background-color: #F57D1F; color: white; border: none;" type="button" class="btn btn" >
                             Not Yet Recieved
                         </button>
-                        
+                        {% elif a.stored_tank == None and a.get_shipped_display == 'Successful'%}
+                        <button style="background-color: rgb(87, 3, 52); border: none; color: white;" type="button" class="btn btn" data-toggle="modal" data-target="#confirmModal2{{ a.notif_id }}">
+                            Allocate tank
+                        </button>
                         {% else %}
-                        <button style="border: none; background-color: rgb(128, 119, 0); color: white;" type="button" class="btn btn" >
+                        <button style="border: none; background-color: rgb(1, 46, 5); color: white;" type="button" class="btn btn" >
                             #{{  a.stored_tank }}
                         </button>
                         {% endif %}
                     </td>
+                    {% else %}
+                        <td>
+                            <button style="border: none; background-color: rgb(128, 119, 0); color: white;" type="button" class="btn btn" >
+                                Nothing
+                            </button>
+                        </td>
+                    {% endif %}
+
+
+
                     <td>{{ a.noti_date }}</td>
                     <td>
                         <!-- Button trigger modal -->
                         {% if a.get_shipped_display == 'Delivered'%}
-                        <button style="background-color: yellow; border: none;" type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal{{ a.notif_id }}">
+                        <button style="background-color: #F57D1F; border: none; color: white;" type="button" class="btn btn" data-toggle="modal" data-target="#confirmModal{{ a.notif_id }}">
                             Not Yet Recieved
                         </button>
                         {% elif a.get_shipped_display == 'Successful'%}
                         <button style="background-color: green; color: white; border: none;" type="button" class="btn btn" >
-                            Recieved
+                            Recieved From Seller
                         </button>
                         {% else %}
-                        <button style="border: none; background-color: rgb(128, 119, 0); color: white;" type="button" class="btn btn" >
+                        <button style="border: none; background-color: #EBF400; color: black;" type="button" class="btn btn" >
                             Order Requested
                         </button>
                         {% endif %}
@@ -130,6 +164,66 @@
                        }
                    });
                }
+                   </script>
+
+
+
+                   <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('#product-search-form');
+        const input = document.querySelector('#product-name');
+        const rows = document.querySelectorAll('#product-table tbody tr');
+        const noResults = document.querySelector('#no-results');
+
+        input.addEventListener('input', function () {
+            const searchTerm = input.value.toLowerCase();
+
+            rows.forEach(function (row) {
+                const productName = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                if (productName.startsWith(searchTerm)) {
+                    row.style.display = 'table-row';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            const visibleRows = [...rows].filter(row => row.style.display !== 'none');
+            if (visibleRows.length === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        });
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('#seller-search-form');
+        const input = document.querySelector('#seller-name');
+        const rows = document.querySelectorAll('#product-table tbody tr');
+        const noResults = document.querySelector('#no-results');
+
+        input.addEventListener('input', function () {
+            const searchTerm = input.value.toLowerCase();
+
+            rows.forEach(function (row) {
+                const productName = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
+                if (productName.startsWith(searchTerm)) {
+                    row.style.display = 'table-row';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            const visibleRows = [...rows].filter(row => row.style.display !== 'none');
+            if (visibleRows.length === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        });
+    });
+
                    </script>
                 {% endfor %}
 

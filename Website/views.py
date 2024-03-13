@@ -188,6 +188,12 @@ def user_profile_view(request):
     prod_count = Product.objects.count()
     user_products_count = Product.objects.filter(user_id=request.user).count()
     s_req= SellerRequest.objects.all()
+    products_with_sentiment_sum = Product.objects.annotate(sentiment_sum=Avg('review__sentiment_score')).order_by('-sentiment_sum')[:5]
+    show_orders_count = Order.objects.filter(payment_status=Order.PaymentStatusChoices.SUCCESSFUL).count()
+    show_sub_count = Subscription.objects.filter(status=True).count()
+    show_hub_count = UserProfile.objects.filter(hub_status=True).count()
+
+
 
 
     try:
@@ -218,7 +224,11 @@ def user_profile_view(request):
         'seller_count' : seller_count,
         'prod_count' : prod_count,
         's_req' : s_req,
-        'user_products_count': user_products_count
+        'user_products_count': user_products_count,
+        'products_with_sentiment_sum': products_with_sentiment_sum,
+        'show_orders_count': show_orders_count,
+        'show_sub_count':show_sub_count,
+        'show_hub_count':show_hub_count
         # 'product' :product
     }
     
@@ -1421,6 +1431,7 @@ def paymenthandler(request):
         for order_item in order.orderitem_set.all():
             notification = OrderNotification_Seller.objects.create(
                 prod_name=order_item.product.prod_name,
+                prod_cat=order_item.product.sub_categ_id.categ_id,
                 quantity=order_item.quantity,
                 order=order_item,
                 main_order=order,
@@ -2264,9 +2275,25 @@ from .models import Subscription_details
 @never_cache
 def subscription(request):
     subscription=Subscription_details.objects.all()
-    subscriptionn=Subscription.objects.filter(user=request.user)
+    # subscriptionn=Subscription.objects.filter(user=request.user)
+    latest_subscription = Subscription.objects.filter(user=request.user).order_by('-order_date').first()
+    # print(latest_subscription.expiration_date)
+    a=timezone.now()
+    # if a < latest_subscription.expiration_date:
+    #    latest_subscription.status = False
+    #    latest_subscription.save()
+ 
 
-    return render(request,'subscription/sub.html', {'subscription' : subscription,'subscriptionn' : subscriptionn})
+    print("now:",a)
+    print("exp:")
+    context = {
+        'subscription':subscription,
+        'latest_subscription': latest_subscription,
+        'is_subscribed': latest_subscription.status if latest_subscription else False,
+        'a':a
+    }
+
+    return render(request,'subscription/sub.html', context)
 
 
 
@@ -2718,8 +2745,8 @@ def update_shipped(request, notification_id):
 def order_status_hub(request):
     user=request.user
     orders=OrderNotification_Seller.objects.filter(hub=user.useraddress.district)
-    for a in orders:
-        print(a)
+    # for a in orders:
+    #     print(a.)
     return render(request,'Orders/order_status_hub.html',{'orders':orders})
 
 
@@ -2743,3 +2770,7 @@ def update_tank(request, notification_id):
         notification.stored_tank = request.POST.get('tank_id') 
         notification.save()
         return redirect('order_status_hub')  # Replace with the actual URL for your category list view
+
+
+def artemia(request):
+    return render(request,"Guide/guide.html")

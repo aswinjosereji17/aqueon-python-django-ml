@@ -281,6 +281,7 @@ class OrderNotification_Seller(models.Model):
 
     notif_id = models.AutoField(primary_key=True)
     prod_name = models.CharField(max_length=100)
+    prod_cat = models.CharField(max_length=100,null=True)
     quantity = models.PositiveIntegerField()
     order = models.ForeignKey(OrderItem, on_delete=models.CASCADE, default=None, null=True)
     main_order = models.ForeignKey(Order, on_delete=models.CASCADE, default=None, null=True)
@@ -346,19 +347,25 @@ class Subscription(models.Model):
     status = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        if self.payment_status == self.PaymentStatusChoices.SUCCESSFUL and not self.payment_date:
+        if self.payment_status == self.PaymentStatusChoices.SUCCESSFUL:
             self.payment_date = timezone.now()
             # Set expiration date to 28 days from the payment date
-            self.expiration_date = self.payment_date + timedelta(days=28)
-        elif self.payment_status == self.PaymentStatusChoices.FAILED:
-            # If payment failed, reset payment_date and expiration_date
+            self.expiration_date = self.payment_date + timedelta(days=1)
+            
+        elif self.payment_status == self.PaymentStatusChoices.FAILED or self.payment_status == self.PaymentStatusChoices.PENDING:
+            # If payment failed or is pending, reset payment_date and expiration_date
             self.payment_date = None
             self.expiration_date = None
             self.status = False
 
-        if self.expiration_date and timezone.now() > self.expiration_date:
+        # Explicitly set status to False if both expiration_date and payment_date are None
+        if self.expiration_date is None and self.payment_date is None:
+            self.status = False
+        elif self.expiration_date and timezone.now() > self.expiration_date:
+            # If the current time is past the expiration date, set status to False
             self.status = False
         else:
+            # Otherwise, the subscription is considered active
             self.status = True
 
         super().save(*args, **kwargs)

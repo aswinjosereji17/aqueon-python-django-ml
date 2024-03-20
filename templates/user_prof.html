@@ -152,7 +152,17 @@
           </li>
           <li>
             <a href="{% url 'seller_request' %}">
-              <i class="bi bi-circle"></i><span>Seller Request</span>
+              <i class="bi bi-circle"></i><span>Seller Requests</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'delboy_request' %}">
+              <i class="bi bi-circle"></i><span>Delivery Boy Requests</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'deliveryagent' %}">
+              <i class="bi bi-circle"></i><span>Delivery Boys</span>
             </a>
           </li>
 
@@ -254,6 +264,25 @@
 
         </ul> -->
       </li>
+      <li class="nav-item">
+        <a href="{% url 'aquascape_designs' %}" class="nav-link collapsed" >
+          <i class="ri-product-hunt-fill"></i><span>Add Aquascaping Designs</span>
+        </a>
+        <!-- <ul id="products" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="{% url 'list_product_subcat' %}">
+              <i class="bi bi-circle"></i><span>Display Sub Category</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'add_subcategory' %}">
+              <i class="bi bi-circle"></i><span>Add Sub Category</span>
+            </a>
+          </li>
+
+
+        </ul> -->
+      </li>
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#componentss-nav" data-bs-toggle="collapse" href="#">
@@ -302,6 +331,13 @@
 
       {% endif %}
 
+
+      
+
+
+
+
+
       <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
         <!-- <li class="nav-heading">Pages</li> -->
         <!-- <i style=" color: #090505; cursor: pointer;" class="bi bi-list toggle-sidebar-btn"></i> -->
@@ -328,17 +364,23 @@
 
 
 
-      {% if user.is_staff and user.userprofile.hub_status  %}
+      {% if user.userprofile.hub_status  %}
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'order_status_hub' %}">
           <i style="" class="ri-home-2-fill"></i>
-          <span>Order Status</span>
+          <span>Order Status(Seller)</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'del_order_status' %}">
+          <i style="" class="ri-home-2-fill"></i>
+          <span>Order Status(Delivery Boy)</span>
         </a>
       </li>
       {% endif %}
 
 
-      {% if not user.is_superuser and not user.is_staff %}
+      {% if not user.is_superuser and not user.is_staff and not user.userprofile.hub_status and user.userprofile.delboy_status == 'Nil' %}
       
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'wishlist' %}">
@@ -388,6 +430,18 @@
           <span>Requested Products</span>
         </a>
       </li> -->
+      {% endif %}
+
+      {% if not user.is_superuser and not user.is_staff and user.userprofile.delboy_status == 'approved'%}
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'del_reqs'%}">
+          <i class="bi bi-layout-text-window-reverse"></i><span>Delivery Requests</span></i>
+        </a>
+
+      
+      </li><!-- End Charts Nav -->
+
       {% endif %}
 
 

@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from .models import UserProfile,SellerRequest,HomeSpecialOffer,ProductCategory, ProductSubcategory, Product, ProductDescription, UserAddress, AddCart, CartItems, Wishlist
 #  ProductCategory, ProductSubcategory, Product
-from .models import Review, ProductRequest,Fish,Event,Subscription,Subscription_details,CommunityPost,PostLikes,ChatMessage,OrderNotification_Seller
+from .models import Review, ProductRequest,Fish,Event,Subscription,Subscription_details,CommunityPost,PostLikes,ChatMessage,OrderNotification_Seller,add_aquascape,AssignedDeliveryAgent,UserAgentDistance
 # class UserProfileAdmin(admin.ModelAdmin):
 #     list_display = ('user', 'street_address', 'city', 'state', 'postal_code', 'country')
     # Other customization options
@@ -25,9 +25,18 @@ admin.site.register(Subscription,SubscriptionAdmin)
 
 
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'mobile', 'profile_image','hub_status')  
+    list_display = ('user', 'mobile', 'profile_image','hub_status','delboy_status','created_at','latitude','longitude')  
 
 admin.site.register(UserProfile, UserProfileAdmin)
+
+admin.site.register(AssignedDeliveryAgent)
+admin.site.register(UserAgentDistance)
+
+
+class add_aquascapeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'aqsp_image')  
+
+admin.site.register(add_aquascape, add_aquascapeAdmin)
 
 class UserAddressAdmin(admin.ModelAdmin):
     list_display = ('user', 'address1', 'address2','mobile_number','pincode','district','city','house_name')

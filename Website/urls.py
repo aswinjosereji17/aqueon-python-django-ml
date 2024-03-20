@@ -140,8 +140,22 @@ urlpatterns = [
 
 
     path('order_status_hub/', views.order_status_hub, name='order_status_hub'),
-    path('artemia/',views.artemia,name='artemia')
+    path('artemia/',views.artemia,name='artemia'),
+    path('aquascape/',views.aquascape,name='aquascape'),
+    path('aquascape_designs/',views.aquascape_designs,name='aquascape_designs'),
+    path('regdelivery/',views.regdelivery,name='regdelivery'),
+    path('delboy_request/',views.delboy_request,name='delboy_request'),
+    path('deliveryagent/',views.deliveryagent,name='deliveryagent'),
+    path('del_order_status/',views.del_order_status,name='del_order_status'),
 
+    path('reject_delivery_agent/<int:agent_id>/', views.reject_delivery_agent, name='reject_delivery_agent'),
+    path('approve_delivery_agent/<int:agent_id>/', views.approve_delivery_agent, name='approve_delivery_agent'),
+    path('allot_del_boy/<int:order_id>/', views.allot_del_boy, name='allot_del_boy'),
+    path('del_reqs/', views.del_reqs, name='del_reqs'),
+
+    path('update_picked/<int:order_id>/', views.update_picked, name='update_picked'),
+    path('update_ready_picked/<int:order_id>/', views.update_ready_picked, name='update_ready_picked'),
+    path('send_otp_to_customer/<int:order_id>/', views.send_otp_to_customer, name='send_otp_to_customer'),
     ]
 
 if settings.DEBUG:

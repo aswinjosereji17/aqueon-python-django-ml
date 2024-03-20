@@ -12,14 +12,77 @@ from django.dispatch import receiver
 #     def __str__(self):
 #         return self.user.username  # Return the username as the string representation
 class UserProfile(models.Model):
+    STATUS_CHOICES = [
+        ('Nil', 'Nil'),
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+    
+    AVAILABILITY_CHOICES = [
+        ('available', 'Available'),
+        ('not_available', 'Not Available'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mobile = models.CharField(max_length=255)
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     hub_status = models.BooleanField(default=False) 
+    vechicle_type = models.CharField(max_length=255,default=1)
+    latitude = models.CharField(max_length=20,null=True,blank=True,default="hi")
+    longitude = models.CharField(max_length=20,null=True,blank=True,default="hi")
+    delboy_status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Nil')
+    availability = models.CharField(max_length=15, choices=AVAILABILITY_CHOICES, default='not_available')
+    created_at = models.DateTimeField(auto_now_add=True)
+
     # Other fields for user profile
 
     def __str__(self):
         return self.user.username
+    
+
+class UserAgentDistance(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    agent = models.ForeignKey(User, on_delete=models.CASCADE,related_name='agent_distances')
+    distance = models.FloatField()
+
+    def __str__(self):
+        return f"{self.user.username} - {self.agent}"
+
+
+
+
+# class DeliveryAgent(models.Model):
+#     STATUS_CHOICES = [
+#         ('pending', 'Pending'),
+#         ('approved', 'Approved'),
+#         ('rejected', 'Rejected'),
+#     ]
+    
+#     AVAILABILITY_CHOICES = [
+#         ('available', 'Available'),
+#         ('not_available', 'Not Available'),
+#     ]
+    
+#     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='delivery_agent')
+#     name = models.CharField(max_length=255)
+#     username = models.CharField(max_length=30)  # Added username field
+#     email = models.EmailField(unique=True)
+#     phone = models.CharField(max_length=15)
+#     license_number = models.CharField(max_length=20,unique=True)
+#     vechicle_type = models.CharField(max_length=255,default=1)
+#     latitude = models.CharField(max_length=20,null=True,blank=True)
+#     longitude = models.CharField(max_length=20,null=True,blank=True)
+#     password = models.CharField(max_length=255)
+#     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+#     availability = models.CharField(max_length=15, choices=AVAILABILITY_CHOICES, default='not_available')
+
+
+#     def _str_(self):
+#         return self.user.username
+        
+#     def is_approved(self):
+#         return self.status == 'approved'
 
 class UserAddress(models.Model):
     user_addr_id = models.AutoField(primary_key=True)
@@ -246,6 +309,34 @@ class OrderItem(models.Model):
         order.total_order_price = sum(order_item.total_price for order_item in order.orderitem_set.all())
         order.save()
 
+
+
+class AssignedDeliveryAgent(models.Model):
+    ORDER_REQUESTED = 'OR'
+    PICKED = 'PI'
+    AT_POINT= 'AP'
+    SUCCESSFUL = 'SU'
+    
+    SHIPPED_CHOICES = [
+        (ORDER_REQUESTED, 'Order Requested'),
+        (PICKED, 'PICKED'),
+        (AT_POINT, 'AT_POINT'),
+        (SUCCESSFUL, 'Successful'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    deliveryagent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assigned_orders')  
+    status = models.CharField(max_length=2, choices=SHIPPED_CHOICES, default=ORDER_REQUESTED)
+    ready_for_pickup=models.BooleanField(default=False)
+    delivered=models.BooleanField(default=False)
+    created_at = models.DateField(auto_now_add=True)
+    otp = models.CharField(max_length=6)
+
+    def __str__(self):
+        return f"Assigned delivery agent for {self.order}"
+
+
 class OrderNotification_Seller(models.Model):
     ORDER_REQUESTED = 'OR'
     DELIVERED = 'DL'
@@ -426,3 +517,11 @@ class ChatMessage(models.Model):
 
     def _str_(self):
         return f'{self.user.username} - {self.message}'
+    
+class add_aquascape(models.Model):
+    aqsp_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    aqsp_image = models.ImageField(upload_to='aqsp_images/', null=True, blank=True)
+    
+    def _str_(self):
+        return f'{self.user.username}'

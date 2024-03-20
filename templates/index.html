@@ -382,7 +382,7 @@
                                     <a id="nav_home" href="#" class="nav-item nav-link active dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">Guide</a>
                                     <div id="dropdownMenu" class="dropdown-menu" aria-labelledby="nav_home">
                                       <a class="dropdown-item" href="{% url 'artemia' %}">Artemia Culture</a>
-                                      <a class="dropdown-item" href="#">Instruction</a>
+                                      <a class="dropdown-item" href="{% url 'aquascape' %}">Aquascaping Designs</a>
                                     </div>
                                   </div>
                                   
@@ -515,6 +515,10 @@
                                         <button class="dropdown-item" type="button"><a
                                                 href="{% url 'seller_register' %}" class="btn px-0">
                                                 Seller Sign Up
+                                            </a></button>
+                                        <button class="dropdown-item" type="button"><a
+                                                href="{% url 'regdelivery' %}" class="btn px-0">
+                                                Delivery Boy Sign Up
                                             </a></button>
                                     </div>
                                 </div>

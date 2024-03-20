@@ -151,6 +151,80 @@ def seller_register(request):
     else:
         return render(request, "seller_reg.html")
 
+from geopy.geocoders import Nominatim
+
+def regdelivery(request):
+    if request.method == 'POST':
+        # Retrieve data from the form
+        # name = request.POST.get('name')
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        zipcode = request.POST.get('zip')
+        # print(zipcode)
+        # license_number = request.POST.get('license')
+        vehicle_type = request.POST.get('vehicle_type')
+        # location = request.POST.get('location')
+        # latitude = request.POST.get('latitude')
+        # longitude = request.POST.get('longitude')
+
+        password = request.POST.get('password')
+
+        latitude_zip, longitude_zip = get_lat_long(zipcode)
+        # print(latitude_zip)
+        # Use the custom manager to create a new user
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+        )
+
+        # Create a new DeliveryAgent instance with 'pending' status
+        # delivery_agent = UserProfile.objects.create(
+        user_profile = get_object_or_404(UserProfile, user__username=username)
+
+        # Update the user profile with delivery details
+        user_profile.vehicle_type = vehicle_type
+        user_profile.mobile = phone
+        user_profile.latitude = latitude_zip
+        user_profile.longitude = longitude_zip
+        user_profile.delboy_status = 'pending'  # Assuming you want to update the status
+
+        # Save the updated user profile
+        user_profile.save()
+
+        
+
+        # Redirect to a success page or do other actions as needed
+        return redirect('login_user')
+
+    return render(request, 'register/del_boy.html')
+
+def get_lat_long(location):
+    geolocator = Nominatim(user_agent="my_geocoder")
+    location = geolocator.geocode(location)
+    if location:
+        return location.latitude, location.longitude
+    else:
+        return None, None
+
+# @require_POST
+def approve_delivery_agent(request, agent_id):
+    if request.method == 'POST':
+        delivery_agent = get_object_or_404(UserProfile, id=agent_id)
+        delivery_agent.delboy_status = 'approved'
+        delivery_agent.save()
+        return redirect('delboy_request')  # Redirect to a success page
+
+# @require_POST
+def reject_delivery_agent(request, agent_id):
+    if request.method == 'POST':
+        delivery_agent = get_object_or_404(UserProfile, id=agent_id)
+        delivery_agent.delboy_status = 'rejected'
+        delivery_agent.save()
+        return redirect('delboy_request')
+
+
 @login_required
 @never_cache
 
@@ -158,6 +232,27 @@ def loggout(request):
     # print('Logged Out')
     logout(request)
     return redirect('index')
+
+def delboy_request(request):
+    from django.db.models import Q
+
+# Fetch UserProfile objects with 'pending' or 'approval' delboy_status
+    dboy_req = UserProfile.objects.filter(Q(delboy_status='pending') | Q(delboy_status='approved'))
+
+    return render(request, 'admin/delboy_request.html',{'dboy_req':dboy_req})
+
+
+def deliveryagent(request):
+    delivery_agents = UserProfile.objects.filter(delboy_status='approved')
+    return render(request, 'admin/deliveryagents.html', {'delivery_agents': delivery_agents })
+
+from .models import AssignedDeliveryAgent
+@login_required
+@never_cache
+def del_reqs(request):
+    del_req= AssignedDeliveryAgent.objects.filter(deliveryagent=request.user)
+    return render(request, 'delivery_boy/deliveryrequests.html', {'del_req': del_req })
+
 
 
 from django.shortcuts import render
@@ -1427,6 +1522,16 @@ def paymenthandler(request):
         order.save()
 
         user_address = UserAddress.objects.get(user=request.user)
+        zipcode=user_address.pincode
+
+        latitude_zip, longitude_zip = get_lat_long(zipcode)
+
+
+        user_profile = UserProfile.objects.get(user=request.user)
+        user_profile.latitude=latitude_zip
+        user_profile.longitude=longitude_zip
+        user_profile.save()
+        
 
         for order_item in order.orderitem_set.all():
             notification = OrderNotification_Seller.objects.create(
@@ -2478,11 +2583,87 @@ from .models import Order
 def my_orders(request):
     
     show_orders = Order.objects.filter(user=request.user, payment_status=Order.PaymentStatusChoices.SUCCESSFUL)
-    for i in show_orders:
-        print(i)
+    
     return render(request, 'Orders/show_orders.html',{'show_orders': show_orders})
 
 
+
+
+from math import sin, cos, sqrt, atan2, radians
+
+def haversine(lat1, lon1, lat2, lon2):
+    # Helper function to convert latitude and longitude strings to floats
+    def convert_coord(coord):
+        return float(coord) if coord is not None else 0.0
+    
+    # Convert latitude and longitude strings to floats
+    lat1, lon1, lat2, lon2 = map(convert_coord, [lat1, lon1, lat2, lon2])
+
+    # Convert latitude and longitude from degrees to radians
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+
+    # Haversine formula (rest of the function remains the same)
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = sin(dlat / 2) * 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) * 2
+    print(a)
+    c = 2 * atan2(sqrt(abs(a)), sqrt(1 - abs(a)))
+    distance = 6371.0 * c  # Radius of Earth in kilometers
+
+    return distance
+
+
+from . models import UserAgentDistance
+@login_required
+@never_cache
+def del_order_status(request):
+    user=request.user
+    
+    distinct_order_ids = Order.objects.filter(
+        all_received=True,
+        ordernotification_seller__hub=user.useraddress.district
+    ).values('id').distinct()
+    
+    # Retrieve orders using the distinct order IDs
+    show_orders = Order.objects.filter(id__in=distinct_order_ids)
+    return render(request, 'admin/del_order_status.html',{'show_orders': show_orders})
+
+from . models import AssignedDeliveryAgent
+def allot_del_boy(request, order_id):
+    agents = UserProfile.objects.filter(delboy_status='approved')
+    order_instance = Order.objects.filter(id=order_id).first()
+    if order_instance:
+            user_order=order_instance.user
+            profile=UserProfile.objects.filter(user=user_order).first()
+            latitude=profile.latitude
+            longitude=profile.longitude
+            for agent in agents:
+                if latitude is not None and longitude is not None:
+                    # Calculate distance for each seller using haversine
+                    distance = haversine(agent.latitude, agent.longitude, latitude, longitude)
+                    UserAgentDistance.objects.update_or_create(
+                        user=request.user,
+                        agent=agent.user,
+                        defaults={'distance': distance}
+                    )
+            useragent = UserAgentDistance.objects.filter(user=request.user)
+            nearby_agent = useragent.filter(
+                distance__isnull=False,
+                user=request.user,
+            ).order_by('distance')[:1]
+
+            nearest_user_agent_distance = nearby_agent.first()
+            if nearest_user_agent_distance:
+                nearest_delivery_agent = nearest_user_agent_distance.agent
+            
+            AssignedDeliveryAgent.objects.create(
+            user=request.user, order=order_instance, deliveryagent=nearest_delivery_agent)
+            return redirect('del_order_status')
+
+        
+    else:
+        # Handle the case where no order with the given ID is found
+        return HttpResponse("Order not found")
 
 
 
@@ -2502,6 +2683,7 @@ def community(request):
 
 
 @login_required
+@never_cache
 def send_message(request):
     if request.method == 'POST':
         user = request.user
@@ -2759,7 +2941,90 @@ def update_shipped1(request, notification_id):
         notification.shipped = 'SU' 
         notification.save()
         return redirect('order_status_hub')  # Replace with the actual URL for your category list view
+    
+@require_POST
+def update_picked(request, order_id):
+    notification = AssignedDeliveryAgent.objects.get(pk=order_id)
+    
+    if request.method == 'POST':
+        # Perform the deletion
+        notification.status = 'PI' 
+        notification.save()
+        return redirect('del_reqs')  # Replace with the actual URL for your category list view
 
+@require_POST
+def update_ready_picked(request, order_id):
+    notification = AssignedDeliveryAgent.objects.get(pk=order_id)
+    
+    if request.method == 'POST':
+        # Perform the deletion
+        notification.ready_for_pickup = True
+        notification.save()
+        return redirect('del_reqs')  # Replace with the actual URL for your category list view
+
+from twilio.rest import Client
+
+
+def send_otp_via_sms(mobile_number, otp):
+    # Your Twilio credentials
+    account_sid = 'AC86b9d0d8ebd858f6ea5b7cda55f04710'
+    auth_token = '1c4df17e85d7334d4e5fb7dc675efeb7'
+    twilio_number = '+13237452215'
+    
+    # Initialize Twilio client
+    client = Client(account_sid, auth_token)
+    v_mobile_number = '+91' + mobile_number
+    print(v_mobile_number)
+    
+    # Compose the message
+    message_body = f"Your OTP for verification is: {otp}"
+    
+    # Send the SMS
+    client.messages.create(from_=twilio_number, body=message_body, to=v_mobile_number)
+
+import random
+
+@require_POST
+def send_otp_to_customer(request, order_id):
+    if request.method == 'POST':
+        order = AssignedDeliveryAgent.objects.get(pk=order_id)
+        print(order)
+        user = Order.objects.get(pk=order.order.id)
+        print(user.user)
+        user_profile=UserProfile.objects.get(user=user.user)
+        
+        # Generate OTP
+        otp = ''.join(random.choices('0123456789', k=6))
+        order.otp = otp
+        order.save()
+        
+        # Send OTP via SMS
+        send_otp_via_sms(user_profile.mobile, otp)
+        
+        return redirect('del_reqs')
+
+def verify_order_otp(request):
+    if request.method == 'POST':
+        order_id = request.POST.get('order_id')
+        otp_entered = request.POST.get('otp')
+        
+        # Retrieve the order object
+        order = Order.objects.get(id=order_id)
+        
+        # Check if the entered OTP matches the OTP stored in the order and it's not null
+        if order.otp == otp_entered and order.otp != 'Null':
+            # Update the order to mark it as verified
+            order.verified = True
+            order.order_status = order.OrderStatusChoices.DELIVERED
+            order.save()
+            
+            # Redirect to a success page or display a success message
+            messages.success(request, 'Order verified successfully.')
+            return redirect('customer_order_view')  # Change 'success_page' to the name of your success page URL
+        else:
+            # Display an error message if the OTP is incorrect or null
+            messages.error(request, 'Invalid OTP. Please try again.')
+            return redirect('customer_order_view')
 
 @require_POST
 def update_tank(request, notification_id):
@@ -2774,3 +3039,27 @@ def update_tank(request, notification_id):
 
 def artemia(request):
     return render(request,"Guide/guide.html")
+
+
+from . models import add_aquascape
+def aquascape(request):
+    aquascape_designs=add_aquascape.objects.all()
+    return render(request,"Guide/aquascaping.html",{'aquascape_designs':aquascape_designs})
+
+from . models import add_aquascape
+@login_required
+@never_cache
+def aquascape_designs(request):
+    if request.method == 'POST':
+        # heading = request.POST.get('heading')
+        # description = request.POST.get('description')
+        image = request.FILES.get('image')
+        # if heading and description:  # Basic validation, you might want to add more
+        if request.user.is_authenticated:  # Check if user is logged in
+            add_aquascape.objects.create(user=request.user, aqsp_image=image)
+            return redirect('index')  # Redirect to home page after successful submission
+        else:
+            return redirect('login')  # Redirect to login page if user is not logged in
+    # return render(request, 'blog/add_community_post.html')
+    return render(request,"admin/add_aquascape.html")
+

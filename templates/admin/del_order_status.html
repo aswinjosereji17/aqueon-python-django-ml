@@ -1,0 +1,36 @@
+{% extends 'user_prof.html' %}
+
+
+{% block content %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Estimated Delivery Time</th>
+            <th>Shipping By</th>
+            <th>Allot Delivery Boy</th>
+            
+           
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in show_orders|dictsortreversed:"order_date" %}
+        
+       
+        <tr>
+            <td><b>{{ order.id }}</b></td>
+            <td><form action="">
+                <input type="date" name="date" id="">
+                <button type="submit">Set</button>
+            </form></td>
+            <td></td>
+            <td><form action="{% url 'allot_del_boy' order.id %}">
+                <button type="submit">Allot Delivery Boy</button>
+            </form></td>
+            
+        </tr>
+   
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock%}

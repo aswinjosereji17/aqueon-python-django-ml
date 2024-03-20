@@ -84,8 +84,15 @@ body {
 .step.active3:before{
     background-color: #ddd;
 }
+.step.active33:before{
+    background-color: green;
+}
 .step.active4:before{
     background-color: #ddd;
+}
+
+.step.active44:before{
+    background-color: green;
 }
 
 .step.active5:before{
@@ -199,6 +206,15 @@ p {
 }
 </style>
 <div class="container">
+    <div class="pagetitle">
+        <h1>My Orders</h1>
+        <nav>
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">Users</li>
+            <li class="breadcrumb-item active">My Orders</li>
+          </ol>
+        </nav>
+      </div><!-- End Page Title -->
     {% for order in show_orders|dictsortreversed:"order_date" %}
 
     <article class="card">
@@ -227,8 +243,27 @@ p {
                 {% endif %}
                 <!-- <div class="step active2"> <span class="icon"> <i class="fa fa-user"></i> </span> <span class="text"> Picked by store</span> </div> -->
 
+                {% for assigned_agent in order.assigneddeliveryagent_set.all %}
+                {% if assigned_agent.status == 'PI' %}
+                    <div class="step active33"> <span class="icon1"> <i class="fa fa-user"></i> </span> <span class="text"> On the way</span> </div>
+                {% else %}
+                    <div class="step active3"> <span class="icon"> <i class="fa fa-truck"></i> </span> <span class="text"> On the way </span> </div>
+                {% endif %}
+            {% empty %}
                 <div class="step active3"> <span class="icon"> <i class="fa fa-truck"></i> </span> <span class="text"> On the way </span> </div>
-                <div class="step active4"> <span class="icon"> <i class="fa fa-box"></i> </span> <span class="text">Ready for pickup</span> </div>
+            {% endfor %}
+
+            {% for assigned_agent in order.assigneddeliveryagent_set.all %}
+                {% if assigned_agent.ready_for_pickup %}
+                <div class="step active44"> <span class="icon1"> <i class="fa fa-user"></i> </span> <span class="text"> Ready for pickup</span> </div>
+                {% else %}
+                <div class="step active4"> <span class="icon1"> <i class="fa fa-user"></i> </span> <span class="text"> Ready for pickup</span> </div>
+                {% endif %}
+            {% empty %}
+            <div class="step active4"> <span class="icon1"> <i class="fa fa-user"></i> </span> <span class="text"> Ready for pickup</span> </div>
+            {% endfor %}
+
+                
                 <div class="step active5"> <span class="icon"> <i class="fa fa-box"></i> </span> <span class="text">Delivered</span> </div>
 
             </div>

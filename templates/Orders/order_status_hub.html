@@ -39,10 +39,12 @@
                 <!-- <th scope="col">Product Image</th> -->
                 <th scope="col">Quantity</th>
                 <th scope="col">Shipped</th>
-                <th scope="col">Requested Hub</th>
+                <!-- <th scope="col">Requested Hub</th> -->
                 <th scope="col">Stored tank</th>
-                <th scope="col">Created At</th>
-                <th>Action</th>
+                <th>Action (Seller)</th>
+                
+                <th scope="col">Ordered Date</th>
+
             </tr>
         </thead>
         <tbody>{% for a in orders|dictsortreversed:"noti_date" %}
@@ -53,7 +55,6 @@
                     <!-- <td><img src="" alt=""></td> -->
                     <td>{{ a.quantity }}</td>
                     <td>{{ a.get_shipped_display }}</td>
-                    <td>{{ a.hub }}</td>
                     {% if a.prod_cat == 'Fish'%}
                     <td>
                         {% if a.stored_tank == None and not a.get_shipped_display == 'Successful'%}
@@ -80,7 +81,6 @@
 
 
 
-                    <td>{{ a.noti_date }}</td>
                     <td>
                         <!-- Button trigger modal -->
                         {% if a.get_shipped_display == 'Delivered'%}
@@ -97,6 +97,9 @@
                         </button>
                         {% endif %}
                     </td>
+                    
+                    <td>{{ a.noti_date }}</td>
+
                 </tr>
 
                 <div class="modal fade" id="confirmModal{{ a.notif_id }}" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">

@@ -1,0 +1,156 @@
+{% extends 'user_prof.html' %}
+
+
+{% block content %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Estimated Delivery Time</th>
+            <!-- <th></th> -->
+            <th>Action (Picked)</th>
+            <th>Action (Ready For pickup)</th>
+            <th>Action(Send OTP)</th>
+            <th>Verify OTP</th>
+            
+           
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in del_req|dictsortreversed:"created_at" %}
+        
+       
+        <tr>
+            <td><b>{{ order.order.id }}</b></td>
+            <td></td>
+            <td><!-- Button trigger modal -->
+                {% if order.get_status_display == 'Order Requested'%}
+                <button style="background-color: #F57D1F; border: none; color: white;" type="button" class="btn btn" data-toggle="modal" data-target="#confirmModal{{ order.id }}">
+                    Requested to pick
+                </button>
+                {% elif order.get_status_display == 'PICKED'%}
+                <button style="background-color: rgb(95, 243, 95); color: rgb(12, 9, 9); border: none;" type="button" class="btn btn" >
+                    Picked
+                </button>
+                {% elif order.get_status_display == 'Successful'%}
+                <button style="background-color: green; color: rgb(3, 0, 0); border: none;" type="button" class="btn btn" >
+                    Delivered
+                </button>
+                {% else %}
+                <button style="border: none; background-color: #EBF400; color: black;" type="button" class="btn btn" >
+                    Ready for pickup
+                </button>
+                {% endif %}</td>
+                <td><!-- Button trigger modal -->
+                    {% if order.ready_for_pickup %}
+                    
+                    <button style="background-color: rgb(95, 243, 95); color: rgb(12, 9, 9); border: none;" type="button" class="btn btn" >
+                        Ready
+                    </button>
+                   
+                    {% else %}
+                    <button style="background-color: rgb(87, 3, 52); border: none; color: white;" type="button" class="btn btn" data-toggle="modal" data-target="#confirmModal2{{ order.id }}">
+                        Not Ready
+                    </button>
+                    {% endif %}</td>
+                    <td><!-- Button trigger modal -->
+                        {% if order.ready_for_pickup %}
+                        <button style="background-color:green;  border: none; color: white;" type="button" class="btn btn" data-toggle="modal" data-target="#confirmModal3{{ order.id }}">
+                        
+                            Send Code
+                        </button>
+                       
+                        {% else %}
+                        <button style="background-color:rgb(87, 3, 52);  color: rgb(250, 247, 247); border: none;" type="button" class="btn btn" >
+                            Pending
+                        </button>
+                        {% endif %}</td>
+                        
+                        <td><!-- Button trigger modal -->
+                            {% if order.otp == "123456" %}
+                            <button style="background-color:rgb(152, 197, 30);  border: none; color: black;" type="button" class="btn btn" data-toggle="modal" data-target="#confirmModal3{{ order.id }}">
+                            
+                                Not Available
+                            </button>
+                           
+                            {% else %}
+                            <form action="" method="post">
+                                <input type="text" name="otp" id="">
+                                <button style="background-color:blue;  color: rgb(250, 247, 247); border: none;" type="submit" class="btn btn" >
+                                Verify
+                            </button>
+                            </form>
+                            {% endif %}</td>
+        </tr>
+   
+        <div class="modal fade" id="confirmModal{{ order.id }}" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel">Confirm Delivery</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to mark this product as picked?
+                    </div>
+                    <div class="modal-footer">
+                        <form method="post" action="{% url 'update_picked' order.id  %}">
+                            {% csrf_token %}
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" >Confirm</button>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="confirmModal2{{ order.id }}" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel">Confirm Delivery</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to mark this product as ready for pickup?
+                    </div>
+                    <div class="modal-footer">
+                        <form method="post" action="{% url 'update_ready_picked' order.id  %}">
+                            {% csrf_token %}
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" >Confirm</button>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="confirmModal3{{ order.id }}" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel">Confirm Delivery</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to send otp?
+                    </div>
+                    <div class="modal-footer">
+                        <form method="post" action="{% url 'send_otp_to_customer' order.id %}">
+                            {% csrf_token %}
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" >Confirm</button>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock%}

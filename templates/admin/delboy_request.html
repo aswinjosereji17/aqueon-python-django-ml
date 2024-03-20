@@ -1,0 +1,87 @@
+{% extends 'user_prof.html' %}
+
+
+{% block content %}
+
+<head>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get all elements with the class "show-document-link"
+        var showDocumentLinks = document.querySelectorAll(".show-document-link");
+
+        showDocumentLinks.forEach(function (link) {
+            link.addEventListener("click", function (event) {
+                event.preventDefault(); // Prevent the default link behavior
+
+                var documentUrl = this.getAttribute("data-document-url");
+                if (documentUrl) {
+                    // Open the document in a new window or tab
+                    window.open(documentUrl, "_blank");
+                }
+            });
+        });
+    });
+</script>
+</head>
+
+<h1>Sellers Request</h1></br></br>
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>Vehicle Type</th>
+            <th>Request Status</th>
+            <th>Availability</th>
+            
+            
+        </tr>
+    </thead>
+    <tbody>
+    
+        {% for d in dboy_req|dictsortreversed:"created_at" %}
+        <tr>
+            {% comment %} <td>{{ d.email }}</td>
+            <td>{{ user.userprofile.mobile }}</td>
+            <td>{{ user.sellerrequest.company }}</td>
+            <td>{{ user.sellerrequest.gstin }}</td>
+            <td>{{ user.sellerrequest.document }}</td> {% endcomment %}
+            <td>{{ d.user.email }}</td>
+            <td>{{ d.mobile }}</td>
+            <td>{{ d.vehicle_type }}</td>
+            <td>{{ d.availability }}</td>
+            <td>
+                {% if d.delboy_status == 'pending' %}
+                <form method="post" action="{% url 'approve_delivery_agent' d.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-approve">Approve</button>
+                </form>
+
+                <form method="post" action="{% url 'reject_delivery_agent' d.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-reject">Reject</button>
+                </form>
+                {% endif %}
+
+                {% if d.delboy_status == 'approved' %}
+                <div class="alert alert-success mt-3" role="alert">
+                    This delivery agent has been approved!
+                </div>
+                {% endif %}
+
+                {% if d.delboy_status == 'rejected' %}
+                <div class="alert alert-danger mt-3" role="alert">
+                    This delivery agent has been rejected!
+                </div>
+                {% endif %}
+            </td>
+
+            
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+    {% endblock%}

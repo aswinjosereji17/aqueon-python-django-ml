@@ -331,7 +331,7 @@ class AssignedDeliveryAgent(models.Model):
     ready_for_pickup=models.BooleanField(default=False)
     delivered=models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
-    otp = models.CharField(max_length=6)
+    otp = models.CharField(max_length=6,default='123456')
 
     def __str__(self):
         return f"Assigned delivery agent for {self.order}"

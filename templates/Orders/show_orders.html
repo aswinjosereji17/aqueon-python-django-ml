@@ -94,6 +94,9 @@ body {
 .step.active44:before{
     background-color: green;
 }
+.step.active55:before{
+    background-color: green;
+}
 
 .step.active5:before{
     background-color: #ddd;
@@ -257,14 +260,23 @@ p {
                 {% if assigned_agent.ready_for_pickup %}
                 <div class="step active44"> <span class="icon1"> <i class="fa fa-user"></i> </span> <span class="text"> Ready for pickup</span> </div>
                 {% else %}
-                <div class="step active4"> <span class="icon1"> <i class="fa fa-user"></i> </span> <span class="text"> Ready for pickup</span> </div>
+                <div class="step active4"> <span class="icon"> <i class="fa fa-user"></i> </span> <span class="text"> Ready for pickup</span> </div>
                 {% endif %}
             {% empty %}
-            <div class="step active4"> <span class="icon1"> <i class="fa fa-user"></i> </span> <span class="text"> Ready for pickup</span> </div>
+            <div class="step active4"> <span class="icon"> <i class="fa fa-user"></i> </span> <span class="text"> Ready for pickup</span> </div>
+            {% endfor %}
+
+                        {% for assigned_agent in order.assigneddeliveryagent_set.all %}
+                {% if assigned_agent.delivered %}
+                <div class="step active55"> <span class="icon1"> <i class="fa fa-user"></i> </span> <span class="text"> Delivered</span> </div>
+                {% else %}
+                <div class="step active5"> <span class="icon"> <i class="fa fa-user"></i> </span> <span class="text"> Delivered</span> </div>
+                {% endif %}
+            {% empty %}
+            <div class="step active5"> <span class="icon"> <i class="fa fa-user"></i> </span> <span class="text">Delivered</span> </div>
             {% endfor %}
 
                 
-                <div class="step active5"> <span class="icon"> <i class="fa fa-box"></i> </span> <span class="text">Delivered</span> </div>
 
             </div>
             <hr>

@@ -156,6 +156,7 @@ urlpatterns = [
     path('update_picked/<int:order_id>/', views.update_picked, name='update_picked'),
     path('update_ready_picked/<int:order_id>/', views.update_ready_picked, name='update_ready_picked'),
     path('send_otp_to_customer/<int:order_id>/', views.send_otp_to_customer, name='send_otp_to_customer'),
+    path('verify_order_otp/<int:order_id>/', views.verify_order_otp, name='verify_order_otp'),
     ]
 
 if settings.DEBUG:

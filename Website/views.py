@@ -3003,28 +3003,29 @@ def send_otp_to_customer(request, order_id):
         
         return redirect('del_reqs')
 
-def verify_order_otp(request):
+def verify_order_otp(request, order_id):
     if request.method == 'POST':
-        order_id = request.POST.get('order_id')
+        # order_id = request.POST.get('order_id')
         otp_entered = request.POST.get('otp')
         
         # Retrieve the order object
-        order = Order.objects.get(id=order_id)
+        order = AssignedDeliveryAgent.objects.get(id=order_id)
         
         # Check if the entered OTP matches the OTP stored in the order and it's not null
         if order.otp == otp_entered and order.otp != 'Null':
             # Update the order to mark it as verified
-            order.verified = True
-            order.order_status = order.OrderStatusChoices.DELIVERED
+            order.otp=000000
+            order.delivered = True
+            # order.order_status = order.OrderStatusChoices.DELIVERED
             order.save()
             
             # Redirect to a success page or display a success message
             messages.success(request, 'Order verified successfully.')
-            return redirect('customer_order_view')  # Change 'success_page' to the name of your success page URL
+            return redirect('del_reqs')  # Change 'success_page' to the name of your success page URL
         else:
             # Display an error message if the OTP is incorrect or null
             messages.error(request, 'Invalid OTP. Please try again.')
-            return redirect('customer_order_view')
+            return redirect('del_reqs')
 
 @require_POST
 def update_tank(request, notification_id):

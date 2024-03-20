@@ -72,9 +72,16 @@
                             
                                 Not Available
                             </button>
+                            {% elif order.otp == "0" %}
+                            <button style="background-color:green;  border: none; color: white;" type="button" class="btn btn" data-toggle="modal" data-target="#confirmModal3{{ order.id }}">
+                            
+                                Successful
+                            </button>
                            
                             {% else %}
-                            <form action="" method="post">
+                            <form action="{% url 'verify_order_otp' order.id  %}" method="post">
+                            {% csrf_token %}
+
                                 <input type="text" name="otp" id="">
                                 <button style="background-color:blue;  color: rgb(250, 247, 247); border: none;" type="submit" class="btn btn" >
                                 Verify

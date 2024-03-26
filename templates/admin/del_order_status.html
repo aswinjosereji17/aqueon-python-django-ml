@@ -6,8 +6,8 @@
     <thead>
         <tr>
             <th>Order ID</th>
-            <th>Estimated Delivery Time</th>
-            <th>Shipping By</th>
+            <!-- <th>Estimated Delivery Time</th> -->
+            <!-- <th>Shipping By</th> -->
             <th>Allot Delivery Boy</th>
             
            
@@ -19,14 +19,23 @@
        
         <tr>
             <td><b>{{ order.id }}</b></td>
-            <td><form action="">
-                <input type="date" name="date" id="">
+            <!-- <td><form method="post" action="{% url 'set_date' order.id %}">
+                {% csrf_token %}
+                <input type="date" name="date_allot" id="">
                 <button type="submit">Set</button>
-            </form></td>
-            <td></td>
-            <td><form action="{% url 'allot_del_boy' order.id %}">
-                <button type="submit">Allot Delivery Boy</button>
-            </form></td>
+            </form></td> -->
+            <!-- <td></td> -->
+            {% if order.assigneddeliveryagent_set.all %}
+            <!-- If a delivery agent is already assigned -->
+            <td>Delivery Agent allotted</td>
+        {% else %}
+            <!-- If a delivery agent is not assigned, display the allot button -->
+            <td>
+                <form action="{% url 'allot_del_boy' order.id %}">
+                    <button type="submit">Allot Delivery Boy</button>
+                </form>
+            </td>
+        {% endif %}
             
         </tr>
    

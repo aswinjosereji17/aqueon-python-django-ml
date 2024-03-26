@@ -41,7 +41,7 @@ margin-top: 50px ;
 
 </style>
 <div class="row mb-3">
-    <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Address1</label>
+    <!-- <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Address1</label> -->
 	<div  class="row mt-3 mx-3" style="background: -webkit-linear-gradient(left, #3931af, #00c6ff);; margin-top:25px ;">
 		<div class="col-md-3">
 		  <div style="margin-top: 50px; margin-left: 10px;" class="text-center">
@@ -57,62 +57,226 @@ margin-top: 50px ;
 	  
 	  
 		</div>
+
+
+
+
+
+
+
 		<div class="col-md-9 justify-content-center">
 		  <div style="margin: 10px 0px;" class="card card-custom pb-4">
 			<div class="card-body mt-0 mx-5">
 			  <div class="text-center mb-3 pb-2 mt-3">
 				<h4 style="color: #495057 ;">Delivery Details</h4>
 			  </div>
-	  
-			  <form class="mb-0">
-	  
+			  <script>
+               
+                function validateFirstName() {
+    const firstNameInput = document.getElementById('fullName');
+    const firstName = firstNameInput.value.trim();
+    const errorElement = document.getElementById('firstNameError');
+
+    // Regular expression to check if the first name starts with a letter and does not contain special characters
+    const regex = /^[A-Za-z][A-Za-z\s]*$/;
+
+    if (regex.test(firstName)) {
+      errorElement.classList.add('d-none');
+      document.getElementById('submitBtn').removeAttribute('disabled');
+
+    } else {
+      errorElement.classList.remove('d-none');
+      document.getElementById('submitBtn').setAttribute('disabled', 'true');
+
+    }
+  }
+
+  function validateDistrict() {
+    const firstNameInput = document.getElementById('district');
+    const firstName = firstNameInput.value.trim();
+    const errorElement = document.getElementById('districtError');
+
+    // Regular expression to check if the first name starts with a letter and does not contain special characters
+    const regex = /^[A-Za-z][A-Za-z\s]*$/;
+
+    if (regex.test(firstName)) {
+      errorElement.classList.add('d-none');
+      document.getElementById('submitBtn').removeAttribute('disabled');
+
+    } else {
+      errorElement.classList.remove('d-none');
+      document.getElementById('submitBtn').setAttribute('disabled', 'true');
+
+    }
+  }
+
+
+
+  function validateLastName() {
+    const lastNameInput = document.getElementById('lastName');
+    const lastName = lastNameInput.value.trim();
+    const errorElement = document.getElementById('lastNameError');
+
+    // Regular expression to check if the last name starts with a letter and does not contain special characters
+    const regex = /^[A-Za-z][A-Za-z\s]*$/;
+
+    if (regex.test(lastName)) {
+      errorElement.classList.add('d-none');
+      document.getElementById('submitBtn').removeAttribute('disabled');
+
+    } else {
+      errorElement.classList.remove('d-none');
+      document.getElementById('submitBtn').setAttribute('disabled', 'true');
+
+    }
+  }
+  function validateCity() {
+    const lastNameInput = document.getElementById('city');
+    const lastName = lastNameInput.value.trim();
+    const errorElement = document.getElementById('cityError');
+
+    // Regular expression to check if the last name starts with a letter and does not contain special characters
+    const regex = /^[A-Za-z][A-Za-z\s]*$/;
+
+    if (regex.test(lastName)) {
+      errorElement.classList.add('d-none');
+      document.getElementById('submitBtn').removeAttribute('disabled');
+
+    } else {
+      errorElement.classList.remove('d-none');
+      document.getElementById('submitBtn').setAttribute('disabled', 'true');
+
+    }
+  }
+  function validateHN() {
+    const lastNameInput = document.getElementById('hn');
+    const lastName = lastNameInput.value.trim();
+    const errorElement = document.getElementById('hnError');
+
+    // Regular expression to check if the last name starts with a letter and does not contain special characters
+    const regex = /^[A-Za-z][A-Za-z\s]*$/;
+
+    if (regex.test(lastName)) {
+      errorElement.classList.add('d-none');
+      document.getElementById('submitBtn').removeAttribute('disabled');
+
+    } else {
+      errorElement.classList.remove('d-none');
+      document.getElementById('submitBtn').setAttribute('disabled', 'true');
+
+    }
+  }
+
+  function validateZipcode() {
+    const firstNameInput = document.getElementById('zip');
+    const firstName = firstNameInput.value.trim();
+    const errorElement = document.getElementById('zipError');
+
+    // Regular expression to check if the first name starts with a letter and does not contain special characters
+    const regex = /^\d{6}$/;
+
+    if (regex.test(firstName)) {
+      errorElement.classList.add('d-none');
+      document.getElementById('submitBtn').removeAttribute('disabled');
+
+    } else {
+      errorElement.classList.remove('d-none');
+      document.getElementById('submitBtn').setAttribute('disabled', 'true');
+
+    }
+  }
+
+  function validateMobile() {
+    const firstNameInput = document.getElementById('mobile');
+    const firstName = firstNameInput.value.trim();
+    const errorElement = document.getElementById('mobileError');
+
+    // Regular expression to check if the first name starts with a letter and does not contain special characters
+    const regex = /^(?!([0-9])\1+$)(?!0{5,})[6-9][0-9]{9}$/;
+
+    if (regex.test(firstName)) {
+      errorElement.classList.add('d-none');
+      document.getElementById('submitBtn').removeAttribute('disabled');
+
+    } else {
+      errorElement.classList.remove('d-none');
+      document.getElementById('submitBtn').setAttribute('disabled', 'true');
+
+    }
+  }
+
+              </script>
+
+
+			  <form class="mb-0" id="userAddressForm" method="post" action="{% url 'delivery_addr' %}" enctype="multipart/form-data" onsubmit="return validateForm()">
+				{% csrf_token %}
 				<div class="row mb-4">
 				  <div class="col">
 					<div class="form-outline">
-					  <input type="text" id="form9Example1" class="form-control input-custom" value="{{ user_add.user.first_name }}" readonly />
-					  <label class="form-label" for="form9Example1">First name</label>
+						<input name="first_name" type="text" class="form-control" id="fullName" value="{{ user_add.user.first_name }}"
+						oninput="validateFirstName()">
+					  <label class="form-label" for="form9Example1">First name</label><br>
+					  <small id="firstNameError" class="text-danger d-none">First name must start with a letter and not contain special characters.</small>
 					</div>
 				  </div>
 				  <div class="col">
 					<div class="form-outline">
-					  <input type="text" id="form9Example2" class="form-control input-custom" value="{{ user_add.user.last_name }}"" readonly />
-					  <label class="form-label" for="form9Example2">Last name</label>
+						<input name="last_name" type="text" class="form-control" id="lastName" value="{{ user_add.user.last_name }}"
+						oninput="validateLastName()">
+						<label class="form-label" for="form9Example1">Last name</label><br>
+
+					  <small id="lastNameError" class="text-danger d-none">Last name must start with a letter and not contain special characters.</small>
 					</div>
 				  </div>
 				</div>
 				<div class="row mb-4">
 				  <div class="col">
 					<div class="form-outline">
-					  <input type="text" id="form9Example3" class="form-control input-custom" value="{{ user_add.district }}" readonly />
-					  <label class="form-label" for="form9Example3">District</label>
+						<input name="district" type="text" class="form-control" id="district" value="{{ user_add.district }}"
+						oninput="validateDistrict()">
+					  <label class="form-label" for="form9Example3">District</label><br>
+					  <small id="districtError" class="text-danger d-none">First name must start with a letter and not contain special characters.</small>
+
 					</div>
 				  </div>
 				  <div class="col">
 					<div class="form-outline">
-					  <input type="text" id="form9Example4" class="form-control input-custom" value="{{ user_add.pincode }}" readonly />
-					  <label class="form-label" for="form9Example4">Zip</label>
+						<input name="zip" type="text" class="form-control" id="zip" value="{{ user_add.pincode }}"
+						oninput="validateZipcode()">
+						<label class="form-label" for="form9Example4">Pincode</label><br>
+					  <small id="zipError" class="text-danger d-none">First name must start with a letter and not contain special characters.</small>
+
 					</div>
 				  </div>
 				</div>
 				<div class="row mb-4">
 					<div class="col">
 					  <div class="form-outline">
-						<input type="text" id="form9Example3" class="form-control input-custom" value="{{ user_add.city }}" readonly />
-						<label class="form-label" for="form9Example3">City</label>
+						<input name="city" type="text" class="form-control" id="city" value="{{ user_add.city }}"
+						oninput="validateCity()">
+						<label class="form-label" for="form9Example4">Town</label><br>
+					  <small id="cityError" class="text-danger d-none">First name must start with a letter and not contain special characters.</small>
+
 					  </div>
 					</div>
 					<div class="col">
 					  <div class="form-outline">
-						<input type="text" id="form9Example4" class="form-control input-custom" value="{{ user_add.house_name }}" readonly />
-						<label class="form-label" for="form9Example4">House Name</label>
+						<input name="hn" type="text" class="form-control" id="hn" value="{{ user_add.house_name }}"
+						oninput="validateHN()">
+						<label class="form-label" for="form9Example4">House Name</label><br>
+					  <small id="hnError" class="text-danger d-none">First name must start with a letter and not contain special characters.</small>
+
 					  </div>
 					</div>
 				  </div>
 				<div class="row mb-4">
 				  <div class="col">
 					<div class="form-outline">
-					  <input type="text" id="form9Example6" class="form-control input-custom" value="{{ user_add.mobile_number }}" readonly />
-					  <label class="form-label" for="form9Example6">Mobile No.</label>
+						<input name="mobile" type="text" class="form-control" id="mobile" value="{{ user_add.mobile_number }}"
+						oninput="validateMobile()">
+						<label class="form-label" for="form9Example4">Mobile No.</label><br>
+					  <small id="mobileError" class="text-danger d-none">First name must start with a letter and not contain special characters.</small>
+
 					</div>
 				  </div>
 				  <div class="col">
@@ -122,14 +286,93 @@ margin-top: 50px ;
 					</div>
 				  </div>
 				</div>
-	  
+				<button style="background-color: #FFD333; border:none; color: black; border-radius: 5px; height: 30px;" id="submitBtn" type="submit" class="" disabled><b>Save Changes</b></button>
+				
+			</form>
+
+			<script>
+
+				
+document.addEventListener("DOMContentLoaded", function() {
+        // Call the checkFormCompleteness function after the DOM has loaded
+        checkFormCompleteness();
+    });
+
+
+				document.getElementById("submitBtn").addEventListener("click", function () {
+					var form = document.getElementById("userAddressForm");
+					var formData = new FormData(form);
+					
+					// Prevent default form submission
+					event.preventDefault();
+			
+					// Send AJAX request
+					$.ajax({
+						type: form.method,
+						url: form.action,
+						data: formData,
+						processData: false,
+						contentType: false,
+						success: function (response) {
+							// Handle successful response
+							console.log(response);
+							
+							// After successful submission, check form completeness
+							checkFormCompleteness();
+							window.location.reload();
+						},
+						error: function (xhr, status, error) {
+							// Handle errors
+							console.error(xhr.responseText);
+						}
+					});
+				});
+			
+				function checkFormCompleteness() {
+					var firstName = "{{ user_add.user.first_name }}";
+					var lastName = "{{ user_add.user.last_name }}";
+					var district = "{{ user_add.district }}";
+					var email = "{{ user_add.user.email }}";
+					var houseName = "{{ user_add.house_name }}";
+					var mobileNumber = "{{ user_add.mobile_number }}";
+					var pincode = "{{ user_add.pincode }}";
+					var city = "{{ user_add.city }}";
+					// var payBtn = document.getElementById("pay-btn");
+			
+					if (firstName === "" || lastName === "" || district === "" || email === "" || houseName === "" || mobileNumber === "" || pincode === "" || city === "") {
+						// document.getElementById("address-btn").style.display = "block";
+						$('#pay-btn').addClass('error'); // Add error class for styling
+						$('#pay-btn').removeClass('error1'); // Remove error class
+
+                        $('#pay-btn').prop('disabled', true);
+					} else {
+						// document.getElementById("address-btn").style.display = "none";
+						$('#pay-btn').removeClass('error'); // Remove error class
+						$('#pay-btn').addClass('error1');
+
+                        $('#pay-btn').prop('disabled', false);
+					}
+				}
+			</script>
+			
+
+			<style>
+				.error{
+					background-color: red;
+					color: white;
+				}
+				.error1{
+					background-color: blue ; height: 30px; border-radius: 5px; border: none; color: white;
+				}
+			</style>
+			  
 				<div class="float-end ">
 				  <!-- Submit button -->
-				  <button id="pay-btn" type="submit" class="btn btn-primary btn-rounded"
-					style="background-color: #0062CC ;">Place order</button>
+				  <!-- Display button to show complete address -->
+				  <!-- Submit button -->
+				  <button id="pay-btn" class="" style="">Place order</button>
 				</div>
 	  
-			  </form>
 			</div>
 		  </div>
 		</div>

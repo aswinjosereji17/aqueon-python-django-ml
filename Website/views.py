@@ -255,6 +255,23 @@ def del_reqs(request):
 
 
 
+def delivery_addr(request):
+    user_profile = UserProfile.objects.get(user=request.user)
+    user = User.objects.get(username=request.user)
+    user_addr= UserAddress.objects.get(user=request.user)
+    if request.method == 'POST':
+        user.first_name=request.POST.get('first_name')
+        user.last_name=request.POST.get('last_name')
+        user_addr.mobile_number=request.POST.get('mobile')
+        user_addr.district=request.POST.get('district')
+        user_addr.pincode=request.POST.get('zip')
+        user_addr.city=request.POST.get('city')
+        user_addr.house_name=request.POST.get('hn')
+        user.save()
+        user_addr.save()
+        messages.info(request, f'Details Saved')
+        return redirect('homepage')
+
 from django.shortcuts import render
 from .models import UserProfile,Product, ProductSubcategory, UserAddress, Product
 from django.shortcuts import render
@@ -2606,7 +2623,7 @@ def haversine(lat1, lon1, lat2, lon2):
     dlat = lat2 - lat1
     dlon = lon2 - lon1
     a = sin(dlat / 2) * 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) * 2
-    print(a)
+    # print(a)
     c = 2 * atan2(sqrt(abs(a)), sqrt(1 - abs(a)))
     distance = 6371.0 * c  # Radius of Earth in kilometers
 
@@ -2629,6 +2646,7 @@ def del_order_status(request):
     return render(request, 'admin/del_order_status.html',{'show_orders': show_orders})
 
 from . models import AssignedDeliveryAgent
+from datetime import datetime, timedelta
 def allot_del_boy(request, order_id):
     agents = UserProfile.objects.filter(delboy_status='approved')
     order_instance = Order.objects.filter(id=order_id).first()
@@ -2656,8 +2674,13 @@ def allot_del_boy(request, order_id):
             if nearest_user_agent_distance:
                 nearest_delivery_agent = nearest_user_agent_distance.agent
             
+            current_date = datetime.today().date()
+
+            # Add one day to the current date
+            delivery_date = current_date + timedelta(days=1)
+
             AssignedDeliveryAgent.objects.create(
-            user=request.user, order=order_instance, deliveryagent=nearest_delivery_agent)
+            user=request.user, order=order_instance, deliveryagent=nearest_delivery_agent,delivery_date_alloted=delivery_date )
             return redirect('del_order_status')
 
         
@@ -3002,6 +3025,20 @@ def send_otp_to_customer(request, order_id):
         send_otp_via_sms(user_profile.mobile, otp)
         
         return redirect('del_reqs')
+
+def set_date(request, order_id):
+    if request.method == 'POST':
+        order_obj=Order.objects.get(pk=order_id)
+        order = AssignedDeliveryAgent.objects.get(order=order_obj)
+        date_alloted = request.POST.get('date_allot')
+        print(date_alloted)
+
+        order.delivery_date_alloted = date_alloted
+        order.save()
+        
+        # Send OTP via SMS
+        
+        return redirect('del_order_status')
 
 def verify_order_otp(request, order_id):
     if request.method == 'POST':

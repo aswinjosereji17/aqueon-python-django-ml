@@ -89,11 +89,11 @@ class UserAddress(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     address1 = models.CharField(max_length=255)
     address2 = models.CharField(max_length=255)
-    mobile_number = models.CharField(max_length=15, null=True)  # Allow null values for mobile number
-    pincode = models.CharField(max_length=10, null=True)  # Allow null values for pincode
-    district = models.CharField(max_length=100, null=True)  # Allow null values for district
-    city = models.CharField(max_length=100, null=True)  # Allow null values for city
-    house_name = models.CharField(max_length=255, null=True)  # Allow null values for house name
+    mobile_number = models.CharField(max_length=15, null=True, default="")  # Allow null values for mobile number
+    pincode = models.CharField(max_length=10, null=True, default="")  # Allow null values for pincode
+    district = models.CharField(max_length=100, null=True, default="")  # Allow null values for district
+    city = models.CharField(max_length=100, null=True, default="")  # Allow null values for city
+    house_name = models.CharField(max_length=255, null=True, default="")  # Allow null values for house name
 
     def __str__(self):
         return f'User Address for {self.user.email}'
@@ -330,6 +330,7 @@ class AssignedDeliveryAgent(models.Model):
     status = models.CharField(max_length=2, choices=SHIPPED_CHOICES, default=ORDER_REQUESTED)
     ready_for_pickup=models.BooleanField(default=False)
     delivered=models.BooleanField(default=False)
+    delivery_date_alloted = models.DateField(null=True, blank=True)
     created_at = models.DateField(auto_now_add=True)
     otp = models.CharField(max_length=6,default='123456')
 
@@ -422,6 +423,11 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
 
+from django.db import models
+from django.utils import timezone
+from datetime import timedelta
+from django.contrib.auth.models import User
+
 class Subscription(models.Model):
     class PaymentStatusChoices(models.TextChoices):
         PENDING = 'pending', 'Pending'
@@ -431,15 +437,16 @@ class Subscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     order_date = models.DateTimeField(auto_now_add=True)
-    payment_date = models.DateTimeField(null=True, blank=True)
-    expiration_date = models.DateTimeField(null=True, blank=True)
+    payment_date = models.DateField(null=True, blank=True)  # Changed to DateField
+    expiration_date = models.DateField(null=True, blank=True)  # Changed to DateField
     razorpay_order_id = models.CharField(max_length=255, default=None)
     payment_status = models.CharField(max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
     status = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if self.payment_status == self.PaymentStatusChoices.SUCCESSFUL:
-            self.payment_date = timezone.now()
+            # Automatically set payment_date to the current date
+            self.payment_date = timezone.now().date()
             # Set expiration date to 28 days from the payment date
             self.expiration_date = self.payment_date + timedelta(days=1)
             
@@ -452,8 +459,8 @@ class Subscription(models.Model):
         # Explicitly set status to False if both expiration_date and payment_date are None
         if self.expiration_date is None and self.payment_date is None:
             self.status = False
-        elif self.expiration_date and timezone.now() > self.expiration_date:
-            # If the current time is past the expiration date, set status to False
+        elif self.expiration_date and timezone.now().date() > self.expiration_date:
+            # If the current date is past the expiration date, set status to False
             self.status = False
         else:
             # Otherwise, the subscription is considered active

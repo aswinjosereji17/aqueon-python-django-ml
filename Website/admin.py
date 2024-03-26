@@ -23,13 +23,16 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('user', 'total_price','order_date','payment_date','expiration_date','razorpay_order_id','payment_status','status') 
 admin.site.register(Subscription,SubscriptionAdmin)
 
+class AssignedDeliveryAgentAdmin(admin.ModelAdmin):
+    list_display = ('user','order','delivery_date_alloted') 
+admin.site.register(AssignedDeliveryAgent,AssignedDeliveryAgentAdmin)
+
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'mobile', 'profile_image','hub_status','delboy_status','created_at','latitude','longitude')  
 
 admin.site.register(UserProfile, UserProfileAdmin)
 
-admin.site.register(AssignedDeliveryAgent)
 admin.site.register(UserAgentDistance)
 
 

@@ -1,6 +1,8 @@
 # context_processors.py
 
-from Website.models import AddCart, CartItems, Wishlist
+from Website.models import AddCart, CartItems, Wishlist,Subscription
+
+from django.utils import timezone
 
 def user_data(request):
     data = {}
@@ -14,6 +16,12 @@ def user_data(request):
             cart_item_count = cart_items.count()
             user_id = request.user.id
             wish_count = Wishlist.objects.filter(user_id=user_id).count()
+            subscriptions = Subscription.objects.filter(user=user)
+            for subscription in subscriptions:
+                if subscription.expiration_date and subscription.expiration_date < timezone.now().date():
+                    subscription.status = False
+                    subscription.save()
+
         except AddCart.DoesNotExist:
             cart = None
             cart_items = []
@@ -31,3 +39,5 @@ def user_data(request):
     data['wish_count'] = wish_count
 
     return data
+
+

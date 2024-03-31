@@ -188,6 +188,7 @@ class Product(models.Model):
     price = models.FloatField(null=False)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)  # Use Django's default user model
     stock_quantity = models.PositiveIntegerField(default=0) 
+    imported=models.BooleanField(default=False)  
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -274,7 +275,9 @@ class Order(models.Model):
         SUCCESSFUL = 'successful', 'Successful'
         FAILED = 'failed', 'Failed'
 
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    serial_number = models.IntegerField(unique=True, null=True, blank=True, editable=False)
     products = models.ManyToManyField(Product)  # Assuming you have a Product model
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     order_date = models.DateTimeField(auto_now_add=True)
@@ -291,6 +294,15 @@ class Order(models.Model):
         all_received = all(notification.shipped == 'SU' for notification in self.ordernotification_seller_set.all())
         self.all_received = all_received
         self.save()
+    
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Check if it's a new instance
+            last_order = Order.objects.order_by('-id').first()
+            if last_order:
+                self.serial_number = last_order.pk + 100
+            else:
+                self.serial_number = 1
+        super().save(*args, **kwargs)
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -443,30 +455,30 @@ class Subscription(models.Model):
     payment_status = models.CharField(max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
     status = models.BooleanField(default=False)
 
-    def save(self, *args, **kwargs):
-        if self.payment_status == self.PaymentStatusChoices.SUCCESSFUL:
-            # Automatically set payment_date to the current date
-            self.payment_date = timezone.now().date()
-            # Set expiration date to 28 days from the payment date
-            self.expiration_date = self.payment_date + timedelta(days=1)
+    # def save(self, *args, **kwargs):
+    #     if self.payment_status == self.PaymentStatusChoices.SUCCESSFUL:
+    #         # Automatically set payment_date to the current date
+    #         self.payment_date = timezone.now().date()
+    #         # Set expiration date to 28 days from the payment date
+    #         self.expiration_date = self.payment_date + timedelta(days=1)
             
-        elif self.payment_status == self.PaymentStatusChoices.FAILED or self.payment_status == self.PaymentStatusChoices.PENDING:
-            # If payment failed or is pending, reset payment_date and expiration_date
-            self.payment_date = None
-            self.expiration_date = None
-            self.status = False
+    #     elif self.payment_status == self.PaymentStatusChoices.FAILED or self.payment_status == self.PaymentStatusChoices.PENDING:
+    #         # If payment failed or is pending, reset payment_date and expiration_date
+    #         self.payment_date = None
+    #         self.expiration_date = None
+    #         self.status = False
 
-        # Explicitly set status to False if both expiration_date and payment_date are None
-        if self.expiration_date is None and self.payment_date is None:
-            self.status = False
-        elif self.expiration_date and timezone.now().date() > self.expiration_date:
-            # If the current date is past the expiration date, set status to False
-            self.status = False
-        else:
-            # Otherwise, the subscription is considered active
-            self.status = True
+    #     # Explicitly set status to False if both expiration_date and payment_date are None
+    #     if self.expiration_date is None and self.payment_date is None:
+    #         self.status = False
+    #     elif self.expiration_date and timezone.now().date() > self.expiration_date:
+    #         # If the current date is past the expiration date, set status to False
+    #         self.status = False
+    #     else:
+    #         # Otherwise, the subscription is considered active
+    #         self.status = True
 
-        super().save(*args, **kwargs)
+    #     super().save(*args, **kwargs)
 
     def __str__(self):
         return self.user.username

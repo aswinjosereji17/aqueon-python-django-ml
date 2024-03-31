@@ -3,156 +3,137 @@
 
 {% block content %}
 
+
+
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
-
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif
+    .section-title {
+    margin-bottom: 38px
 }
 
-
-.card {
-    max-width: 250px;
-    height: 380px;
-    margin-top: 50px;
-    position: relative;
-    padding: 20px;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px
+.img-fluid{
+    height:100px;
 }
 
-.h-1 {
-    text-transform: uppercase
+.section {
+    padding-top: 40px;
+    padding-bottom: 1400px
 }
 
-.ribon {
+.rounded-lg {
+    border-radius: 10px
+}
+
+.shadow,
+.subscription-wrapper {
+    box-shadow: 0px 15px 39px 0px rgba(8, 18, 109, 0.1) !important
+}
+
+.hover-bg-primary::before {
+    content: '';
     position: absolute;
-    left: 50%;
     top: 0;
-    transform: translate(-50%, -50%);
-    width: 80px;
-    height: 80px;
-    background-color: #2b98f0;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(134deg, #00a4db 0%, #00269e 100%);
+    z-index: -1;
+    opacity: 0
 }
 
-.ribon .fas.fa-spray-can,
-.ribon .fas.fa-broom,
-.ribon .fas.fa-shower,
-.ribon .fas.fa-infinity {
-    font-size: 30px;
-    color: white
+.hover-bg-primary:hover {
+    background: transparent
 }
 
-.card .price {
-    color: #2b98f0;
-    font-size: 30px
+.hover-bg-primary:hover:before {
+    opacity: 1
 }
 
-.card ul {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center
+.pricing-table:before,
+.hover-bg-primary::before,
+.card-border-bottom:after {
+    transition: ease 0.3s
 }
 
-.card ul li {
-    font-size: 12px;
-    margin-bottom: 8px
+.hover-bg-primary:hover * {
+    color: #fff !important
 }
 
-.card ul .fa.fa-check {
-    font-size: 8px;
-    color: gold
+.hover-bg-primary:hover * {
+    color: #fff !important
 }
 
-.card:hover {
-    background-color: gold
+.btnn-outline-primary {
+    color: #007ac7;
+    border: 2px solid #00e0d8
 }
 
-.card:hover .fa.fa-check {
-    color: #2b98f0
+.btnn {
+    font-size: 16px;
+    font-family: "Poppins", sans-serif;
+    text-transform: capitalize;
+    padding: 14px 45px;
+    border-radius: 45px;
+    font-weight: 500;
+    border: 1px solid;
+    position: relative;
+    z-index: 1;
+    transition: .3s ease-in;
+    overflow: hidden
 }
 
-.card .btn {
-    width: 200px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #2b98f0;
-    border: none;
-    border-radius: 0px;
-    box-shadow: none
+.hover-bg-primary .btnn {
+    transition: unset
 }
 
-@media (max-width:500px) {
-    .card {
-        max-width: 100%
-    }
+.btnn-outline-primary:hover {
+    color: #fff !important;
+    background: none;
+    border: 2px solid #00e0d8
 }
 </style>
 
-<div id="modalContainer"></div>
 
-<div class="container">
-    <div>
-        <p class="h2 text-center mb-5">Choose Your Perfect Plans</p>
-    </div>
-    <div style="margin-left: 200px; gap: 40px;" class="row mt-3">
-     
-        {% for sub in subscription %}
-        <div class="col-lg-3 col-md-6 mt-lg-0 mt-5">
-            <div class="card d-flex align-items-center justify-content-center">
-                <div class="ribon"> <span class="{{sub.sub_image}}"></span> </div>
-                <p class="h-1 pt-5">{{sub.sub_name}}</p>
-                <span class="price"> ₹.<span class="number">{{sub.sub_amount}}</span> </span>
-                <ul class="mb-5 list-unstyled text-muted">
-                    <li><span class="fa fa-check me-2"></span>{{sub.sub_offer1}}</li>
-                    <li><span class="fa fa-check me-2"></span>{{sub.sub_offer2}}</li>
-                    <li><span class="fa fa-check me-2"></span>{{sub.sub_offer3}} </li>
-                </ul>
-                {% if is_subscribed %}
-                <div style="background-color: green; color: white;" class="btn btn"> <a> Subscribed</a> </div>
+<section class="section pb-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2 class="section-title">Exclusive features</h2>
+            </div>
+            <div class="col-lg-4 col-sm-6 mb-lg- mb-4">
+                <div class="hover-bg-primary text-center position-relative px-4 py-5 rounded-lg shadow"> <img src="https://i.imgur.com/zyCBebp.png" class="img-fluid" alt="feature-image">
+                    <h5 class="pt-5 pb-3 text-capitalize card-title">No Setup</h5>
+                    <p class="mb-4">For what reason would it be advisable for me to think about business content? That might be little bit risky to have crew member like them.</p> 
+                    <!-- <a class="btnn btnn-outline-primary" href="#" data-abc="true">read more</a> -->
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 mb-lg- mb-4">
+                <div class="hover-bg-primary text-center position-relative px-4 py-5 rounded-lg shadow"> <img src="https://i.imgur.com/zyCBebp.png" class="img-fluid" alt="feature-image">
+                    <h5 class="pt-5 pb-3 text-capitalize card-title">free trail</h5>
+                    <p class="mb-4">For what reason would it be advisable for me to think about business content? That might be little bit risky to have crew member like them.</p> 
+                    
 
-                {% else %}
-                <div class="btn btn-primary"> <a href="{% url 'sub_pay' %}?amount={{sub.sub_amount}}">Subscribe Now</a> </div>
+                        {% if is_subscribed %}
+                        <a style="background-color: green; color: white;" class="btnn btnn-outline-primary" >
+                        Subscribed
+                        </a>
+                        {% else %}
+                        <a class="btnn btnn-outline-primary" href="{% url 'sub_pay' %}?amount=300">Subscribe Now</a>
+                        {% endif %}
 
-                {% endif %}
-
-                {% if a < latest_subscription.expiration_date %}
-
-                <h1>nooo</h1>
-
-                {% else %}
-
-                <h1>helloooooo</h1>
-
-                {% endif %}
-
-                <!-- {% for user_sub in subscriptionn %}
-
-                {% if user_sub.status %}
-                <div style="background-color: green; color: white;" class="btn btn"> <a> Subscribed</a> </div>
-                {% else %}
-                <div class="btn btn-primary"> <a href="{% url 'sub_pay' %}?amount={{sub.sub_amount}}">Subscribe Now</a> </div>
-                {% endif %}
-                {% empty %}
-                <div class="btn btn-primary"> <a href="{% url 'sub_pay' %}?amount={{sub.sub_amount}}">Subscribe Now</a> </div>
-
-
-                {% endfor %} -->
-
+                    
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 mb-lg- mb-4">
+                <div class="hover-bg-primary text-center position-relative px-4 py-5 rounded-lg shadow"> <img src="https://i.imgur.com/zyCBebp.png" class="img-fluid" alt="feature-image">
+                    <h5 class="pt-5 pb-3 text-capitalize card-title">optimized data</h5>
+                    <p class="mb-4">For what reason would it be advisable for me to think about business content? That might be little bit risky to have crew member like them.</p>
+                     <!-- <a class="btnn btnn-outline-primary" href="#" data-abc="true">read more</a> -->
+                </div>
             </div>
         </div>
-        {% endfor %}
-     
     </div>
-</div>
+</section>
+<!--  -->
 
 {% endblock%}

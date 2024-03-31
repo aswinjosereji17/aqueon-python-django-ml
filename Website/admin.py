@@ -58,7 +58,7 @@ admin.site.register(ProductCategory, ProductCategoryAdmin)
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('prod_name','sub_categ_id','price','user_id','stock_quantity','created_at')  # Add other fields here
+    list_display = ('prod_name','sub_categ_id','price','user_id','stock_quantity','imported','created_at')  # Add other fields here
 
 admin.site.register(Product, ProductAdmin)
 
@@ -100,7 +100,7 @@ class OrderItemInline(admin.TabularInline):
     extra = 1  # Number of empty forms to show for adding related OrderItems
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['user', 'total_price', 'order_date', 'razorpay_order_id', 'payment_status','all_received']
+    list_display = ['id','user','serial_number', 'total_price', 'order_date', 'razorpay_order_id', 'payment_status','all_received']
     inlines = [OrderItemInline]
 
 class OrderItemAdmin(admin.ModelAdmin):

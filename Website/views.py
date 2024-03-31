@@ -21,13 +21,14 @@ from django.db.models import Sum
 def index(request):
     homeimg = HomeSpecialOffer.objects.all()  
   
-    recent_products = Product.objects.all().order_by('-created_at')[:12]
+    recent_products = Product.objects.filter(imported=False).order_by('-created_at')[:12]
+
     product_ratings = []
 
     products_with_sentiment_sum = Product.objects.annotate(sentiment_sum=Avg('review__sentiment_score')).order_by('-sentiment_sum')[:6]
 
     for product in recent_products:
-        avg_rating = Review.objects.filter(prod=product).aggregate(Avg('rating'))['rating__avg'] or 0
+        avg_rating = Review.objects.filter(prod=product, prod__imported=False).aggregate(Avg('rating'))['rating__avg'] or 0
         print(avg_rating)
         product_ratings.append({'product': product, 'avg_rating': avg_rating})
 
@@ -260,15 +261,20 @@ def delivery_addr(request):
     user = User.objects.get(username=request.user)
     user_addr= UserAddress.objects.get(user=request.user)
     if request.method == 'POST':
+        zipcode=request.POST.get('zip')
         user.first_name=request.POST.get('first_name')
         user.last_name=request.POST.get('last_name')
         user_addr.mobile_number=request.POST.get('mobile')
         user_addr.district=request.POST.get('district')
-        user_addr.pincode=request.POST.get('zip')
+        user_addr.pincode=zipcode
+        latitude_zip, longitude_zip = get_lat_long(zipcode)
         user_addr.city=request.POST.get('city')
         user_addr.house_name=request.POST.get('hn')
+        user_profile.latitude = latitude_zip
+        user_profile.longitude = longitude_zip
         user.save()
         user_addr.save()
+        user_profile.save()
         messages.info(request, f'Details Saved')
         return redirect('homepage')
 
@@ -552,6 +558,90 @@ def add_product(request):
         return redirect('product_list')  # Redirect to a product list view
     
     return render(request, 'product\save_product.html', context)
+
+
+@login_required
+@never_cache
+def add_imported_subs(request):
+    users = User.objects.all()
+    # seller_requests = SellerRequest.objects.all()
+    # fish=Fish.objects.all()
+    # try:
+    #     seller_request = SellerRequest.objects.get(user=request.user)
+    # except SellerRequest.DoesNotExist:
+    #     seller_request = None
+    
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        user_profile = None
+
+    try:
+        user_addr = UserAddress.objects.get(user=request.user)
+    except UserAddress.DoesNotExist:
+        user_addr = None
+    subcategories = ProductSubcategory.objects.all()
+
+    context = {
+        'users': users,
+        'user_profile': user_profile,
+        'seller_request': seller_request,
+        'user_addr' : user_addr,
+        # 'seller_requests' : seller_requests,
+        'subcategories': subcategories,
+        # 'fish' :fish,
+    }
+
+    if request.method == 'POST':
+        product_name = request.POST['product_name']
+        # fish = request.POST['fish']
+        subcategory_id = request.POST['subcategory']
+        price = request.POST['price']
+        quantity=request.POST['quantity']
+        description = request.POST['description']
+        # instruction = request.POST['instruction']
+        img1 = request.FILES['img1']
+        img2 = request.FILES['img2']
+        img3 = request.FILES['img3']
+
+        # Check if the product name already exists
+        if Product.objects.filter(prod_name=product_name).exists():
+            # Handle the case where the product name already exists
+            return HttpResponse("Product with this name already exists.")
+
+        subcategory = ProductSubcategory.objects.get(pk=subcategory_id)
+        # fish1=Fish.objects.get(pk=fish)
+        
+        # Create and save the product using the provided data
+        product = Product(
+            prod_name=product_name,
+            # fish_name=fish1,
+            sub_categ_id=subcategory,
+            price=price,
+            stock_quantity=quantity,
+            user_id=request.user,
+            imported=True
+        )
+        product.save()
+
+        # Create and save the product description with images
+        product_description = ProductDescription(
+            prod_id=product,
+            description=description,
+            img1=img1,
+            img2=img2,
+            img3=img3,
+            # instructions=instruction
+        )
+        product_description.save()
+
+        return redirect('index')  # Redirect to a product list view
+    
+    return render(request, 'admin\imported_subs.html', context)
+
+
+
+
 
 
 from .models import ProductSubcategory
@@ -2398,7 +2488,7 @@ from .models import Subscription_details
 def subscription(request):
     subscription=Subscription_details.objects.all()
     # subscriptionn=Subscription.objects.filter(user=request.user)
-    latest_subscription = Subscription.objects.filter(user=request.user).order_by('-order_date').first()
+    latest_subscription = Subscription.objects.filter(user=request.user)
     # print(latest_subscription.expiration_date)
     a=timezone.now()
     # if a < latest_subscription.expiration_date:
@@ -2411,7 +2501,7 @@ def subscription(request):
     context = {
         'subscription':subscription,
         'latest_subscription': latest_subscription,
-        'is_subscribed': latest_subscription.status if latest_subscription else False,
+        'is_subscribed': any(sub.status for sub in latest_subscription),
         'a':a
     }
 
@@ -2497,6 +2587,9 @@ def paymenthandlerr(request):
         razorpay_client.payment.capture(payment_id, amount)
         subscription.payment_id = payment_id
         subscription.payment_status = Subscription.PaymentStatusChoices.SUCCESSFUL
+        subscription.payment_date = timezone.now().date()
+        subscription.expiration_date = subscription.payment_date + timezone.timedelta(days=28)
+        subscription.status=True
         subscription.save()
         return redirect('index')
 

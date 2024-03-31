@@ -159,6 +159,7 @@ urlpatterns = [
     path('verify_order_otp/<int:order_id>/', views.verify_order_otp, name='verify_order_otp'),
     path('set_date/<int:order_id>/', views.set_date, name='set_date'),
     path('delivery_addr/', views.delivery_addr, name='delivery_addr'),
+    path('add_imported_subs/', views.add_imported_subs, name='add_imported_subs'),
     ]
 
 if settings.DEBUG:

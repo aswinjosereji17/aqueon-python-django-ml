@@ -48,12 +48,32 @@ class Hosttest(TestCase):
         browse=driver.find_element(By.CSS_SELECTOR,"a[href='/user_profile/']")
         browse.click()
         time.sleep(1)
-       
 
-        #logout
-        browse=driver.find_element(By.CSS_SELECTOR,"a#logt.nav-link.collapsed > span")
+
+
+        time.sleep(3)
+        browse=driver.find_element(By.CSS_SELECTOR,"a#req_p.nav-link.collapsed > span")
         browse.click()
-        time.sleep(2)
+        time.sleep(3)
+        #add a product request
+        select_element=Select(driver.find_element(By.NAME, "categ_id"))
+        select_element.select_by_value("1")
+        time.sleep(1)
+
+        elem = driver.find_element(By.NAME, "sub_cat_name")
+        elem.send_keys("Fish")
+        time.sleep(1)
+
+        file_path = r"C:\Users\asus\Downloads\discus-fish.jpg"
+        elem = driver.find_element(By.NAME, "subcat_image")
+        elem.send_keys(file_path)
+        time.sleep(1) 
+        browse=driver.find_element(By.CSS_SELECTOR,"button#submitBtn") 
+        browse.click()
+        time.sleep(1)
+
+
+        
 
 
      

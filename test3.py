@@ -61,7 +61,7 @@ class Hosttest(TestCase):
         time.sleep(1)
 
         elem = driver.find_element(By.NAME, "sub_cat_name")
-        elem.send_keys("Fish")
+        elem.send_keys("Discus")
         time.sleep(1)
 
         file_path = r"C:\Users\asus\Downloads\discus-fish.jpg"

@@ -60,7 +60,7 @@ class Hosttest(TestCase):
         browse.click()
         time.sleep(3)
         elem = driver.find_element(By.NAME, "categ_name")
-        elem.send_keys("Fish2")
+        elem.send_keys("Discus")
         time.sleep(1)
         file_path = r"C:\Users\asus\Downloads\discus-fish.jpg"
         elem = driver.find_element(By.NAME, "categ_image")
@@ -69,11 +69,7 @@ class Hosttest(TestCase):
         browse=driver.find_element(By.CSS_SELECTOR,"button#save_cat") 
         browse.click()
         time.sleep(1)
-        #add a product request
-        # select_element=Select(driver.find_element(By.NAME, "categ_id"))
-        # select_element.select_by_value("1")
-        # time.sleep(1)
-
+       
       
 
 

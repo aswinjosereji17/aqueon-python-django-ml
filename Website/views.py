@@ -23,6 +23,9 @@ def index(request):
   
     recent_products = Product.objects.filter(imported=False).order_by('-created_at')[:12]
 
+    imp_products = Product.objects.filter(imported=True)
+    
+
     product_ratings = []
 
     products_with_sentiment_sum = Product.objects.annotate(sentiment_sum=Avg('review__sentiment_score')).order_by('-sentiment_sum')[:6]
@@ -35,12 +38,22 @@ def index(request):
     
     if request.user.is_authenticated:
         user=request.user
-      
+        userr=request.user
+        is_subscribed=False
+        sub_status=Subscription.objects.filter(user=userr)
+        for i in sub_status:
+            if i.status:
+                is_subscribed=True
+            # else:
+            #     is_subscribed=False
         context = {
         'homeimg': homeimg,
         'recent_products': recent_products,
         'product_ratings': product_ratings,
-        'products_with_sentiment_sum': products_with_sentiment_sum
+        'products_with_sentiment_sum': products_with_sentiment_sum,
+        'imp_products':imp_products,
+        'sub_status':sub_status,
+        'is_subscribed': is_subscribed
         }
         
         return render(request,'index.html', context)
@@ -300,6 +313,14 @@ def user_profile_view(request):
 
     if not request.user.is_authenticated:
         return redirect('login_user')
+    today = timezone.now().date()
+
+    # Monthly orders
+    monthly_orders = AssignedDeliveryAgent.objects.filter(delivered=True, delivery_date_alloted__year=today.year, delivery_date_alloted__month=today.month).count()
+
+    # Yearly orders
+    yearly_orders = AssignedDeliveryAgent.objects.filter(delivered=True, delivery_date_alloted__year=today.year).count()
+
     # user_profile = UserProfile.objects.get(user=request.user)
     user_count = User.objects.filter(is_staff=False).count()
     seller_count = User.objects.filter(Q(is_staff=True) & Q(is_superuser=False)).count()
@@ -307,7 +328,7 @@ def user_profile_view(request):
     user_products_count = Product.objects.filter(user_id=request.user).count()
     s_req= SellerRequest.objects.all()
     products_with_sentiment_sum = Product.objects.annotate(sentiment_sum=Avg('review__sentiment_score')).order_by('-sentiment_sum')[:5]
-    show_orders_count = Order.objects.filter(payment_status=Order.PaymentStatusChoices.SUCCESSFUL).count()
+    show_orders_count = AssignedDeliveryAgent.objects.filter(delivered=True).count()
     show_sub_count = Subscription.objects.filter(status=True).count()
     show_hub_count = UserProfile.objects.filter(hub_status=True).count()
 
@@ -346,7 +367,9 @@ def user_profile_view(request):
         'products_with_sentiment_sum': products_with_sentiment_sum,
         'show_orders_count': show_orders_count,
         'show_sub_count':show_sub_count,
-        'show_hub_count':show_hub_count
+        'show_hub_count':show_hub_count,
+        'monthly_orders':monthly_orders,
+        'yearly_orders' :yearly_orders
         # 'product' :product
     }
     
@@ -2357,7 +2380,8 @@ from .models import Event
 @login_required
 @never_cache
 def events(request):
-    events = Event.objects.all()
+    today = timezone.now().date()
+    events = Event.objects.filter(date__gte=today)
     return render(request, 'events/events.html', {'events': events})
 
 @login_required

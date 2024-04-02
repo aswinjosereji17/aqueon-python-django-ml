@@ -188,6 +188,7 @@ class Product(models.Model):
     price = models.FloatField(null=False)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)  # Use Django's default user model
     stock_quantity = models.PositiveIntegerField(default=0) 
+    discount = models.PositiveIntegerField(default=0) 
     imported=models.BooleanField(default=False)  
     created_at = models.DateTimeField(auto_now_add=True)
     

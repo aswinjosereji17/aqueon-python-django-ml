@@ -27,7 +27,7 @@
         <tbody>{% for a in orders|dictsortreversed:"noti_date" %}
                 <tr>
                     <!-- <th scope="row"></th> -->
-                    <td>#{{ a.order.order.id }}</td>
+                    <td>#{{ a.order.order.serial_number }}</td>
                     <td>{{ a.prod_name }}</td>
                     <!-- <td><img src="" alt=""></td> -->
                     <td>{{ a.quantity }}</td>

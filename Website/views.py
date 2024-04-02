@@ -23,7 +23,15 @@ def index(request):
   
     recent_products = Product.objects.filter(imported=False).order_by('-created_at')[:12]
 
-    imp_products = Product.objects.filter(imported=True)
+    prod_20_per = Product.objects.filter(discount=20)[:2]
+    prod_50_per = Product.objects.filter(discount=50)[:2]
+    prod_banner1 = Product.objects.get(prod_id=49)
+    prod_banner2 = Product.objects.get(prod_id=48)
+    prod_banner3 = Product.objects.get(prod_id=68)
+    print(prod_banner1)
+
+
+    imp_products = Product.objects.filter(imported=True)[:6]
     
 
     product_ratings = []
@@ -53,7 +61,12 @@ def index(request):
         'products_with_sentiment_sum': products_with_sentiment_sum,
         'imp_products':imp_products,
         'sub_status':sub_status,
-        'is_subscribed': is_subscribed
+        'is_subscribed': is_subscribed,
+        'prod_20_per':prod_20_per,
+        'prod_50_per':prod_50_per,
+        'prod_banner1': prod_banner1,
+        'prod_banner2': prod_banner2,
+        'prod_banner3': prod_banner3,
         }
         
         return render(request,'index.html', context)
@@ -62,7 +75,12 @@ def index(request):
         'homeimg': homeimg,
         'recent_products': recent_products,
         'product_ratings': product_ratings,
-        'products_with_sentiment_sum': products_with_sentiment_sum
+        'products_with_sentiment_sum': products_with_sentiment_sum,
+        'prod_20_per':prod_20_per,
+        'prod_50_per':prod_50_per,
+        'prod_banner1': prod_banner1,
+        'prod_banner2': prod_banner2,
+        'prod_banner3': prod_banner3
         }
         
         return render(request,'index.html', context)
@@ -540,10 +558,12 @@ def add_product(request):
         product_name = request.POST['product_name']
         # fish = request.POST['fish']
         subcategory_id = request.POST['subcategory']
-        price = request.POST['price']
+        price = float(request.POST['price'])
         quantity=request.POST['quantity']
         description = request.POST['description']
-        # instruction = request.POST['instruction']
+        discount = float(request.POST['discount'])
+        discounted_price = price * (1 - discount/100)
+        instruction = request.POST['instruction']
         img1 = request.FILES['img1']
         img2 = request.FILES['img2']
         img3 = request.FILES['img3']
@@ -561,7 +581,8 @@ def add_product(request):
             prod_name=product_name,
             # fish_name=fish1,
             sub_categ_id=subcategory,
-            price=price,
+            price=discounted_price,
+            discount=discount,
             stock_quantity=quantity,
             user_id=request.user
         )
@@ -574,7 +595,7 @@ def add_product(request):
             img1=img1,
             img2=img2,
             img3=img3,
-            # instructions=instruction
+            instructions=instruction
         )
         product_description.save()
 

@@ -701,46 +701,44 @@
                             <div style="border-radius: 9px;" class="carousel-inner">
                                 <div class="carousel-item position-relative active" style="height: 430px;">
                                     <img style="border-radius: 9px;" class="position-absolute w-100 h-100"
-                                        src="{% static 'img/fish1.jpg' %}" style="object-fit: cover;">
+                                        src="{{ prod_banner1.productdescription.img1.url}}" style="object-fit: cover;">
                                     <div
                                         class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                         <div class="p-3" style="max-width: 700px;">
                                             <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">
-                                                Nemo
+                                                {{ prod_banner1.prod_name|truncatechars:21}}
                                             </h1>
                                             <p class="mx-md-5 px-5 animate__animated animate__bounceIn"></p>
                                             <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
-                                                href="{% url 'prod_desc' prod_id=39 %}">Shop Now</a>
+                                                href="{% url 'prod_desc' prod_id=49 %}">Shop Now</a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="carousel-item position-relative" style="height: 430px;">
                                     <img style="border-radius: 9px;" class="position-absolute w-100 h-100"
-                                        src="{% static 'img/fish_images/koi-fish.jpg' %}" style="object-fit: cover;">
+                                        src="{{ prod_banner2.productdescription.img1.url}}" style="object-fit: cover;">
                                     <div
                                         class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                         <div class="p-3" style="max-width: 700px;">
                                             <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">
-                                                Koi
-                                                - Fish</h1>
+                                                {{ prod_banner2.prod_name|truncatechars:21}}</h1>
                                             <p class="mx-md-5 px-5 animate__animated animate__bounceIn"></p>
                                             <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
-                                                href="{% url 'prod_desc' prod_id=39 %}">Shop Now</a>
+                                                href="{% url 'prod_desc' prod_id=48 %}">Shop Now</a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="carousel-item position-relative" style="height: 430px;">
                                     <img style="border-radius: 9px;" class="position-absolute w-100 h-100"
-                                        src="{% static 'img/fish_images/lionfish.jpg' %}" style="object-fit: cover;">
+                                        src="{{ prod_banner3.productdescription.img1.url}}" style="object-fit: cover;">
                                     <div
                                         class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                         <div class="p-3" style="max-width: 700px;">
                                             <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">
-                                                Lion
-                                                Fish</h1>
+                                                {{ prod_banner3.prod_name|truncatechars:21}}</h1>
                                             <p class="mx-md-5 px-5 animate__animated animate__bounceIn"></p>
                                             <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
-                                                href="{% url 'prod_desc' prod_id=39 %}">Shop Now</a>
+                                                href="{% url 'prod_desc' prod_id=68 %}">Shop Now</a>
                                         </div>
                                     </div>
                                 </div>
@@ -748,22 +746,26 @@
                         </div>
                     </div>
                     <div class="col-lg-4">
+                        {% for i in prod_50_per %}
                         <div class="product-offer mb-30" style="height: 200px; border-radius: 9px;">
-                            <img class="img-fluid" src="{% static 'img/fish_images/lionfish.jpg' %}" alt="">
+                            <img class="img-fluid" src="{{ i.productdescription.img1.url }}" alt="">
                             <div class="offer-text">
-                                <h6 class="text-white text-uppercase">Save 20%</h6>
+                                <h6 class="text-white text-uppercase">Save 50%</h6>
                                 <h3 class="text-white mb-3">Special Offer</h3>
-                                <a href="" class="btn btn-primary">Shop Now</a>
+                                <div onclick="navigateToSubcategoryProducts({{i.prod_id }})">
+                                    <a class="btn btn-primary">Shop Now</a>
+                                </div>
                             </div>
                         </div>
-                        <div class="product-offer mb-30" style="height: 200px; border-radius: 9px;">
+                        {% endfor %}
+                        <!-- <div class="product-offer mb-30" style="height: 200px; border-radius: 9px;">
                             <img class="img-fluid" src="{% static 'img/fish_images/discus-fish.jpg' %}" alt="">
                             <div class="offer-text">
                                 <h6 class="text-white text-uppercase">Save 20%</h6>
                                 <h3 class="text-white mb-3">Special Offer</h3>
                                 <a href="" class="btn btn-primary">Shop Now</a>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -903,10 +905,7 @@
                 </div>
             </div>
 
-            {% else %}
-
-            <h1>noo</h1>
-
+           
             {% endif %}
 
 
@@ -1164,17 +1163,21 @@
             <!-- Offer Start -->
             <div class="container-fluid pt-5 pb-3">
                 <div class="row px-xl-5">
+                    {% for i in prod_20_per %}
                     <div class="col-md-6">
                         <div class="product-offer mb-30" style="height: 300px;">
-                            <img class="img-fluid" src="{% static 'img/fish_images/lionfish.jpg' %}" alt="">
+                            <img class="img-fluid" src="{{ i.productdescription.img1.url }}" alt="">
                             <div class="offer-text">
                                 <h6 class="text-white text-uppercase">Save 20%</h6>
                                 <h3 class="text-white mb-3">Special Offer</h3>
-                                <a href="" class="btn btn-primary">Shop Now</a>
+                                <div onclick="navigateToSubcategoryProducts({{i.prod_id }})">
+                                    <a class="btn btn-primary">Shop Now</a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    {% endfor %}
+                    <!-- <div class="col-md-6">
                         <div class="product-offer mb-30" style="height: 300px;">
                             <img class="img-fluid" src="{% static 'img/fish_images/discus-fish.jpg' %}" alt="">
                             <div class="offer-text">
@@ -1183,7 +1186,7 @@
                                 <a href="" class="btn btn-primary">Shop Now</a>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <!-- Offer End -->
@@ -1531,12 +1534,12 @@
 
 
             <!-- Vendor Start -->
-            <div class="container-fluid py-5">
+            <!-- <div class="container-fluid py-5">
                 <div class="row px-xl-5">
                     <div class="col">
                         <div class="owl-carousel vendor-carousel">
                             <div class="bg-light p-4">
-                                <img src="img/vendor-1.jpg" alt="">
+                                <img style="height: 44px;" src="" alt="">
                             </div>
                             <div class="bg-light p-4">
                                 <img src="img/vendor-2.jpg" alt="">
@@ -1562,7 +1565,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- </div> -->
             <!-- Vendor End -->

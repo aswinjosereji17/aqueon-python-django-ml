@@ -31,7 +31,7 @@
 
                 <div style="display: flex; gap: 40px; flex-direction: column;">
                     <div>
-                        <img onclick="navigateToSubcategories('{{ item.prod_id.prod_id }}')" src="{{ item.prod_id.productdescription.img1.url }}" alt="Product Image">
+                        <img style="cursor: pointer;" onclick="navigateToSubcategories('{{ item.prod_id.prod_id }}')" src="{{ item.prod_id.productdescription.img1.url }}" alt="Product Image">
                     </div>
                    
                 </div>
@@ -45,6 +45,7 @@
                         {% else %}
                           <p style="color: green;">In Stock</p>
                         {% endif %}
+                        <!-- <p>hghjgh</p> -->
                     </div>
                     
                     <form method="post" action="{% url 'remove_wish_item' item.wish_id %}">

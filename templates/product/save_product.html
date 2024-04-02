@@ -117,6 +117,27 @@
       $("#price").change(validatePrice);
 
 
+
+      function validateDiscount() {
+        var priceInput = parseFloat($("#discount").val());
+        if (isNaN(priceInput) || priceInput <= 0) {
+          $("#discount-error").text("Price must be greater than 0.");
+          return false;
+        } else {
+          $("#discount-error").text("");
+          return true;
+        }
+      }
+
+      // Attach the validation function to the form submission
+      $(".product-form").submit(function () {
+        return validateDiscount();
+      });
+
+      // Attach the validation function to the price input's change event
+      $("#discount").change(validateDiscount);
+
+
       function validateImages() {
         var img1 = $("#img1").val();
         var img2 = $("#img2").val();
@@ -253,6 +274,11 @@ function validateImage3(event) {
       <label for="description">Description:</label>
       <textarea style="height: 81px;" id="description" name="description" required class="form-control"></textarea>
     </div>
+    <div class="form-group">
+      <label for="description">Discount:</label>
+      <input type="number" id="discount" name="discount" min="1" max="100" step="1" required class="form-control">
+      <span id="discount-error" class="text-danger"></span>
+    </div>
   </div>
 
   <div>
@@ -264,10 +290,10 @@ function validateImage3(event) {
   
    
   
-    <!-- <div class="form-group">
+    <div class="form-group">
       <label for="instruction">Instruction:</label>
       <textarea style="width: 397px;" id="instruction" name="instruction" required class="form-control"></textarea>
-    </div> -->
+    </div>
   
     <!-- <div class="form-group">
             <label for="img1">Image 1:</label>
